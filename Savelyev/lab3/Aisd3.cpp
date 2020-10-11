@@ -4,7 +4,7 @@
 #include <iterator>
 #include <sstream>
 
-#define FOLDER "readme.txt" // Изменить в соответствии с расположением на
+#define FOLDER "/home/indiora/C++/Aisd/readmytree.txt" // Изменить в соответствии с расположением на
                                                        // своем компьютере
 using namespace std;
 
@@ -102,7 +102,7 @@ public:
     // Вывод листьев в консоль
     void PrintTreeLeaves(Node *tree) {
         // Если корень
-        if(tree->lt == nullptr && tree->rt == nullptr ) {
+        if(tree->lt == nullptr && tree->rt == nullptr && tree->data != '^') {
             std::cout << tree->data << ' ';
             return ;
         }
@@ -122,9 +122,15 @@ public:
         for (int i = 0; i < indent; i++){
             std::cout << ('\t');
         }
-        if(tree->lt == nullptr && tree->rt == nullptr ) {
-            std::cout << "Leaf " << tree->data << '\n';
-            return ;
+        if(tree->lt == nullptr && tree->rt == nullptr) {
+            if (tree->data != '^') {
+                std::cout << "Leaf " << tree->data << '\n';
+                return ;
+            }
+            else {
+                std::cout << "empty" << '\n';
+                return ;
+            }
         }
         else {
             std::cout  << tree->data << " has descendant" << '\n';
@@ -144,25 +150,31 @@ public:
         for (int i = 0; i < indent; i++){
             std::cout << ('\t');
         }
-        std::cout << tree->data << " Curent depth: " << cur << '\n';
-        if(cur == depth) {
-            return 1;
-        }
-        else {
-
-            if(tree->rt != nullptr && tree->lt != nullptr) {
-                return Count(tree->lt, depth, cur + 1, count, indent + 1) + Count(tree->rt, depth, cur + 1, count, indent + 1);
-            }
-            else if (tree->rt == nullptr && tree->lt != nullptr) {
-                return Count(tree->lt, depth, cur + 1, count, indent + 1);
-            }
-            else if(tree->rt != nullptr && tree->lt == nullptr) {
-                return Count(tree->rt, depth, cur + 1, count, indent + 1);
+        if (tree->data != '^') {
+            std::cout << tree->data << " Curent depth: " << cur << '\n';
+            if(cur == depth) {
+                return 1;
             }
             else {
-                return 0;
-            }
 
+                if(tree->rt != nullptr && tree->lt != nullptr) {
+                    return Count(tree->lt, depth, cur + 1, count, indent + 1) + Count(tree->rt, depth, cur + 1, count, indent + 1);
+                }
+                else if (tree->rt == nullptr && tree->lt != nullptr) {
+                    return Count(tree->lt, depth, cur + 1, count, indent + 1);
+                }
+                else if(tree->rt != nullptr && tree->lt == nullptr) {
+                    return Count(tree->rt, depth, cur + 1, count, indent + 1);
+                }
+                else {
+                    return 0;
+                }
+
+            }
+        }
+        else {
+            std::cout << "empty" << '\n';
+            return 0;
         }
     }
 
@@ -182,7 +194,12 @@ public:
             std::cout << ('\t');
         }
         // Вывод содержимого узла
-        std::cout << tree->data << '\n';
+        if(tree->data != '^' ) {
+            std::cout << tree->data << '\n';
+        }
+        else {
+            std::cout << "empty" << '\n';
+        }
         // Если есть потомки
         if(tree->lt != nullptr) {
             PrintTree(tree->lt, indent + 1);
