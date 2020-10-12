@@ -4,7 +4,7 @@
 #include <iterator>
 #include <sstream>
 
-#define FOLDER "/home/indiora/C++/Aisd/readmytree.txt" // Изменить в соответствии с расположением на
+#define FOLDER "readme.txt" // Изменить в соответствии с расположением на
                                                        // своем компьютере
 using namespace std;
 
