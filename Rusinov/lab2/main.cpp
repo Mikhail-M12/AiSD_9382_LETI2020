@@ -324,7 +324,7 @@ void Expression::operator*() {
 int main() {
     std::string string;
 
-    std::ifstream in("../file.txt");
+    std::ifstream in("file.txt");
     if (!in.is_open()) {
         std::cout << "Не удалось открыть файл!" << std::endl;
         in.close();
