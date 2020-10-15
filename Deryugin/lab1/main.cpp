@@ -4,8 +4,8 @@
 #include <cctype>
 using namespace std;
 
-
-void Error(int numberOfError){
+/*Функция вывода ошибок*/
+void printError(int numberOfError){
     if (numberOfError == 1) cout<<"\nCannot open file\n";
     if (numberOfError == 2) cout<<"\nIncorrect first symbol\n";
     if (numberOfError == 3) cout<<"\nempty string\n";
@@ -18,79 +18,101 @@ void Error(int numberOfError){
     if (numberOfError == 10) cout<<"\nNo '(' symbol\n";
 }
 
-
-bool Operation(ifstream &file, char ch){
-    return ch == '+' || ch == '-' || ch == '*';
+/*Функция проверки знака операции*/
+bool isOperation(ifstream &file, char letter){
+    return letter == '+' || letter == '-' || letter == '*';
 }
 
-
-bool Simple(ifstream &file, char ch){
+/*Функция проверки простого выражения*/
+bool isSimple(ifstream &file, char letter, int depth){
     bool flag;
-
-    if(isalpha(ch)) return true;
-    else if (ch == '('){
-       if (file>>ch){
-           cout<<ch;
-           flag = Simple(file, ch);
+    /*Является ли простое выражание латинской буквой*/
+    if(isalpha(letter)){
+        return true;
+    }
+    else if (letter == '('){
+        /*Проверка первой части простого выражения*/
+       if (file>>letter){
+           if (letter == '(')  for (int i = 0; i < depth+1; i++) cout<<"\t";
+           else  for (int i = 0; i < depth; i++) cout<<"\t";
+           cout<<letter<<"\n";
+           flag = isSimple(file, letter, depth+1);
+           /*Проверка второй части(коррестность знака опериции) простого выражения*/
            if (flag){
-               if (file>>ch){
-                   cout<<ch;
-                   flag = Operation(file, ch);
+               if (file>>letter){
+                   for (int i = 0; i < depth; i++) cout<<"\t";
+                   cout<<letter<<"\n";
+                   flag = isOperation(file, letter);
+                   /*Проверка третьей части простого вырожения*/
                    if (flag){
-                       if (file>>ch){
-                           cout<<ch;
-                           flag = Simple(file, ch);
+                       if (file>>letter){
+                           if (letter == '(') {
+                               for (int i = 0; i < depth+1; i++) cout<<"\t";
+                               cout<<letter<<"\n";
+                               flag = isSimple(file, letter, depth+1);
+                           }
+                           else {
+                               for (int i = 0; i < depth; i++) cout<<"\t";
+                               cout<<letter<<"\n";
+
+                               flag = isSimple(file, letter, depth);
+                           }
+
                        }
                    }
                    else {
-                       Error(5);
+                       printError(5);
                        return false;
                    }
                }
            }
            else {
-               Error(6);
+               printError(6);
                return false;
            }
+           /*Проверка на наличие закрывающей скобки*/
            if (flag) {
-               if (file>>ch){
-                   cout<<ch;
-                   return (ch == ')');
+               if (file>>letter){
+                   for (int i = 0; i < depth; i++) cout<<"\t";
+                   cout<<letter<<"\n";
+                   return (letter == ')');
                }
                else{
-                   Error(8);
+                   printError(8);
                    return false;
                }
            }
            else{
-               Error(7);
+               printError(7);
                return false;
            }
        }
        else{
-           Error(9);
+           printError(9);
            return false;
        }
     }
     else{
-        Error(10);
+        printError(10);
         return false;
     }
 }
 
-bool Expression(ifstream &file){
-    char ch;
+/*Функция проверки первого сивмола, а также проверки на налчие лишних символов*/
+bool isSimpleExpression(ifstream &file){
+    char letter;
     bool flag = false;
+    int depth = 0;
 
-    if (file>>ch) {
-        cout<<ch;
-        if (ch == '(' || isalpha(ch)) flag = Simple(file, ch);
-        else Error(2);
-        file>>ch;
-        if (flag && !file.eof()) Error(4);
+    if (file>>letter) {
+        cout<<letter<<"\n";
+        if (letter == '(' || isalpha(letter)) flag = isSimple(file, letter, depth);
+        else printError(2);
+        file>>letter;
+        if (flag && !file.eof()) printError(4); // Вызов функции ошибок, если есть лишние символы или ошибки в самой строке
         flag = (flag && file.eof());
     }
-    else Error(3);
+    else printError(3);
     return flag;
 }
 
@@ -101,11 +123,11 @@ int main(){
     ifstream fin;
     fin.open(fileName);
     if (!fin.is_open()){
-        Error(1);
+        printError(1);
         return 0;
     }
 
-    if(Expression(fin)) cout<<"\nIts a Simple Expression";
+    if(isSimpleExpression(fin)) cout<<"\nIts a Simple Expression";
     else cout<<"\nIts not a Simple Expression";
 
     fin.close();
