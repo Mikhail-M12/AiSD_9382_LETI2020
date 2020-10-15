@@ -1,7 +1,6 @@
-﻿#include <pch.h>
+﻿
 #include <iostream>
 #include <cstdio>
-#include <conio.h>
 
 using namespace std;
 
@@ -35,7 +34,7 @@ void write_seq(const lisp x); // для элемента
 
 lisp head(const lisp s)
 {
-	if (s != NULL) 
+	if (s != nullptr) 
 		if (!isAtom(s)) return s->hd;
 			
 	else {
@@ -230,11 +229,11 @@ int main() {
 	
 	if (lisp_cmp(l1, l2)) {
 		
-		printf("Списки идентичны\n");
+		cout << "Списки идентичны\n";
 	}
 	else {
 		
-		printf("Списки не идентичны\n");
+		cout << "Списки не идентичны\n";
 	}
 	
 	
