@@ -10,7 +10,7 @@ using namespace std;
 
 typedef unsigned int unInt;
 //typedef char base;
-ifstream infile ("KLP.txt");
+ifstream infile ("./tests/KLP3.txt");
 
 template <class T>
 
