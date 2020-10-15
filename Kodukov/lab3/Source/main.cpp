@@ -1,32 +1,31 @@
-/*  одуков јлександр 9382, в. 18д
- *
- * Ѕинарное дерево называетс€ бинарным деревом поиска,
- * если дл€ каждого его узла справедливо
- * : все элементы правого поддерева больше этого узла,
- *   а все элементы левого поддерева Ц меньше этого узла.Ѕинарное дерево
- *       называетс€ пирамидой,
- *   если дл€ каждого его узла справедливо
- * : значени€ всех потомков этого узла не больше,
- *   чем значение узла.ƒл€ заданного бинарного дерева с числовым типом
- *       элементов определить,
- *   €вл€етс€ ли оно бинарным деревом поиска и €вл€етс€ ли оно пирамидой.
- */
+/* Kodukov Aleksabdr 9382, v. 18d */
+
+#include <conio.h>
+
 #include "tree.h"
 
 template <typename Elem>
-Tree<Elem> *Read(std::ifstream &f) {
+Tree<Elem> *Read(std::istream &f) {
   char ch;
+  bool neg = false, num = false;
   Elem e = 0;
   Tree<Elem> *p, *q;
 
   f >> ch;
   int d = 0;
+  if (ch == '-') {
+    f >> ch;
+    neg = true;
+  }
   while (ch >= '0' && ch <= '9') {
-    e = e * pow(10, d++) + ch - '0';
+    num = true;
+    e = e * 10 + (ch - '0') * (pow(-1, neg));
     f >> ch;
   }
+  if (neg && !num)
+    return nullptr;
   if (ch == '/')
-    return NULL;
+    return nullptr;
   else {
     p = Read<Elem>(f);
     q = Read<Elem>(f);
@@ -48,11 +47,37 @@ void Print(Tree<Elem> *q, long n) {
 }
 
 int main() {
-  Tree<int> *t;
-  std::ifstream f("Tests/input.txt");
-  t = Read<int>(f);
+  bool m;
+  Tree<int> *t = nullptr;
+  
+  while (1) {
+    char mode;
+
+    system("cls");
+    std::cout << "Choose mode:\n1 - console input\n2 - file input\n";
+    mode = _getch();
+    if (mode == '1') {
+      m = false;
+      break;
+    } else if (mode == '2') {
+      m = true;
+      break;
+    } else {
+      std::cout << "Wrong option";
+      _getch();
+    }
+  }
+  system("cls");
+  if (m) {
+    std::ifstream f("Tests/input.txt");
+    if (f.is_open()) {
+      t = Read<int>(f);
+      f.close();
+    }
+  } else
+    t = Read<int>(std::cin);
+
   if (t != nullptr) {
-    f.close();
     Print(t, 0);
     std::cout << "Check search:\n";
     bool Search = t->CheckSearchTree(-INFINITY, INFINITY, 1);
