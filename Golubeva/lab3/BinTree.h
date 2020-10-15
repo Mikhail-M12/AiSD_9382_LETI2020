@@ -138,7 +138,7 @@ public:
         };
     }
 
-//---------------------------------------
+//--------------------------------------
 void find_elem (BinTree* b, int n, T elem, int &count, int &track)
     {
     	cout<<" ";
