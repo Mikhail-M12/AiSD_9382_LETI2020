@@ -174,11 +174,19 @@ int main() {
     if(inputCh == 'f') {
         ifstream infile("../in.txt");
         infile >> arraySize;
+        if (arraySize <=0){
+            cout << "Некорректная длина массива!";
+            return 0;
+        }
         infile.close();
     }
     else if (inputCh == 'c'){
         cout << "Введите количество элементов в массиве: ";
         cin >> arraySize;
+        if(arraySize <=0){
+            cout <<"Некорректная длина массива!";
+            return 0;
+        }
     }
 
     int arr[arraySize];
