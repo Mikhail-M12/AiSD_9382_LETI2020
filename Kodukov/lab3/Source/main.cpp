@@ -69,13 +69,20 @@ int main() {
   }
   system("cls");
   if (m) {
+    char s[200];
     std::ifstream f("Tests/input.txt");
+    f.getline(s, 200);
     if (f.is_open()) {
+      std::cout << "File input: " << s;
+      f.close();
+      f = std::ifstream("Tests/input.txt");
       t = Read<int>(f);
       f.close();
     }
-  } else
+  } else {
     t = Read<int>(std::cin);
+  }
+  std::cout << "\n";
 
   if (t != nullptr) {
     Print(t, 0);
