@@ -138,7 +138,6 @@ class TreeCreator { // Класс для создания деревьев
 public:
     static Node<char>** createTreesFromFile() { // создание деревьев из файла
         std::cout << "------Считывание деревьев из файла------" << std::endl;
-        auto** treeArray = new Node<char>*[2];
         std::fstream treesFile("file.txt");
         if (!treesFile.is_open()) { // проверим, получилось ли открыть файл
             std::cout << "Не удалось открыть файл file.txt" << std::endl;
@@ -150,10 +149,26 @@ public:
         std::getline(treesFile, firstTree, '\n');
         std::getline(treesFile, secondTree, '\n');
         treesFile.close();
+        return createTrees(firstTree, secondTree);
+    }
+
+    static Node<char>** createTreesFromConsole() { // создание дерева из консоли
+        std::cout << "------Считывание деревьев из консоли------" << std::endl;
+        std::cout << "Введите первое дерево - ";
+        std::string first;
+        std::cin >> first;
+        std::cout << "Введите второе дерево - ";
+        std::string second;
+        std::cin >> second;
+        return createTrees(first, second);
+    }
+
+    static Node<char>** createTrees(const std::string& first, const std::string& second) {
+        auto** treeArray = new Node<char>*[2];
         std::cout << "---Считывание первого дерева---" << std::endl;
-        treeArray[0] = createTree(firstTree); // создаем первое дерево
+        treeArray[0] = createTree(first); // создаем первое дерево
         std::cout << "---Считывание второго дерева---" << std::endl;
-        treeArray[1] = createTree(secondTree); // создаем второе дерево
+        treeArray[1] = createTree(second); // создаем второе дерево
         return treeArray; // возвращаем массив из двух деревьев
     }
 };
@@ -209,6 +224,14 @@ public:
 
 
 int main() {
-    Exercise(TreeCreator::createTreesFromFile()).executeTask();
+    int value = 0;
+    std::cout << "0 - ввод из консоли, 1 - ввод из файла file.txt" << std::endl;
+    std::cout << "Введите значение: ";
+    std::cin >> value;
+    if (value) {
+        Exercise(TreeCreator::createTreesFromFile()).executeTask();
+    } else {
+        Exercise(TreeCreator::createTreesFromConsole()).executeTask();
+    }
     return 0;
 }
