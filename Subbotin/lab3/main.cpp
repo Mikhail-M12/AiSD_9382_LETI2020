@@ -4,7 +4,7 @@
 #include <set>
 using namespace std;
 
-ifstream infile ("KLP.txt");
+
 
 /*
  * class BT - класс, реализующий бинарное дерево
@@ -19,7 +19,7 @@ public:
     BT *left;
     BT *right;
     BT(Elem val, BT * l, BT * r);
-    BT * enter();
+    BT * enter(istream &stream);
     void checkForEqualElements(BT * root);
     void outBT(BT * root);
 };
@@ -40,13 +40,13 @@ BT<Elem>::BT(Elem val,BT * l, BT * r) {
  * BT<Elem>* enter() - метод для ввода дерева, возвращает указатель на корень дерева
  */
 template<typename Elem>
-BT<Elem>* BT<Elem>::enter() {
+BT<Elem>* BT<Elem>::enter(istream &stream) {
     Elem val;
-    infile >> val;
+    stream >> val;
     if(val == '/') return nullptr;
     else {
-        BT<Elem> * l = enter();
-        BT<Elem> * r = enter();
+        BT<Elem> * l = enter(stream);
+        BT<Elem> * r = enter(stream);
         return new BT<Elem>(val,l,r);
     }
 }
@@ -142,7 +142,21 @@ void BT<Elem>::checkForEqualElements(BT * root) {
 
 int main() {
     BT<char> * tree;
-    tree = tree->enter();
+    char choice='a';
+    while(choice!='f' && choice!='c'){
+        cout <<"Введите f/c для ввода дерева с файла/консоли: ";
+        cin >> choice;
+    }
+
+    if(choice == 'c'){
+        cout << "Введите дерево: ";
+        tree = tree->enter(cin);
+    }
+    else if (choice == 'f'){
+        ifstream infile ("KLP.txt");
+        tree = tree->enter(infile);
+    }
+
     cout << "Рассматриваемое дерево: \n";
     tree->outBT(tree);
     cout << "\nПроходимся по дереву в ширину и ищем одинаковые элементы: \n";
@@ -151,6 +165,5 @@ int main() {
     cout << "\n";
     return 0;
 }
-
 
 
