@@ -1,0 +1,3 @@
+Онлайн компилятор:
+https://repl.it/languages/cpp
+однако он не пропускает itoa и atoi, лучше тестировать в Clion
