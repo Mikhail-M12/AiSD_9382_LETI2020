@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+
 using namespace std;
 template <typename Elem>// Elem - параметр шаблона класса, в качестве него используем char
 class BinaryTree {
@@ -57,7 +58,7 @@ public:
             return;
         }
         printInorder(node->left, n, shift);//вход в самую левую ветку
-        itoa (n, k, 10);//перевод номера в строку
+        sprintf(k,"%d",n);
         strcat(_k_, k);
         strcat(_k_, " ");
         char* t = strstr(shift,_k_);//поиск номера в строке из номеров
@@ -83,7 +84,7 @@ public:
             for (int i = 0; i < n + 1; i++)
                 cout << " ";//сдвигаем узел до его уровня
             cout << node->data << "\n";
-            itoa(n, k, 10);//добавляем номер обратно в строку номеров
+            sprintf(k,"%d",n);//добавляем номер обратно в строку номеров
             strcat(shift, k);
             strcat(shift, " ");
         } else//если номер 1, то это вершина дерева, его корень
@@ -129,7 +130,7 @@ public:
         shift[0] = ' ';
         char k[10];
         for (int i = 1;i <strlen(pre) + 1;i++) {//запись номеров в строку, они не будут превышать количество узлов
-            itoa(i, k, 10);
+            sprintf(k,"%d",i);
             strcat(shift, k);
             strcat(shift, " ");
         }
