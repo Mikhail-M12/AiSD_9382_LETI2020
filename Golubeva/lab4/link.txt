@@ -1,2 +1,0 @@
-Ссылка на файл с проектом:
-https://repl.it/repls/GiantMintcreamOrder#main.cpp
