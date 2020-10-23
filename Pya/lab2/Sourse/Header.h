@@ -740,7 +740,7 @@ char* simplify(char* t, node* shift, char x) {//упрощение выраже�
         delete[] tright_sen;
         m = 0;
         for (int i = 0; i < strlen(right_sen); i++) {
-            if (right_sen[i] == '+' || (right_sen[i] == '-' && i != 0) || (i == (strlen(right_sen) - 1) && flag)) {
+            if (right_sen[i] == '+' || (right_sen[i] == '-' && i != 0) || (i == (strlen(right_sen) - 1) && flag)) {//НУЖНО ЗАДЕЙСТВОВАТЬ ФЛАГ
                 flag = true;
                 char *t_str = new char[20]();
                 if (i == (strlen(right_sen) - 1) || m != 0)
@@ -752,7 +752,7 @@ char* simplify(char* t, node* shift, char x) {//упрощение выраже�
                     char* r_pch = strtok(t_str, sym);
                     strcpy(l_pch, r_pch);
                     r_pch = strtok(NULL, sym);
-                    if (r_pch != NULL) {
+                    if (r_pch != NULL) {//НУЖНО УБРАТЬ ВСЕ ИКСЫ С УМНОЖЕНИЕМ
                         if (!(strcmp(l_pch, "0") == 0 || strcmp(l_pch, "-0") == 0) && !(strcmp(r_pch, "0") == 0 || strcmp(r_pch, "-0") == 0)) {
                             int lvalue = atoi(l_pch);
                             int rvalue = atoi(r_pch);
