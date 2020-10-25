@@ -18,6 +18,7 @@ struct List { // двусвязный линейный список
 
     ~List() { // деструктор
         delete next;
+        delete prev;
     }
 };
 
