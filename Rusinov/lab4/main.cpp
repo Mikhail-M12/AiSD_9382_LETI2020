@@ -4,18 +4,14 @@
 
 struct List { // односвязный линейный список
     List* next = nullptr;
+    List* prev = nullptr;
     int value;
 
     void append(int element) { // добавить элемент в конец
         List* current = this;
         while(current->next) current = current->next;
         current->next = new List(element);
-    }
-
-    int last() { // получить значение последнего элемента
-        List* current = this;
-        while (current->next) current = current->next;
-        return current->value;
+        current->next->prev = current;
     }
 
     explicit List(int value) : value(value) {} // конструктор
@@ -33,93 +29,42 @@ void showList(List* list) {
     }
 }
 
+void insertionSort(List* list) {
+    // начинать сортировку можно с первого элемента списка
+    for (List* i = list->next; i; i = i->next) {
+        // начинаем сравнивать предыдущий элемент за рассматриваемым элементом
+        List* j = i->prev;
+        // запоминаем значение рассматриваемого элемента
+        int key = i->value;
+        std::cout << "Начал рассматривать элемент " << key << std::endl;
 
-List* merge(List* first, List* second) { // слияние двух списков
-    if (!first) return second; // если первый пустой, то вернуть второй
-    if (!second) return first; // если второй пустой, то вернуть первый
-
-    List* mergedList;
-
-    List* headFirst = first; // фиксируем головы списков, чтобы в конце функции очистить память
-    List* headSecond = second;
-
-    std::cout << "[Слияние] ";
-    showList(first);
-    std::cout << "| ";
-    showList(second);
-    std::cout << std::endl;
-
-    if (first->value < second->value) { // инициализация головы списка
-        mergedList = new List(first->value);
-        first = first->next; // переход к следующему элементу
-    } else {
-        mergedList = new List(second->value);
-        second = second->next;
-    }
-
-    while (first || second) { // пока списки не пустые
-        if (first && second) { // если оба списка не пустые
-            if (first->value < second->value) { // если значение первого списка < второго
-                mergedList->append(first->value); // тогда в результативный список добавляем значение первого
-                first = first->next; // обрезаем первый список
-            } else {
-                mergedList->append(second->value); // аналогично
-                second = second->next;
-            }
-        } else if (first) { // если непустой только первый, то добавляем в результативный список элементы первого
-            mergedList->append(first->value);
-            first = first->next;
-        } else {
-            mergedList->append(second->value); // аналогия
-            second = second->next;
+        // пока предыдущий элемент существует и его значение > рассматриваемого элемента
+        // пред. элементом становится пред. элемент пред. элемента
+        // а так же мы сдвигаем пред элемент вперед
+        for (; j && j->value > key; j = j->prev) {
+            std::cout << "Сравнил c " << j->value;
+            std::cout << ". " << j->value << " > " << key << ". Сдвигаю " << j->value << " вправо" << std::endl;
+            j->next->value = j->value;
         }
-    }
 
-    delete headFirst; // очистка памяти
-    delete headSecond;
-
-    std::cout << "[Результат слияния] ";
-    showList(mergedList);
-    std::cout << std::endl;
-
-    return mergedList; // результат слияния
-}
-
-// Strand sort is a recursive sorting algorithm that sorts items of a list into increasing order
-// сортирущий алгоритм для сортировки элементов списка
-// поэтому была реализована модель односвязного линейного списка
-List* strandSort(List* list) { // нитевидная сортировка
-    // в эту функцию нельзя передать пустой список
-    if (!list->next) return list; // если список из одного элемента, то возвращаем его
-
-    List* sublist = new List(list->value); // промежуточный список
-    list = list->next;
-    // в него передается первый элемент списка
-    // затем добавляются элементы из оригинального списка, которые больше последнего элемента промежуточного списка
-
-    List* source = nullptr;
-    // данный список необходим, чтобы хранить элементы, которые <= последнего элемента промежуточного списка
-    // данный шаг упрощает работу с односвязным списком
-
-    while (list) { // идем по элементам списка
-        // если последний элемент промежуточного списка < элемента списка, то добавляем элемент списка
-        // в промежуточный список
-        if (sublist->last() < list->value) sublist->append(list->value);
+        // если элемент существует, то мы дошли до момента, когда пред. элемент <= рассматриваемого
+        // тогда значение след. элемента нужно заменить на значение рассматриваемого
+        if (j) {
+            std::cout << "Дошел до значения " << j->value;
+            std::cout << ". " << j->value << " <= " << key << ". Поэтому устанавливаю " << key << " правее." << std::endl;
+            j->next->value = key;
+        }
+        // а если не существует, то мы вышли за границы массива, значит нужно переместить
+        // значение рассматриваемого элемента в начало списка
         else {
-            // элемент списка <= последнего элемента промежуточного списка
-            // значит нужно добавить в source
-            if (!source) source = new List(list->value); // инициализация, если source пустой
-            else source->append(list->value);
+            std::cout << "Вышел за границу списка, поэтому устанавливаю значение " << key << " в начало списка" << std::endl;
+            list->value = key;
         }
-        // след элемент списка
-        list = list->next;
+        std::cout << "[Промежуточный результат] ";
+        showList(list);
+        std::cout << std::endl;
     }
-
-    // теперь есть промежуточный список и оригинальный без элементов промежуточного
-    // оригинальный без элементов промежуточного нужно еще раз отсортировать
-    // затем сделать слияние
-    if (source) return merge(sublist, strandSort(source)); // если source не пустой, то проводим его сортировку
-    else return sublist; // иначе вернем промежуточный, он уже отсортирован
+    std::cout << "Прошелся по всему списку, сортировка окончена!" << std::endl;
 }
 
 // ввод из консоли или из файла
@@ -186,11 +131,9 @@ int main() {
     std::cout << "[Список до сортировки] ";
     showList(source);
     std::cout << std::endl;
-    List* result = strandSort(source); // сортировка
-    if (result != source) delete source;
-    std::cout << "[Результат сортировки] ";
-    showList(result); // отображение списка
-    delete result;
-
+    insertionSort(source);
+    std::cout << "[Список после сортировки] ";
+    showList(source);
+    delete source;
     return 0;
 }
