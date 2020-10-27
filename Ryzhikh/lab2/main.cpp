@@ -73,18 +73,18 @@ unsigned int W(BinKor* bin_kor, int indent) {//Функция для поиска длины
 }
 
 
-void Drop(std::string& str, int n) {
+void drop(std::string& str, int n) {
     if (str.length() >= n) {//Если длинна больше или равно
         str = str.substr(n);//Отрезаем лишнии символы
     }
 }
 
-short ReadNum(string& str) {
+short readNum(string& str) {
     string number = "";
 
     while (isdigit(str[0])) {//Пока цифры сохраняем в строчку
         number += str[0];
-        Drop(str, 1);// Отрезаем не нужный символ
+        drop(str, 1);// Отрезаем не нужный символ
     }
     try {
         string i;
@@ -99,45 +99,59 @@ short ReadNum(string& str) {
 
 
 // (Side Side)
-Side* CreateNewSide(string& input);
-BinKor* CreateNewBinKor(string& input) {
+Side* createNewSide(string& input, int n);
+BinKor* createNewBinKor(string& input, int n) {
     BinKor* bin_kor = new BinKor;
-    Drop(input, 1);// Отрезаем ненужный символ
-    bin_kor->left = CreateNewSide(input);
-    Drop(input, 1);// Отрезаем ненужный символ
-    bin_kor->right = CreateNewSide(input);
-    Drop(input, 1);// Отрезаем ненужный символ
+    drop(input, 1);// Отрезаем ненужный символ
+    bin_kor->left = createNewSide(input, n);
+    for (int i = 0; i < n; i++)
+        std::cout << '\t';
+    std::cout << "Left side: ";
+    if (bin_kor->left->isWeight)
+        std::cout << '(' << bin_kor->left->length << ' ' << bin_kor->left->data.weight << ')' << std::endl;
+    else
+        std::cout << '(' << bin_kor->left->length << " (...))" << std::endl;
+    drop(input, 1);// Отрезаем ненужный символ
+    bin_kor->right = createNewSide(input, n);
+    for (int i = 0; i < n; i++)
+        std::cout << '\t';
+    std::cout << "Right side: ";
+    if (bin_kor->right->isWeight)
+        std::cout << '(' << bin_kor->right->length << ' ' << bin_kor->right->data.weight << ')' << std::endl;
+    else
+        std::cout << '(' << bin_kor->right->length << " (...))" << std::endl;
+    drop(input, 1);// Отрезаем ненужный символ
     return bin_kor;
 }
 
-Side* CreateNewSide(string& input) {// Создаем сторону
+Side* createNewSide(string& input, int n) {// Создаем сторону
     Side* side = new Side;
-    Drop(input, 1);// Отрезаем ненужный символ
-    side->length = ReadNum(input);
-    Drop(input, 1);// Отрезаем ненужный символ
+    drop(input, 1);// Отрезаем ненужный символ
+    side->length = readNum(input);
+    drop(input, 1);// Отрезаем ненужный символ
     side->isWeight = (input[0] != '(');
     if (side->isWeight) {
-        side->data.weight = ReadNum(input);
+        side->data.weight = readNum(input);
     }
     else {
-        side->data.bin_kor = CreateNewBinKor(input);
+        side->data.bin_kor = createNewBinKor(input, n+1);
     }
-    Drop(input, 1);// Отрезаем не нужный символ
+    drop(input, 1);// Отрезаем не нужный символ
     return side;
 }
 
 
-void FreeBinKor(BinKor* bin_kor) {
+void freeBinKor(BinKor* bin_kor) {
     if (bin_kor != nullptr) {// Если указывает на  BinKor
         if (bin_kor->right->isWeight == 0) {// Если не груз
-            FreeBinKor(bin_kor->right->data.bin_kor);// Вызываем рекурсивную функцию
+            freeBinKor(bin_kor->right->data.bin_kor);// Вызываем рекурсивную функцию
             delete bin_kor->right;// Освобождаем сторону
         }
         else {
             delete bin_kor->right;// Освобождаем сторону
         }
         if (bin_kor->left->isWeight == 0) {// Если не груз
-            FreeBinKor(bin_kor->left->data.bin_kor);// Вызываем рекурсивную функцию
+            freeBinKor(bin_kor->left->data.bin_kor);// Вызываем рекурсивную функцию
             delete bin_kor->left;// Освобождаем сторону
         }
         else {
@@ -176,9 +190,11 @@ int main(int argc, char** argv) {
     }
     std::cout << '\n' << "You entered:" << input << '\n' << '\n';
     BinKor* bin_kor = new BinKor;// Создаем указатель на BinKor
-    bin_kor = CreateNewBinKor(input);
+    int n = 0;// отступы
+    bin_kor = createNewBinKor(input, n);
+    std::cout << std::endl;
     int res = W(bin_kor, indent);
     std::cout << '\n' << "Weight of all weights: " << res << '\n';
-    FreeBinKor(bin_kor);// Особождаем память
+    freeBinKor(bin_kor);// Особождаем память
     return 0;
 }
