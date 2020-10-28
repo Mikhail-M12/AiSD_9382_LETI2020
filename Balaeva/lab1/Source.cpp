@@ -24,7 +24,7 @@ number cnk(number m, number n)
 
 int main() {
     setlocale(LC_ALL, "Russian");
-    std::ifstream fin("../file.txt");
+    std::ifstream fin("file.txt");
     if (!fin.is_open()) {
         std::cout << "Не удалось открыть файл!" << std::endl;
         fin.close();
