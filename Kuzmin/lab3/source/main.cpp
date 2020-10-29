@@ -7,23 +7,23 @@
 class binTree {
 public:
 	int size = 100;
-	char* elementsArray = new char[size];
+	char* elementsArray = new char[size]; //массив, в котором хранятся элементы деерва
 	binTree() {
 		for (int i = 0; i < size; i++)
-			elementsArray[i] = '_';
+			elementsArray[i] = '_'; //инициализируется "пустым" символом
 	}
 	friend void printLKP(binTree* b, int index);
 	bool isLeaf(int index) {
-		return (!strchr("+-/*", elementsArray[index]));
+		return (!strchr("+-/*", elementsArray[index])); //функция проверяет, является ли элемент "листом"
 	}
 	int getRightElemIndex(int index) {
-		return index * 2 + 2;
+		return index * 2 + 2; //возвращает индекс правого потомка
 	}
 	int getLeftElemIndex(int index) {
-		return index * 2 + 1;
+		return index * 2 + 1; //возвращает индекс левого потомка
 	}
 
-	bool areEqualElements(int index1, int index2) {
+	bool areEqualElements(int index1, int index2) { //проверка идентичности двух элементов
 		
 
 		if (isLeaf(index1) && isLeaf(index2)) {
@@ -31,16 +31,17 @@ public:
 			return (elementsArray[index1] == elementsArray[index2]);
 		}
 
-			else if (isLeaf(index1) == isLeaf(index2)){
+			else if (isLeaf(index1) == isLeaf(index2)){ //если оба элемента поддеревья, то далее проверяются их потомки
 
 				return areEqualElements(getLeftElemIndex(index1), getLeftElemIndex(index2))
 					&& areEqualElements(getRightElemIndex(index1), getRightElemIndex(index2));
 			}
+      else return false;
 		}
 	
 
 	
-	void transform() {
+	void transform() { //замена поддеревьев вида (f + f) на (2 * f)
 		int i = 0;
 		for (int i = 0; i < size; i++)
 		if (!isLeaf(i)) {
@@ -65,7 +66,7 @@ public:
 void readBinTree(binTree* b, int index, FILE* f);
 
 
-void printLKP(binTree* b, int index = 0){
+void printLKP(binTree* b, int index = 0){//вывод дерева-формула
 
 	if (index < b->size && b->elementsArray[index] != '_') {
 		
@@ -79,6 +80,7 @@ void printLKP(binTree* b, int index = 0){
 	}
 }
 
+//функции для считывания дерева
 void readLeftElem(binTree* b, int index, FILE* f) {
 	b->elementsArray[index * 2 + 1] = fgetc(f);
 	readBinTree(b, index* 2 + 1, f);
@@ -102,7 +104,7 @@ void readBinTree(binTree* b, int index, FILE* f) {
 int main()
 {
 	
-	setlocale(LC_ALL, "Russian");
+	
 	binTree bt;
 	char* c = new char[300];
 	char* a = new char[20];
@@ -122,7 +124,7 @@ int main()
 		f1 = fopen("test.txt", "r+");
 		readBinTree(&bt, 0, f1);
 		std::cout << "\n";
-		fclose(f1);
+	  fclose(f1);
 		
 	}
 
@@ -133,7 +135,6 @@ int main()
 	bt.transform();
 	std::cout << "Результат: ";
 	printLKP(&bt, 0);
-
 	std::cout << "\n";
-	system("pause");
+	
 }
