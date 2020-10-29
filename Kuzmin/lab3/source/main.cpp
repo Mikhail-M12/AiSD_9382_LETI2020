@@ -14,7 +14,7 @@ public:
 	}
 	friend void printLKP(binTree* b, int index);
 	bool isLeaf(int index) {
-		return (!strchr("+-/*", elementsArray[index])); //функция проверяет, является ли элемент "листом"
+		return (!strchr("+-*", elementsArray[index])); //функция проверяет, является ли элемент "листом"
 	}
 	int getRightElemIndex(int index) {
 		return index * 2 + 2; //возвращает индекс правого потомка
@@ -94,7 +94,7 @@ void readBinTree(binTree* b, int index, FILE* f) {
 
 	if (index == 0)b->elementsArray[index] = fgetc(f);
 
-	if (strchr("+-/*", b->elementsArray[index])) {
+	if (strchr("+-*", b->elementsArray[index])) {
 		readLeftElem(b, index, f);
 		readRightElem(b, index, f);
 	}
