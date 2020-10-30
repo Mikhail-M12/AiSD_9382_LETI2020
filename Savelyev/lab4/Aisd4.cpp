@@ -51,27 +51,27 @@ void sortMass2(vector<T>& array) {
     // Перебираем каждый элемент массив
     for(int i = 0; i < ((array.size())/2); i++) {
         int smallestIndex = i;
-        int biggestIndex = array.size() - 1 - i;
-        // Ищем наименьший элеммент подмассива
-        for(int j = i + 1; j < array.size() - i; j++) {
-            if(array[j] < array[smallestIndex])
+        int biggestIndex = i;
+        // Ищем наименьший элеммент подмассива // Ищем наибольший элеммент подмассива
+        for(int j = i; j < array.size() - i; j++) {
+
+            if(array[j] > array[biggestIndex]) {
+                biggestIndex = j;
+            }
+            if(array[j] < array[smallestIndex]) {
                 smallestIndex = j;
-        }
-        // Меняем местами первый элемент подмассива и наименьший в нем
-        swap(array[i], array[smallestIndex]);
-        // Ищем наибольший элеммент подмассива
-        for(int k = i + 1; k < array.size() - i; k++) {
-            if(array[k] > array[biggestIndex])
-                biggestIndex = k;
+            }
         }
         // Меняем местами последний элемент подмассива и наибольший в нем
-        swap(array[array.size() - 1 - i],array[biggestIndex]);
+        swap(array[array.size() - 1 - i], array[biggestIndex]);
+        // Меняем местами первый элемент подмассива и наименьший в нем
+        swap(array[i], array[smallestIndex]);
         // Выводим массив
         std::cout << "Sort number " << i << " : ";
         printArray(array);
         // Выводим промежуточные значения
         std::cout << '\t' << "Smallest number: " << array[i] << '\n';
-        std::cout << '\t' << "Biggest number: " << array[biggestIndex] << '\n' << '\n';
+        std::cout << '\t' << "Biggest number: " << array[smallestIndex] << '\n' << '\n';
     }
 
 }
@@ -100,5 +100,5 @@ int main() {
     std::cout << '\n';
     sortMass2(mass2);
     std::cout << "\n" << "Sorted array: ";
-    printArray(mass2);
+    printArray(mass1);
 }
