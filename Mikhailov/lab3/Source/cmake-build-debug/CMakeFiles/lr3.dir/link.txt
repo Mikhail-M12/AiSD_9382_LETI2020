@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/lr3.dir/main.cpp.o CMakeFiles/lr3.dir/api.cpp.o CMakeFiles/lr3.dir/bintree.cpp.o  -o lr3 
