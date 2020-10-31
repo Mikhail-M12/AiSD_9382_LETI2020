@@ -2,7 +2,7 @@
 #include "fstream"
 
 
-struct List { // односвязный линейный список
+struct List { // двусвязный линейный список
     List* next = nullptr;
     List* prev = nullptr;
     int value;
