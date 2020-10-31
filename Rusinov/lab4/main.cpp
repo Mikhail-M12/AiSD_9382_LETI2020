@@ -2,7 +2,7 @@
 #include "fstream"
 
 
-struct List { // двусвязный линейный список
+struct List { // односвязный линейный список
     List* next = nullptr;
     List* prev = nullptr;
     int value;
@@ -29,42 +29,55 @@ void showList(List* list) {
     }
 }
 
-void insertionSort(List* list) {
+List* insertionSort(List* list) {
     // начинать сортировку можно с первого элемента списка
-    for (List* i = list->next; i; i = i->next) {
+    for (List* i = list->next; i;) {
         // начинаем сравнивать предыдущий элемент за рассматриваемым элементом
         List* j = i->prev;
         // запоминаем значение рассматриваемого элемента
-        int key = i->value;
-        std::cout << "Начал рассматривать элемент " << key << std::endl;
+        std::cout << "Начал рассматривать элемент " << i->value << std::endl;
 
-        // пока предыдущий элемент существует и его значение > рассматриваемого элемента
-        // пред. элементом становится пред. элемент пред. элемента
-        // а так же мы сдвигаем пред элемент вперед
-        for (; j && j->value > key; j = j->prev) {
-            std::cout << "Сравнил c " << j->value;
-            std::cout << ". " << j->value << " > " << key << ". Сдвигаю " << j->value << " вправо" << std::endl;
-            j->next->value = j->value;
+        // доходим до элемента, который будет <= рассматриваемого
+        while (j && j->value > i->value) {
+            std::cout << "Сравнение " << j->value << " > " << i->value << std::endl;
+            j = j->prev;
         }
 
-        // если элемент существует, то мы дошли до момента, когда пред. элемент <= рассматриваемого
-        // тогда значение след. элемента нужно заменить на значение рассматриваемого
+        // запоминаем следующий рассматриваемый элемент
+        List* next = i->next;
+
+        // выдергиваем из списка текущий рассматриваемый элемент
+        i->prev->next = i->next;
+        if (i->next) i->next->prev = i->prev;
+
         if (j) {
-            std::cout << "Дошел до значения " << j->value;
-            std::cout << ". " << j->value << " <= " << key << ". Поэтому устанавливаю " << key << " правее." << std::endl;
-            j->next->value = key;
+            // если попали сюда, то рассматриваемый элемент устанавливаем правее найденного
+            // найденный <= рассматриваемого
+            std::cout << j->value << " <= " << i->value << ". Элемент " << i->value << " выставляется правее " << j->value << "." << std::endl;
+            if (j->next) j->next->prev = i;
+            i->next = j->next;
+            i->prev = j;
+            j->next = i;
+        } else {
+            // если попали сюда, то рассматриваемый элемент станет началом списка
+            // мы не нашли элементов, которые <= рассматриваемого
+            std::cout << "Вышел за границу списка, элемент " << i->value << " стал началом списка!" << std::endl;
+            list->prev = i;
+            list->prev->prev = nullptr;
+            list->prev->next = list;
+            list = i;
         }
-        // а если не существует, то мы вышли за границы массива, значит нужно переместить
-        // значение рассматриваемого элемента в начало списка
-        else {
-            std::cout << "Вышел за границу списка, поэтому устанавливаю значение " << key << " в начало списка" << std::endl;
-            list->value = key;
-        }
+
+        // устанавливаем следующий рассматриваемый элемент
+        i = next;
+
         std::cout << "[Промежуточный результат] ";
         showList(list);
         std::cout << std::endl;
+
     }
     std::cout << "Прошелся по всему списку, сортировка окончена!" << std::endl;
+    return list;
 }
 
 // ввод из консоли или из файла
@@ -131,9 +144,9 @@ int main() {
     std::cout << "[Список до сортировки] ";
     showList(source);
     std::cout << std::endl;
-    insertionSort(source);
+    List* sorted = insertionSort(source);
     std::cout << "[Список после сортировки] ";
-    showList(source);
-    delete source;
+    showList(sorted);
+    delete sorted;
     return 0;
 }
