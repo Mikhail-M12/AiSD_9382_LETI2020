@@ -1,2 +1,0 @@
-Ссылка на проект:
-https://repl.it/repls/WavyMinorSampler#realisation.cpp
