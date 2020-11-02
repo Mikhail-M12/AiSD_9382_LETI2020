@@ -17,7 +17,7 @@ namespace main_vars {
     unsigned int str_index;
     char *input_str = nullptr;
 }
-//объявляем заранее что-бы у каждой функции была видимость другой функции
+//РѕР±СЉСЏРІР»СЏРµРј Р·Р°СЂР°РЅРµРµ С‡С‚Рѕ-Р±С‹ Сѓ РєР°Р¶РґРѕР№ С„СѓРЅРєС†РёРё Р±С‹Р»Р° РІРёРґРёРјРѕСЃС‚СЊ РґСЂСѓРіРѕР№ С„СѓРЅРєС†РёРё
 string state(char* input, int n, ofstream &fout);
 int orExept(symbolFieald &symb, int n, ofstream &fout);
 int term(symbolFieald &symb, int n, ofstream &fout);
@@ -27,21 +27,21 @@ char interpretator(const char* str);
 symbolFieald getNext();
 
 
-int main() { /* головная функция, тут реализован ввод и вывод из файла, преобразование строки из слов в
-     в символьную и вызов функции state, которая является точкой запуска рекурсивного алгоритма */
-   setlocale(LC_ALL, "Russian"); // задаём русский текст
+int main() { /* РіРѕР»РѕРІРЅР°СЏ С„СѓРЅРєС†РёСЏ, С‚СѓС‚ СЂРµР°Р»РёР·РѕРІР°РЅ РІРІРѕРґ Рё РІС‹РІРѕРґ РёР· С„Р°Р№Р»Р°, РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ СЃС‚СЂРѕРєРё РёР· СЃР»РѕРІ РІ
+     РІ СЃРёРјРІРѕР»СЊРЅСѓСЋ Рё РІС‹Р·РѕРІ С„СѓРЅРєС†РёРё state, РєРѕС‚РѕСЂР°СЏ СЏРІР»СЏРµС‚СЃСЏ С‚РѕС‡РєРѕР№ Р·Р°РїСѓСЃРєР° СЂРµРєСѓСЂСЃРёРІРЅРѕРіРѕ Р°Р»РіРѕСЂРёС‚РјР° */
+   setlocale(LC_ALL, "Russian"); // Р·Р°РґР°С‘Рј СЂСѓСЃСЃРєРёР№ С‚РµРєСЃС‚
     ifstream fin;
     ofstream fout;
     string path1, path2;
-    cout << "Введите путь откуда читать логическое выражение и путь куда записывать:\n";
-    //работа с файлами
+    cout << "Р’РІРµРґРёС‚Рµ РїСѓС‚СЊ РѕС‚РєСѓРґР° С‡РёС‚Р°С‚СЊ Р»РѕРіРёС‡РµСЃРєРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ Рё РїСѓС‚СЊ РєСѓРґР° Р·Р°РїРёСЃС‹РІР°С‚СЊ:\n";
+    //СЂР°Р±РѕС‚Р° СЃ С„Р°Р№Р»Р°РјРё
     cin >> path1 ;
     cin >> path2;
     fin.open(path1);
     fout.open(path2);
-    if(fin.is_open()) cout << "Файл " << path1<< " успешно открыт\n";
+    if(fin.is_open()) cout << "Р¤Р°Р№Р» " << path1<< " СѓСЃРїРµС€РЅРѕ РѕС‚РєСЂС‹С‚\n";
     else{
-        cout << "Не удалось открыть файл " << path2;
+        cout << "РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» " << path2;
         return 0;
     }
     string input;
@@ -68,25 +68,25 @@ int main() { /* головная функция, тут реализован ввод и вывод из файла, преобраз
     }
     str[count] = '\0';
     string result = state(str, 0, fout);
-    cout << "Значение выражения: " << result <<"\n";
-    fout << "Значение выражения: " << result <<"\n";
+    cout << "Р—РЅР°С‡РµРЅРёРµ РІС‹СЂР°Р¶РµРЅРёСЏ: " << result <<"\n";
+    fout << "Р—РЅР°С‡РµРЅРёРµ РІС‹СЂР°Р¶РµРЅРёСЏ: " << result <<"\n";
     delete [] str;
     delete [] input_str_cpy;
     fout.close();
 	getch();
     return 0;
 }
-void printDepth(int n, ofstream& fout){ // Для вывода глубины рекурсии
+void printDepth(int n, ofstream& fout){ // Р”Р»СЏ РІС‹РІРѕРґР° РіР»СѓР±РёРЅС‹ СЂРµРєСѓСЂСЃРёРё
     for(int i = 0; i < n; i++)
         fout << ".";
 }
 
 
 
-string state(char* input, int n, ofstream &fout) { /* Проверяем первый символ строки, после чего
- * запускается алгоритм рекурсивного спуска и вычисляется результат выражения */
+string state(char* input, int n, ofstream &fout) { /* РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРІС‹Р№ СЃРёРјРІРѕР» СЃС‚СЂРѕРєРё, РїРѕСЃР»Рµ С‡РµРіРѕ
+ * Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ Р°Р»РіРѕСЂРёС‚Рј СЂРµРєСѓСЂСЃРёРІРЅРѕРіРѕ СЃРїСѓСЃРєР° Рё РІС‹С‡РёСЃР»СЏРµС‚СЃСЏ СЂРµР·СѓР»СЊС‚Р°С‚ РІС‹СЂР°Р¶РµРЅРёСЏ */
     printDepth(n, fout);
-    fout << "Зашёл в функцию state. " << "Аргумент: " << input << "\n";
+    fout << "Р—Р°С€С‘Р» РІ С„СѓРЅРєС†РёСЋ state. " << "РђСЂРіСѓРјРµРЅС‚: " << input << "\n";
     int result = 0;
     symbolFieald symb;
     main_vars::input_str = input;
@@ -96,14 +96,14 @@ string state(char* input, int n, ofstream &fout) { /* Проверяем первый символ ст
         case LP:
         case NUM:
         case NOT:
-            // orExept может начинаться с открывающейся скобки,  числа или слова not
+            // orExept РјРѕР¶РµС‚ РЅР°С‡РёРЅР°С‚СЊСЃСЏ СЃ РѕС‚РєСЂС‹РІР°СЋС‰РµР№СЃСЏ СЃРєРѕР±РєРё,  С‡РёСЃР»Р° РёР»Рё СЃР»РѕРІР° not
             result = orExept(symb, n + 1, fout);
             break;
         default:
             break;
     }
     printDepth(n, fout);
-    fout << "Вышел из функции state. Возвращаемое значение: ";
+    fout << "Р’С‹С€РµР» РёР· С„СѓРЅРєС†РёРё state. Р’РѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ: ";
     if (result > 0) {
         fout << "TRUE\n";
         return "TRUE";
@@ -113,9 +113,9 @@ string state(char* input, int n, ofstream &fout) { /* Проверяем первый символ ст
     }
 }
 
-int orExept(symbolFieald &symb, int n, ofstream &fout) { // разбирает значения, между которыми стоит or   expr
+int orExept(symbolFieald &symb, int n, ofstream &fout) { // СЂР°Р·Р±РёСЂР°РµС‚ Р·РЅР°С‡РµРЅРёСЏ, РјРµР¶РґСѓ РєРѕС‚РѕСЂС‹РјРё СЃС‚РѕРёС‚ or   expr
     printDepth(n, fout);
-    fout << "Зашёл в функцию orExept. " << "Текущий символ: " << symb.symbol << "\n";
+    fout << "Р—Р°С€С‘Р» РІ С„СѓРЅРєС†РёСЋ orExept. " << "РўРµРєСѓС‰РёР№ СЃРёРјРІРѕР»: " << symb.symbol << "\n";
     symbolFieald tmp_symb = symb;
     int ret = 0;
     switch (tmp_symb.attrib) {
@@ -130,7 +130,7 @@ int orExept(symbolFieald &symb, int n, ofstream &fout) { // разбирает значения, 
                     ret += orExept(tmp_symb, n + 1, fout);
                     break;
                 case RP:
-                    // Если символ равен закрывающейся скобке, возвращаем его назад в строку
+                    // Р•СЃР»Рё СЃРёРјРІРѕР» СЂР°РІРµРЅ Р·Р°РєСЂС‹РІР°СЋС‰РµР№СЃСЏ СЃРєРѕР±РєРµ, РІРѕР·РІСЂР°С‰Р°РµРј РµРіРѕ РЅР°Р·Р°Рґ РІ СЃС‚СЂРѕРєСѓ
                     main_vars:: str_index--;
                 default:
                     break;
@@ -140,13 +140,13 @@ int orExept(symbolFieald &symb, int n, ofstream &fout) { // разбирает значения, 
             break;
     }
     printDepth(n, fout);
-    fout << "Вышел из функции orExept. Возвращаемое значение: " << ret << "\n";
+    fout << "Р’С‹С€РµР» РёР· С„СѓРЅРєС†РёРё orExept. Р’РѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ: " << ret << "\n";
     return ret;
 }
 
-int term(symbolFieald &symb, int n, ofstream &fout) { // разбирает выражения, между которыми стоит and
+int term(symbolFieald &symb, int n, ofstream &fout) { // СЂР°Р·Р±РёСЂР°РµС‚ РІС‹СЂР°Р¶РµРЅРёСЏ, РјРµР¶РґСѓ РєРѕС‚РѕСЂС‹РјРё СЃС‚РѕРёС‚ and
     printDepth(n, fout);
-    fout << "Зашёл в функцию term. " << "Текущий символ: " << symb.symbol << "\n";
+    fout << "Р—Р°С€С‘Р» РІ С„СѓРЅРєС†РёСЋ term. " << "РўРµРєСѓС‰РёР№ СЃРёРјРІРѕР»: " << symb.symbol << "\n";
     symbolFieald tmp_symb = symb;
     int ret = 0;
     switch (tmp_symb.attrib) {
@@ -161,7 +161,7 @@ int term(symbolFieald &symb, int n, ofstream &fout) { // разбирает выражения, ме
                     break;
                 case OR:
                 case RP:
-                    // Если символ равен плюсу или закрывающейся скобке, возвращаем его назад
+                    // Р•СЃР»Рё СЃРёРјРІРѕР» СЂР°РІРµРЅ РїР»СЋСЃСѓ РёР»Рё Р·Р°РєСЂС‹РІР°СЋС‰РµР№СЃСЏ СЃРєРѕР±РєРµ, РІРѕР·РІСЂР°С‰Р°РµРј РµРіРѕ РЅР°Р·Р°Рґ
                     main_vars:: str_index--;
                 default:
                     break;
@@ -177,7 +177,7 @@ int term(symbolFieald &symb, int n, ofstream &fout) { // разбирает выражения, ме
                     break;
                 case OR:
                 case RP:
-                    // Если текущий символ равен or или закрывающейся скобке, возвращаем его назад
+                    // Р•СЃР»Рё С‚РµРєСѓС‰РёР№ СЃРёРјРІРѕР» СЂР°РІРµРЅ or РёР»Рё Р·Р°РєСЂС‹РІР°СЋС‰РµР№СЃСЏ СЃРєРѕР±РєРµ, РІРѕР·РІСЂР°С‰Р°РµРј РµРіРѕ РЅР°Р·Р°Рґ
                     main_vars:: str_index--;
                 default:
                     break;
@@ -188,13 +188,13 @@ int term(symbolFieald &symb, int n, ofstream &fout) { // разбирает выражения, ме
             break;
     }
     printDepth(n, fout);
-    fout << "Вышел из функции term. Возвращаемое значение: " << ret << "\n";
+    fout << "Р’С‹С€РµР» РёР· С„СѓРЅРєС†РёРё term. Р’РѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ: " << ret << "\n";
     return ret;
 }
 int nparentheses(symbolFieald &symb, int n, ofstream &fout) {
-    // разбирает  любые элементарные значения  и выражения в скобках, если перед ними стоит отрицание
+    // СЂР°Р·Р±РёСЂР°РµС‚  Р»СЋР±С‹Рµ СЌР»РµРјРµРЅС‚Р°СЂРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ  Рё РІС‹СЂР°Р¶РµРЅРёСЏ РІ СЃРєРѕР±РєР°С…, РµСЃР»Рё РїРµСЂРµРґ РЅРёРјРё СЃС‚РѕРёС‚ РѕС‚СЂРёС†Р°РЅРёРµ
     printDepth(n, fout);
-    fout << "Зашёл в функцию nparentheses. " << "Текущий символ: " << symb.symbol << "\n";
+    fout << "Р—Р°С€С‘Р» РІ С„СѓРЅРєС†РёСЋ nparentheses. " << "РўРµРєСѓС‰РёР№ СЃРёРјРІРѕР»: " << symb.symbol << "\n";
     int ret = 0;
     symbolFieald tmp_symb = getNext();
     switch (tmp_symb.attrib) {
@@ -213,12 +213,12 @@ int nparentheses(symbolFieald &symb, int n, ofstream &fout) {
             break;
     }
     printDepth(n, fout);
-    fout << "Вышел из функции nparentheses. Возвращаемое значение: " << ret << "\n";
+    fout << "Р’С‹С€РµР» РёР· С„СѓРЅРєС†РёРё nparentheses. Р’РѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ: " << ret << "\n";
     return ret;
 }
-int parentheses(symbolFieald &symb, int n, ofstream &fout) { // разбирает элементарные значения и выражения в скобках   fact
+int parentheses(symbolFieald &symb, int n, ofstream &fout) { // СЂР°Р·Р±РёСЂР°РµС‚ СЌР»РµРјРµРЅС‚Р°СЂРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ Рё РІС‹СЂР°Р¶РµРЅРёСЏ РІ СЃРєРѕР±РєР°С…   fact
     printDepth(n, fout);
-    fout << "Зашёл в функцию parentheses. " << "Текущий символ: " << symb.symbol << "\n";
+    fout << "Р—Р°С€С‘Р» РІ С„СѓРЅРєС†РёСЋ parentheses. " << "РўРµРєСѓС‰РёР№ СЃРёРјРІРѕР»: " << symb.symbol << "\n";
     int ret = 0;
     symbolFieald tmp_symb = symb;
     switch (tmp_symb.attrib) {
@@ -230,20 +230,20 @@ int parentheses(symbolFieald &symb, int n, ofstream &fout) { // разбирает элемен
             tmp_symb = getNext();
             ret = orExept(tmp_symb, n + 1, fout);
             tmp_symb = getNext();
-            // Считываем закрывающуюся скобку
+            // РЎС‡РёС‚С‹РІР°РµРј Р·Р°РєСЂС‹РІР°СЋС‰СѓСЋСЃСЏ СЃРєРѕР±РєСѓ
             break;
         default:
             break;
     }
     printDepth(n, fout);
-    fout << "Вышел из функции parentheses. Возвращаемое значение: " << ret << "\n";
+    fout << "Р’С‹С€РµР» РёР· С„СѓРЅРєС†РёРё parentheses. Р’РѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ: " << ret << "\n";
     return ret;
 }
 
 using namespace main_vars;
 
-symbolFieald getNext() /* последовательно даёт доступ к символам логического выражения ,
- * присваивает им атрибуты. За каждый запуск символ сдвигается на 1 */
+symbolFieald getNext() /* РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ РґР°С‘С‚ РґРѕСЃС‚СѓРї Рє СЃРёРјРІРѕР»Р°Рј Р»РѕРіРёС‡РµСЃРєРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ ,
+ * РїСЂРёСЃРІР°РёРІР°РµС‚ РёРј Р°С‚СЂРёР±СѓС‚С‹. Р—Р° РєР°Р¶РґС‹Р№ Р·Р°РїСѓСЃРє СЃРёРјРІРѕР» СЃРґРІРёРіР°РµС‚СЃСЏ РЅР° 1 */
 {
     symbolFieald cur_symb;
     cur_symb.attrib = EOI;
@@ -282,7 +282,7 @@ symbolFieald getNext() /* последовательно даёт доступ к символам логического выр
     return cur_symb;
 }
 
-char interpretator(const char* str){ // позволяет преобразовать строку, состоящую из слов, в символьную
+char interpretator(const char* str){ // РїРѕР·РІРѕР»СЏРµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ СЃС‚СЂРѕРєСѓ, СЃРѕСЃС‚РѕСЏС‰СѓСЋ РёР· СЃР»РѕРІ, РІ СЃРёРјРІРѕР»СЊРЅСѓСЋ
     switch(*str){
         case 'T':
             return '1';
