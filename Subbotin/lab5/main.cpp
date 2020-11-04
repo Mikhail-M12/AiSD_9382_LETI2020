@@ -252,6 +252,16 @@ void preOrder(Node<Elem>* root){
 }
 
 
+bool isInteger(const std::string & s)
+{
+    if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
+
+    char * p;
+    strtol(s.c_str(), &p, 10);
+
+    return (*p == 0);
+}
+
 int main() {
     Node<int> *root = nullptr;
 
@@ -265,32 +275,39 @@ int main() {
         string filename = "../in.txt";
         ifstream myfile(filename);
 
-        int n;
-        myfile >> n;
-        if( n < 0) {
+        string nStr;
+        myfile >> nStr;
+        cout << nStr << " - Количество вершин"  << endl;
+        if(!isInteger(nStr) || stoi(nStr) < 0){
             cout << "Некорректное значение количества вершин в дереве!";
             return 0;
         }
+        int n = stoi(nStr);
+        int mas[n];
+        cout << "Вершины: ";
         for(int i = 0; i<n; i++){
-            int key;
-            myfile >> key;
-            cout << "Хотим добавить вершину с ключём " << key << endl;
-            root = insert(root, key, 1);
+            myfile >> mas[i];
+            cout << mas[i] << " ";
+        }
+        cout << endl << endl;
+        for(int i = 0; i<n; i++){
+            cout << "Хотим добавить вершину с ключём " << mas[i] << endl;
+            root = insert(root, mas[i], 1);
             cout << "Сбалансированное дерево после вставки: ";
             preOrder(root);
             cout << endl << endl;
         }
-
         myfile.close();
     }
     else if(ch == "c"){
         cout << "Введите сначала количество элементов в дереве и затем сами вершины: ";
-        int n;
-        cin >> n;
-        if( n < 0) {
+        string nStr;
+        cin >> nStr;
+        if(!isInteger(nStr) || stoi(nStr) < 0){
             cout << "Некорректное значение количества вершин в дереве!";
             return 0;
         }
+        int n = stoi(nStr);
         for(int i = 0; i<n; i++){
             int key;
             cin >> key;
