@@ -3,39 +3,44 @@
 #include <fstream>
 #include <algorithm>
 #include <vector>
+#include <ctime>
+#include <cstdio>
+#include <typeinfo>
 
-template <typename T>
-void shell(T* A, int n){ //сортировка Шелла
-    int count, d;
-    d=n/2; // Присвоение в d половины длины массива
-    while (d>0){ // выполнение цикла пока d > 0
-        for (int i=0; i<n-d; i++){
-            std::cout << std::endl;
-            std::cout << "Passage " << i+1  << ", d = " << d << std::endl;
-            for (int j = i; j >= 0; j--){
-                std::cout << "Comparison of elements " << A[j] << " и " << A[j + d] << std::endl;
-                if (A[j]>A[j+d]){ // сравнение двух элементов
-                    /*
-                     * Замена элементов если условие верно
-                     */
-                    std::cout << "Replacing elements " << A[j] << " и " << A[j + d] << std::endl;
-                    count = A[j];
-                    A[j] = A[j + d];
-                    A[j + d] = count;
-                    std::cout << "Array after replacement: ";
-                    for (int k = 0; k < n; k++){
-                        std::cout << A[k] << ' ';
-                    }
-                    std::cout << std::endl<<std::endl;
+
+void shell(std::vector<int>& data)
+{
+    int step, i, j;
+    unsigned int time1 = clock();
+
+    for (step = data.size() / 2; step > 0; step /= 2)
+    {
+        std::cout << "Current step: " << step << '\n';
+        // Перечисление элементов, которые сортируются на определённом шаге
+        for (i = step; i < data.size(); i++) {
+            // Перестановка элементов внутри подсписка, пока i-тый не будет отсортирован
+            for (j = i - step; j >= 0 && data[j] > data[j + step]; j -= step)
+            {
+                std::cout << "Change elem " << data[j] << " and " << data[j+step] << std::endl;
+                std::swap(data[j], data[j + step]);
+                std::cout << "Array after change: ";
+                for (auto& k : data)
+                {
+                    std::cout << k << " ";
                 }
-                else{
-                    std::cout  << A[j] << " и " << A[j + d] << " no replacement required " << std::endl;
-                }
-                //std::cout << std::endl;
+                std::cout << std::endl;
             }
         }
-        d=d/2;
+        for (auto& k : data)
+        {
+            std::cout << k << " ";
+        }
+        std::cout << std::endl;
     }
+
+    unsigned int time2 = clock();
+
+    std::cout << "Time : " << (time2 - time1) / 1000.0 << "s\n"; // Подсчет длительности выполнения
 }
 
 
@@ -44,34 +49,57 @@ void shell(T* A, int n){ //сортировка Шелла
 int main(){
     SetConsoleOutputCP(CP_UTF8);
     int n;
-    bool file;
     std::cout << "Write f - if reading from file, any other - if console" << std::endl;
     char symbol;
     std::cin >> symbol;
-    std::string input;
+    char input[200];
     /*
      * Считывание название файла из командной строки, после чего
      * Считывание размера массива из файла
      */
     if (symbol == 'f'){
         std::cout << "Enter the path to the file:" << std::endl;
-        std::cin >> input;
-        std::ifstream fin;
-        fin.open(input);
+        fflush(stdin);
+        std::cin.getline (input, 200);
+        //std::ifstream fin;
+        FILE* fin;
+        //fin.open(input);
+        fin = fopen(input, "r");
         if (!fin){
-            std::cout << "error" << std::endl;
+            std::cout << "file error" << std::endl;
+            fclose(fin);
             system("pause");
             std::cout << "To continue the program, press any key ...";
             std::cin.get();
             exit(1);
         }
-        fin >> n;
+        int error;
+        fflush(fin);
+        error = fscanf(fin, "%d", &n);
+        if (error != 1){
+            fclose(fin);
+            std::cout << "Data is incorrect"<< std::endl;
+            system("pause");
+            std::cout << "To continue the program, press any key ...";
+            std::cin.get();
+            exit(1);
+        }
+        fclose(fin);
+
     } else {
         /*
          * Считывание размера массива из консоли
          */
         std::cout<<"Array size > " ;
-        std::cin>>n;
+        int error;
+        error = scanf("%d", &n);
+        if (error != 1){
+            std::cout << "Data is incorrect" << std::endl;
+            system("pause");
+            std::cout << "To continue the program, press any key ...";
+            std::cin.get();
+            exit(1);
+        }
         std::cout << std::endl;
     }
     if (n <= 0){
@@ -82,30 +110,74 @@ int main(){
         exit(1);
     }
 
-    int* arrayForShell= new int[n]; //объявление динамического массива
+    std::vector<int> arrayForShell; //объявление динамического массива
     std::vector<int> arrayForStdSort; // создание вектора для стандартной сортировки
 
     /*
      * Считывание массива из файла
      */
     if (symbol == 'f'){
-        std::ifstream fin;
+        /*std::ifstream fin;
         fin.open(input);
-        fin >> n;
+        fin >> n;*/
+        FILE* fin;
+        //fin.open(input);
+        fin = fopen(input, "r");
+        if (!fin){
+            std::cout << "file error" << std::endl;
+            fclose(fin);
+            system("pause");
+            std::cout << "To continue the program, press any key ...";
+            std::cin.get();
+            exit(1);
+        }
+        int error;
+        error = fscanf(fin, "%d", &n);
+        if (error != 1){
+            fclose(fin);
+            std::cout << "Data is incorrect" << std::endl;
+            system("pause");
+            std::cout << "To continue the program, press any key ...";
+            std::cin.get();
+            exit(1);
+        }
+        int currentNumb;
+        error = 0;
         for (int i=0; i<n; i++){
-            fin>>arrayForShell[i];
+            error = fscanf(fin, "%d", &currentNumb);
+            if (error != 1){
+                fclose(fin);
+                std::cout << "Data is incorrect" << std::endl;
+                system("pause");
+                std::cout << "To continue the program, press any key ...";
+                std::cin.get();
+                exit(1);
+            }
+            arrayForShell.push_back(currentNumb);
         }
         std::cout << "The array fed: ";
         for (int i=0; i<n; i++){
             std::cout << arrayForShell[i] << ' ';
         }
+        fclose(fin);
         std::cout << std::endl;
     } else{
         /*
         * Считывание массива из консоли
         */
+        int error;
+        int currentNumb;
         for (int i=0; i<n; i++){
-            std::cout<<i+1<<" item > " << std::endl; std::cin>>arrayForShell[i];
+            std::cout<<i+1<<" item > " << std::endl;
+            error = scanf("%d", &currentNumb);
+            if (error != 1){
+                std::cout << "Data is incorrect" << std::endl;
+                system("pause");
+                std::cout << "To continue the program, press any key ...";
+                std::cin.get();
+                exit(1);
+            }
+            arrayForShell.push_back(currentNumb);
         }
 
     }
@@ -117,7 +189,7 @@ int main(){
     }
 
     std::cout << std::endl << "Shell sort call" << std::endl << std::endl;
-    shell(arrayForShell, n); //Вызов сортировки Шелла
+    shell(arrayForShell); //Вызов сортировки Шелла
 
     /*
      * Вывод отсортированного массива
@@ -134,9 +206,9 @@ int main(){
         std::cout<<arrayForStdSort[i]<<" "; //вывод массива
     }
     std::cout << std::endl;
-    delete [] arrayForShell; //освобождение памяти
     system("pause");
-    std::cout << "To continue the program, press any key ...";
+   // std::cout << "To continue the program, press any key ...";
     std::cin.get();
     return 0;
 }
+
