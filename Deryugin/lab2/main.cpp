@@ -57,6 +57,7 @@ shoulder* makeLength(char character) {
 
 
 void makeWeight(char character, shoulder* shoulder) {
+    // set weight in shoulder
     shoulder->weight = character - 48;// char to int
     shoulder->isBinaryRocker = false;
     shoulder->binaryRockerPtr = nullptr;
@@ -65,14 +66,17 @@ void makeWeight(char character, shoulder* shoulder) {
 
 binaryRocker* readBinaryRocker(binaryRocker* binRock, char character, ifstream& fin) {
     if (character == '(') {
+        // Create left and right shoulder for binary rocker
         binRock->left = readShoulder(character, binRock, fin);
         binRock->right = readShoulder(character, binRock, fin);
     }
+    // If first symbol isn't '('
     else {
         error(INCORRECT_FIRST_SYMBOL);
         exit(1);
     }
     fin>>character;
+    // if close symbol isn't ')'
     if (character != ')') {
         error(NO_CLOSE_BRACKET);
         exit(1);
@@ -83,6 +87,8 @@ binaryRocker* readBinaryRocker(binaryRocker* binRock, char character, ifstream& 
 
 shoulder* readShoulder(char prev, binaryRocker* binRock, ifstream& fin) { //prev - previous character
         auto* sh = new shoulder;
+
+        //if there are unfinished expressions
         if (!(fin>>prev)) {
             error(UNFINISHED_EXPRESSION);
             exit(1);
@@ -92,12 +98,14 @@ shoulder* readShoulder(char prev, binaryRocker* binRock, ifstream& fin) { //prev
             exit(1);
         }
         fin>>prev;
+        // set length if it's a number otherwise throw an error
         if (isdigit(prev)) sh = makeLength(prev);
         else{
             error(INCORRECT_LENGTH);
             exit(1);
         }
         fin>>prev;
+        // if shoulder is weight, set weight, otherwise create binary rocker
         if (isdigit(prev)){
             makeWeight(prev, sh);
         }
@@ -142,6 +150,7 @@ void printResult(const binaryRocker* binRock, int side, int tab) {//side 1 - lef
 
 
 unsigned int numbers(unsigned int count, const binaryRocker* binRock, int tab) {
+    //check left shoulder
     if (binRock->left->isBinaryRocker) {
         printResult(binRock, 1, tab);
         count = numbers(count, binRock->left->binaryRockerPtr, tab +1);
@@ -150,6 +159,7 @@ unsigned int numbers(unsigned int count, const binaryRocker* binRock, int tab) {
         printResult(binRock, 1, tab);
         count++;
     }
+    //check right shoulder
     if (binRock->right->isBinaryRocker) {
         printResult(binRock, 2, tab);
         count = numbers(count, binRock->right->binaryRockerPtr, tab + 1);
@@ -178,14 +188,26 @@ int main ( ) {
     char character;// previous character
     string path = "input.txt";// path to input file
     unsigned int result;//answer on question
+    int typeOfInput;// 1 if console
+    string consoleBinRock;
+    cout<<"Enter '1' if you wanna write down binary rocker in console otherwise write down any letter or number:\n";
+    cin>>typeOfInput;
+    //input from console
+    if (typeOfInput == 1){
+        cout<<"Enter binary rocker:\n";
+        cin>>consoleBinRock;
+        ofstream fin(path);
+        fin<<consoleBinRock;
+        fin.close();
 
+    }
+    //open file
     ifstream fin;
     fin.open(path);
     if (!fin.is_open()){
         error(CANNOT_OPEN_FILE);
         exit(1);
     }
-
     auto* binRock = new binaryRocker;
     fin>>character;
     readBinaryRocker(binRock, character,  fin);
@@ -193,6 +215,7 @@ int main ( ) {
         error(EXTRA_SYMBOLS);
         exit(1);
     }
+    //print intermediate and final result
     cout<<"Intermediate results:\n";
     result = numbers(0, binRock, 0);
     cout<<"Count of weights: "<<result;//write answer
