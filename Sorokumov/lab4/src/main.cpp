@@ -43,6 +43,13 @@ void shell(std::vector<int>& data)
     std::cout << "Time : " << (time2 - time1) / 1000.0 << "s\n"; // Подсчет длительности выполнения
 }
 
+/*
+ * Функция проверки строки на число
+ */
+bool is_digits(const std::string &str)
+{
+    return str.find_first_not_of("0123456789") == std::string::npos;
+}
 
 //главная функция
 
@@ -50,136 +57,84 @@ int main(){
     SetConsoleOutputCP(CP_UTF8);
     int n;
     std::cout << "Write f - if reading from file, any other - if console" << std::endl;
+    std::vector<int> arrayForShell;
+    std::vector<int> arrayForStdSort;
     char symbol;
+    std::string  numb;
     std::cin >> symbol;
-    char input[200];
     /*
-     * Считывание название файла из командной строки, после чего
-     * Считывание размера массива из файла
+     * Считывания данных из файла
      */
     if (symbol == 'f'){
         std::cout << "Enter the path to the file:" << std::endl;
-        fflush(stdin);
-        std::cin.getline (input, 200);
-        //std::ifstream fin;
-        FILE* fin;
-        //fin.open(input);
-        fin = fopen(input, "r");
-        if (!fin){
-            std::cout << "file error" << std::endl;
-            fclose(fin);
-            system("pause");
-            std::cout << "To continue the program, press any key ...";
-            std::cin.get();
-            exit(1);
-        }
-        int error;
-        fflush(fin);
-        error = fscanf(fin, "%d", &n);
-        if (error != 1){
-            fclose(fin);
-            std::cout << "Data is incorrect"<< std::endl;
-            system("pause");
-            std::cout << "To continue the program, press any key ...";
-            std::cin.get();
-            exit(1);
-        }
-        fclose(fin);
-
-    } else {
-        /*
-         * Считывание размера массива из консоли
-         */
-        std::cout<<"Array size > " ;
-        int error;
-        error = scanf("%d", &n);
-        if (error != 1){
-            std::cout << "Data is incorrect" << std::endl;
-            system("pause");
-            std::cout << "To continue the program, press any key ...";
-            std::cin.get();
-            exit(1);
-        }
-        std::cout << std::endl;
-    }
-    if (n <= 0){
-        std::cout << "Incorrect length" << std::endl;
-        system("pause");
-        std::cout << "To continue the program, press any key ...";
-        std::cin.get();
-        exit(1);
-    }
-
-    std::vector<int> arrayForShell; //объявление динамического массива
-    std::vector<int> arrayForStdSort; // создание вектора для стандартной сортировки
-
-    /*
-     * Считывание массива из файла
-     */
-    if (symbol == 'f'){
-        /*std::ifstream fin;
+        std::string  input;
+        std::cin >> input;
+        std::ifstream fin;
         fin.open(input);
-        fin >> n;*/
-        FILE* fin;
-        //fin.open(input);
-        fin = fopen(input, "r");
         if (!fin){
             std::cout << "file error" << std::endl;
-            fclose(fin);
+            fin.close();
             system("pause");
             std::cout << "To continue the program, press any key ...";
             std::cin.get();
             exit(1);
         }
-        int error;
-        error = fscanf(fin, "%d", &n);
-        if (error != 1){
-            fclose(fin);
-            std::cout << "Data is incorrect" << std::endl;
+        fin >> numb;
+        if (is_digits(numb)){
+            n = std::atoi(numb.c_str());
+        } else{
+            std::cout << "Incorrect length" << std::endl;
             system("pause");
             std::cout << "To continue the program, press any key ...";
             std::cin.get();
             exit(1);
         }
-        int currentNumb;
-        error = 0;
-        for (int i=0; i<n; i++){
-            error = fscanf(fin, "%d", &currentNumb);
-            if (error != 1){
-                fclose(fin);
+        for (int i = 0; i < n; i++){
+            fin >> numb;
+            if (is_digits(numb)) {
+                arrayForShell.push_back(std::atoi(numb.c_str()));
+            } else{
                 std::cout << "Data is incorrect" << std::endl;
                 system("pause");
                 std::cout << "To continue the program, press any key ...";
                 std::cin.get();
                 exit(1);
             }
-            arrayForShell.push_back(currentNumb);
         }
-        std::cout << "The array fed: ";
-        for (int i=0; i<n; i++){
-            std::cout << arrayForShell[i] << ' ';
+        std::cout << "Input array: ";
+        for(auto i: arrayForShell){
+            std::cout << i << " " ;
         }
-        fclose(fin);
         std::cout << std::endl;
-    } else{
         /*
-        * Считывание массива из консоли
-        */
-        int error;
-        int currentNumb;
-        for (int i=0; i<n; i++){
+         * Считывание данных из консоли
+         */
+    } else{
+        std::cout<<"Array size > " ;
+        std::cin >> numb;
+        std::cout << std::endl;
+        if (is_digits(numb)){
+            n = std::atoi(numb.c_str());
+        } else{
+            std::cout << "Incorrect length" << std::endl;
+            system("pause");
+            std::cout << "To continue the program, press any key ...";
+            std::cin.get();
+            exit(1);
+        }
+        for (int i = 0; i < n; i++){
             std::cout<<i+1<<" item > " << std::endl;
-            error = scanf("%d", &currentNumb);
-            if (error != 1){
+            std::cin >> numb;
+            if (is_digits(numb)) {
+                arrayForShell.push_back(std::atoi(numb.c_str()));
+            } else{
                 std::cout << "Data is incorrect" << std::endl;
                 system("pause");
                 std::cout << "To continue the program, press any key ...";
                 std::cin.get();
                 exit(1);
             }
-            arrayForShell.push_back(currentNumb);
         }
-
     }
     /*
      * Занесение элементов в массив для стандартной сортировки
