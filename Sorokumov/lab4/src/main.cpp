@@ -8,6 +8,17 @@
 #include <typeinfo>
 
 
+/*
+ * функция сравнения двух чисел
+ */
+bool cmp(int a, int b){
+    std::cout << "Compare " << a << " and " << b << std::endl;
+    if (a > b){
+        return true;
+    }
+    return false;
+}
+
 void shell(std::vector<int>& data)
 {
     int step, i, j;
@@ -19,7 +30,7 @@ void shell(std::vector<int>& data)
         // Перечисление элементов, которые сортируются на определённом шаге
         for (i = step; i < data.size(); i++) {
             // Перестановка элементов внутри подсписка, пока i-тый не будет отсортирован
-            for (j = i - step; j >= 0 && data[j] > data[j + step]; j -= step)
+            for (j = i - step; j >= 0  && cmp(data[j], data[j + step]); j -= step)
             {
                 std::cout << "Change elem " << data[j] << " and " << data[j+step] << std::endl;
                 std::swap(data[j], data[j + step]);
@@ -31,11 +42,12 @@ void shell(std::vector<int>& data)
                 std::cout << std::endl;
             }
         }
+        std::cout << "Array after step: ";
         for (auto& k : data)
         {
             std::cout << k << " ";
         }
-        std::cout << std::endl;
+        std::cout << std::endl << std::endl;
     }
 
     unsigned int time2 = clock();
