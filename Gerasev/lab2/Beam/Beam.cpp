@@ -15,33 +15,39 @@ bool isPointersNulls(Beam* p1, Beam* p2)
     return (isPointerNull(p1) && isPointerNull(p2));
 }
 
-int findMiddleSpace(string input)
+int findMiddleComma(string input)
 {
     int openCounter = 0;
+    int result;
     for (int i=0; i<input.length(); i++)
     {
+        
         switch (input[i])
         {
             case '(': { openCounter++; break; }
             case ')': { openCounter--; break; }
-            case ' ':
+            case ',':
                 {
-                    if (openCounter == 1) return i;
+                    if (openCounter == 1) result = i;
                     break;
                 }
         }
     }
 
-    cout << "Error: Invalid findMiddleSpace call ";
-    cout << "on string " << input << '\n';
-    raise(SIGILL);
-    return -1;
+    if (openCounter != 0)
+    {
+        cout << "Error: Invalid findMiddleComma call ";
+        cout << "on string " << input << '\n';
+        raise(SIGILL);
+    }
+
+    return result;
 }
 
 Beam::Beam(string inputString)
 {
     int massInput = -1, leverInput = -1;
-    sscanf(inputString.c_str(), "(%d, %d)", &massInput, &leverInput);
+    sscanf(inputString.c_str(), "(%d,%d)", &massInput, &leverInput);
     if (!(massInput == -1 || leverInput == -1))
     {
         beamUnion.values.mass = massInput;
@@ -49,11 +55,11 @@ Beam::Beam(string inputString)
         return;
     }   
 
-    int middleSpace = findMiddleSpace(inputString);
+    int middleComma = findMiddleComma(inputString);
     string insides = inputString.substr(1, inputString.size() -2); // .substr(1, inputString.size() -1) on StackOverflow. It's not working for some reason.
 
-    string leftString = insides.substr(0, middleSpace-1);
-    string rightString = insides.substr(middleSpace);
+    string leftString = insides.substr(0, middleComma-1);
+    string rightString = insides.substr(middleComma);
 
     if (!(leftString.empty() || rightString.empty()))
     {
@@ -150,18 +156,11 @@ void Beam::isContainsListHandler(Beam second, string* result_ptr, string* curren
 
     if (!isPointersNulls(beamUnion.pointers.Left, beamUnion.pointers.Right))
     {
-        if (beamUnion.pointers.Left->isContains(second))
-        {
-            
-            currentlyAt_ptr->append("0");
-            beamUnion.pointers.Left->isContainsListHandler(second, result_ptr, currentlyAt_ptr);
-        }
+        currentlyAt_ptr->append("0");
+        beamUnion.pointers.Left->isContainsListHandler(second, result_ptr, currentlyAt_ptr);
 
-        if (beamUnion.pointers.Right->isContains(second))
-        {
-            currentlyAt_ptr->append("1");
-            beamUnion.pointers.Right->isContainsListHandler(second, result_ptr, currentlyAt_ptr);
-        }
+        currentlyAt_ptr->append("1");
+        beamUnion.pointers.Right->isContainsListHandler(second, result_ptr, currentlyAt_ptr);
     }
 
     *currentlyAt_ptr = currentlyAt_ptr->substr(0, currentlyAt_ptr->size() -1);;
@@ -176,12 +175,21 @@ string* Beam::isContainsList(Beam second)
     return result_ptr;
 }
 
-
-
 int main()
 {
-    Beam beam1("(1, 2)");
-    Beam beam2("((1, 2) (((1, 2) (1, 2)) (1, 2)))");
+    string whatToSearch, whereToSearch;
+    cin >> whatToSearch;
+    cin >> whereToSearch;
+
+    Beam beam1(whatToSearch);
+    Beam beam2(whereToSearch);
+
+    if (beam1.isEqual(beam2))
+    {
+        cout << "BEAMS ARE EQUAL\n";
+        return 0;
+    }
+
     string result = *(beam2.isContainsList(beam1));
     cout << "THE ANSWER IS " << result << '\n';
     return 0;

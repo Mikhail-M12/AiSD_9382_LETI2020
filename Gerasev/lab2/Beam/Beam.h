@@ -30,7 +30,7 @@ private:
 
     BeamUnion beamUnion;
 
-    void isContainsListHandler(Beam second, string* result_ptr, string* currentlyAt_ptr);
+    void isContainsListHandler(Beam second, string* result_ptr, string* currentlyAt);
 
 public:
     Beam(string inputString = "(0, 0)");
