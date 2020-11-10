@@ -43,6 +43,7 @@ public:
 };
 
 
+
 bool isPointerNull(Beam* p);
 bool isPointersNulls(Beam* p1, Beam* p2);
 bool isBracketValid(int bracket);
