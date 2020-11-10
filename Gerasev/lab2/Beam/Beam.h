@@ -23,14 +23,26 @@ private:
     {
         Values values;
         Pointers pointers;
-        // No way to make (Values or pointers)
-        // Union is too low-level
+        // No way to make structure like this : (Values || Pointers)
+        // Union is too low-level, and there is no way to tell the difference
+        // between Values and Pointers
     };
 
     BeamUnion beamUnion;
 
+    void isContainsListHandler(Beam second, string* result_ptr, string* currentlyAt_ptr);
+
 public:
-    Beam(string inputString);
+    Beam(string inputString = "(0, 0)");
+    Beam(const Beam & beam);
     ~Beam();
     void view();
+    bool isEqual(Beam second);
+    bool isContains(Beam second);
+    string* isContainsList(Beam second);
 };
+
+
+bool isPointerNull(Beam* p);
+bool isPointersNulls(Beam* p1, Beam* p2);
+bool isBracketValid(int bracket);
