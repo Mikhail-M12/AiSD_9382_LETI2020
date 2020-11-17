@@ -40,41 +40,20 @@ class BinaryTree {
             error(INCORRECT_DATA);
             exit(1);
         }
+        cout<<"Root is "<<tree->data<<endl<<"Left subtree LKP: "<<lkp.substr(0, indexOfRoot)<<endl;
+        cout<<"Left subtree LPK: "<<lpk.substr(0, indexOfRoot)<<endl<<"Right subtree LKP: "<<lkp.substr(indexOfRoot + 1, lkp.size() - indexOfRoot - 1)<<endl;
+        cout<<"Right subtree LPK: "<<lpk.substr(indexOfRoot, lkp.size() - indexOfRoot - 1)<<endl<<endl;
         // if hasn't right leaf
         if (indexOfRoot == 0) tree->left = nullptr;
         else tree->left = createBinaryTree(lkp.substr(0, indexOfRoot), lpk.substr(0, indexOfRoot));
         tree->right = createBinaryTree(lkp.substr(indexOfRoot + 1, lkp.size() - indexOfRoot - 1), lpk.substr(indexOfRoot, lkp.size() - indexOfRoot - 1));
-        printIntermediateResult(tree);
         return tree;
     }
 
-    void printIntermediateResult(Node *tree) {
-        //print tree and left and right subtree
-        cout<<"Image of subtree:\n";
-        cout<<"     "<<tree->data<<endl;
-        cout<<"    /";
-        cout<<" \\"<<endl;
-        cout<<"   ";
-        if (tree->left) cout<<tree->left->data;
-        else cout<<"#";
-        cout<<"   ";
-        if (tree->right) cout<<tree->right->data;
-        else cout<<"#";
-        cout<<endl;
-        if (tree->left && tree->left->left) cout<<"  /";
-        else cout<<"  ";
-        if (tree->left&& tree->left->right) cout<<"  \\";
-        else cout<<"  ";
-        if (tree->right &&tree->right->left) cout<<"  /";
-        else cout<<"  ";
-        if (tree->right && tree->right->right) cout<<" \\";
-        else cout<<"  ";
-        cout<<endl<<"-----------------"<<endl;
-    }
 public:
     Node* tree;
     BinaryTree(string lkp, string lpk) {
-        cout<<"You entered:\nLKP: "<<lkp<<";\nLPK: "<<lpk<<endl;
+        cout<<"You entered:\nLKP: "<<lkp<<";\nLPK: "<<lpk<<endl<<endl;
         //if lkp size != lpk size
         if (lkp.size() != lpk.size()) {
             error(INCORRECT_DATA);
@@ -88,12 +67,14 @@ public:
             error(INCORRECT_DATA);
             exit(1);
         }
+        cout<<"Root is "<<tree->data<<endl<<"Left subtree LKP: "<<lkp.substr(0, indexOfRoot)<<endl;
+        cout<<"Left subtree LPK: "<<lpk.substr(0, indexOfRoot)<<endl<<"Right subtree LKP: "<<lkp.substr(indexOfRoot + 1, lkp.size() - indexOfRoot - 1)<<endl;
+        cout<<"Right subtree LPK: "<<lpk.substr(indexOfRoot, lkp.size() - indexOfRoot - 1)<<endl<<endl;
         // create left subtree
         if (indexOfRoot == 0) tree->left = nullptr;
         else tree->left = createBinaryTree(lkp.substr(0, indexOfRoot), lpk.substr(0, indexOfRoot));
         //create right subtree
         tree->right = createBinaryTree(lkp.substr(indexOfRoot + 1, lkp.size() - indexOfRoot - 1), lpk.substr(indexOfRoot, lkp.size() - indexOfRoot - 1));
-        printIntermediateResult(tree);
     }
 
     void printKLP(Node* binTree) {
@@ -151,7 +132,7 @@ int main() {
     cout<<"KLP is: ";
     binTree.printKLP(binTree.tree);
     cout<<endl;
-    cout<<"Tree:";
+    cout<<"Tree:"<<endl;
     //print tree
     binTree.printTree(binTree.tree, 0);
     return 0;
