@@ -1,14 +1,6 @@
 #include <algorithm>
 #include "fano.h"
 
-typedef int Symbol;
-
-void sort(Symbol *symbols, size_t size) {
-  std::vector<Symbol> data;
-  for (int i = 0; i < size; i++) data.push_back(symbols[i]);
-  std::sort(data.begin(), data.end());
-}
-
 int main() { 
   std::string fname;
   
