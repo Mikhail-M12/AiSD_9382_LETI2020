@@ -62,19 +62,25 @@ void printHeap(int n, int u, int q, int h) {//предназначена для 
 }
 
 void printRoot(int n, int u) {//предназначена для вывода пути от корня до листа с выбором наибольшего сына
-    int main = 0, max = 1;
-    cout << arr[0] << "[0] ";
+    int main = 0, max = 1, l = 1;
+    cout << "It is " << l++ <<" level\n";
+    cout << arr[0] << "[0]\n";
     while (true) {
         max = main + 1;
-        if (max > n) {
+        if (max >= n) {
             cout << "\n";
             return;
         }
-        for (int k = 2; k < u + 1; k++)
+        cout << "I will choose the biggest son from:\n";
+        for (int k = 1; k < u + 1; k++) {
+            if (main + k < n)
+                cout << arr[main + k] << " ";
             if (main + k < n && arr[main + k] >= arr[max]) {//выбор наибольшего сына
                 max = main + k;
             }
-        cout << arr[max] << "[" << max << "] ";//вывод сына
+        }
+        cout << "\nIt is " << l++ <<" level\n";
+        cout << arr[max] << "[" << max << "]\n";//вывод сына
         main = max * u;
     }
 }
