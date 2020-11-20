@@ -1,4 +1,3 @@
-#include <algorithm>
 #include "fano.h"
 
 int main() { 
@@ -6,9 +5,9 @@ int main() {
   
   std::cout << "Input filename: ";
   std::cin >> fname;
-  if (Press(fname.data())) {
+  if (press(fname.data())) {
     std::cout << "Compression complete!\n";
-    if (Depress()) std::cout << "Decompression complete!\n";
+    if (depress()) std::cout << "Decompression complete!\n";
     else
       std::cout << "Decompression error\n";
   } else

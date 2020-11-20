@@ -7,6 +7,6 @@
 
 #include "tree.h"
 
-bool Press(const char *filename);
+bool press(const char *filename);
 
-bool Depress();
+bool depress();

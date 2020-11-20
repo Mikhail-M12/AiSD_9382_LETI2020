@@ -36,36 +36,36 @@ class Tree {
   Tree(node *N) { Node = N; }
 
   // Tree memory clear function
-  void Clear() {
+  void clear() {
     if (Node != nullptr) {
-      if (Node->lt != nullptr) Node->lt->Clear();
-      if (Node->rt != nullptr) Node->rt->Clear();
+      if (Node->lt != nullptr) Node->lt->clear();
+      if (Node->rt != nullptr) Node->rt->clear();
       delete Node;
       Node = nullptr;
     }
   }
 
-  ~Tree() { Clear(); }
+  ~Tree() { clear(); }
 
-  // Left child getting function
-  Tree *Left() {
+  // left child getting function
+  Tree *left() {
     if (Node == nullptr) {  // No node
-      std::cout << "Error: Left(null) \n";
+      std::cout << "Error: left(null) \n";
       exit(1);
     } else
       return Node->lt;
   }
 
-  // Right child getting function
-  Tree *Right() {
+  // right child getting function
+  Tree *right() {
     if (Node == nullptr) {
-      std::cout << "Error: Right(null) \n";
+      std::cout << "Error: right(null) \n";
       exit(1);
     } else
       return Node->rt;
   }
   // Node pointer getting function
-  node *NodePtr() {
+  node *nodePtr() {
     if (Node == nullptr) {
       std::cout << "Error: RootBT(null) \n";
       exit(1);
@@ -73,7 +73,7 @@ class Tree {
       return Node;
   }
   // Node data getting function
-  Elem GetNode() {
+  Elem getNode() {
     if (Node == nullptr) {  // No node
       std::cout << "Error: RootBT(null) \n";
       exit(1);
