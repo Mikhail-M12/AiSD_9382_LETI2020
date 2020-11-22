@@ -1,0 +1,2 @@
+Initial array: 132546
+Sorted array is: 123456
