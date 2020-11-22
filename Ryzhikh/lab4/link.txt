@@ -1,2 +1,2 @@
 Ссылка на прокет:
-https://repl.it/@RyzhikhRoman/EasyExhaustedNewsaggregator#main.cpp
+https://repl.it/@RyzhikhRoman/LemonchiffonFumblingConfiguration#main.cpp

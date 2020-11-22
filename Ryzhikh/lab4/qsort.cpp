@@ -1,24 +1,33 @@
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 
 template <class Item>
-void read(Item arr[], int n){    //считывание массива
-	for(int i = 0; i < n; i++)
+void read(Item arr[], int n) {    //считывание массива
+	for (int i = 0; i < n; i++)
 		cin >> arr[i];
-}	
+}
 
-	
+
 template <class Item>
-void print(Item arr[], int n){    //печать массива
-	for(int i = 0; i < n; i++)
+void print(Item arr[], int n) {    //печать массива
+	for (int i = 0; i < n; i++)
 		cout << arr[i] << ' ';
 	cout << "\n";
 }
 
 
 template <class Item>
-void exch(Item &a, Item &b){   //перестановка элементов
+void printArray(Item arr[], int l, int r) {
+	for (int i = l; i <= r; i++)
+		cout << arr[i] << ' ';
+	cout << "\n\n";
+}
+
+
+template <class Item>
+void exch(Item& a, Item& b) {   //перестановка элементов
 	int tmp;
 	tmp = a;
 	a = b;
@@ -27,87 +36,111 @@ void exch(Item &a, Item &b){   //перестановка элементов
 
 
 template <class Item>
-void comepxch(Item &a, Item &b){
-	if(b < a)
-		exch(a, b);
-}
-
-
-template <class Item>
-void insertion(Item arr[], int l, int r){    //сортировка вставками
-	for(int i = r; i > l; i--)
-		comepxch(arr[i-1], arr[i]);
-	cout << "Promezhutochniy vivod: \n"; 
-	print(arr, r);
-	for(int i = l + 2; i <= r; i++){
+void insertionSort(Item arr[], int l, int r, int lenght) {
+	bool check = false;
+	for (int i = l + 1; i < r + 1; i++) {
 		int j = i;
-		Item v = arr[i];
-		while(v < arr[j-1]){
-			arr[j] = arr[j-1]; 
+		while (j > l && arr[j - 1] > arr[j]) {
+			cout << "Changing elements: " << arr[j - 1] << ", " << arr[j] << endl;
+			exch(arr[j - 1], arr[j]);
 			j--;
+			cout << "Intermediate value (insertion): ";
+			print(arr, lenght + 1);
+			cout << "\n";
+			check = true;
 		}
-		arr[j] = v;
 	}
+	if (!check)
+		cout << "No need to use insertion sorting; Array is already sorted\n\n";
 }
 
 
 template <class Item>
-int partition(Item arr[], int l, int r){    //разбиение
-	int i = l - 1;
-	int j = r;
-	Item v = arr[r]; 
-    for (;;)
-	{
-		while (arr[++i] < v);
-		while (v < arr[--j])
-			if (j == l)
-				break;
-		if (i >= j) 
-			break;
-		exch(arr[i], arr[j]);
-    }
-    exch(arr[i], arr[r]);
-    return i;
-}
-
-
-template <class Item>
-void quickSort(Item arr[], int l, int r, int M){   //быстрая сортировка
-	if (r-l <= M) 
+void quickSort(Item arr[], int l, int r, int M, int lenght) {
+	if (r - l <= M) {
+		cout << "Beginning of the insertion sorting:\n";
+		cout << "Unsorted subarray: ";
+		printArray(arr, l, r);
+		insertionSort(arr, l, r, lenght);
 		return;
-	exch(arr[(l+r)/2], arr[r-1]);
-	comepxch(arr[l], arr[r-1]);
-	comepxch(arr[l], arr[r]);
-	comepxch(arr[r-1], arr[r]);
-	cout << "Promezhutochiy vivod:\n"; 
-	print(arr, r+1);
-	int i = partition(arr, l+1, r-1);
-	quickSort(arr,l, i-1, M);
-	quickSort(arr, i+1, r, M);
+	}
+	int z = arr[l + (r - l) / 2];  //средний элемент
+	cout << "Middle element is " << z << "\n\n";
+	int ll = l, rr = r; //первый и последний элементы
+	while (ll < rr) {
+		while (arr[ll] < z) {
+			cout << "Element " << arr[ll] << " stays in place, because it less than middle element " << z << "\n\n";
+			ll++;
+		}
+		while (arr[rr] > z) {
+			cout << "Element " << arr[rr] << " stays in place, because it bigger than middle element " << z << "\n\n";
+			rr--;
+		}
+		if (ll < rr) {
+			cout << "Changing elements: " << arr[ll] << ", " << arr[rr] << endl;
+			exch(arr[ll], arr[rr]);
+			ll++;
+			rr--;
+			cout << "Intermediate value(quick sort): ";
+			print(arr, lenght + 1);
+			cout << "\n";
+		}
+		else if (ll == rr)
+		{
+			ll++;
+			rr--;
+		}
+	}
+	if (l < rr) quickSort(arr, l, rr + 1, M, lenght);
+	if (ll < r) quickSort(arr, ll, r, M, lenght);
 }
 
-
-template <class Item>
-void hybridSort(Item arr[], int l, int r, int M){   //быстрая сортировка, совмещенная с сортировкой вставками
-	quickSort(arr, l, r, M);
-	insertion(arr, l, r); 
-}
-
-
-int main(){
+int main(int argc, char** argv) {
 	int n, M;
-	cout << "Vvedite kolichestvo elementov v massive:\n";
-	cin >> n;
-	cout << "Vvedite razmen malogo podmassiva:\n";
-	cin >> M;
-	cout << "Vvedite massiv:\n";
-	int *arr = new int[n];
-	read(arr, n);
-	cout << "Vvedenniy massiv:\n";
+	int* arr = nullptr;
+	if (argc == 2)
+	{
+		char* file = argv[1];
+		ifstream fin(file);// окрываем файл для чтения
+		if (fin.is_open())
+		{
+			fin >> n;
+			if (n < 0)
+				n = 0;
+			fin >> M;
+			if (M < 0)
+				M = 0;
+			arr = new int[n];
+			for (int i = 0; i < n; i++)
+				fin >> arr[i];
+		}
+		else
+		{
+			std::cout << "Can`t open file" << std::endl;
+			return 0;
+		}
+		fin.close();
+	}
+	else
+	{
+		cout << "Enter capacity of array:\n";
+		cin >> n;
+		if (n < 0)
+			n = 0;
+		cout << "Enter capacity of small subarray:\n";
+		cin >> M;
+
+		if (M < 0)
+			M = 0;
+		cout << "Enter array:\n";
+		arr = new int[n];
+		read(arr, n);
+	}
+	cout << "Entered array:\n";
 	print(arr, n);
 	cout << "\n";
-	hybridSort(arr, 0, n-1, M);
-	cout << "\nOtsortirovanniy massiv:\n";
+	quickSort(arr, 0, n - 1, M, n - 1);
+	cout << "\nSorted array:\n";
 	print(arr, n);
 	delete[] arr;
 	return 0;
