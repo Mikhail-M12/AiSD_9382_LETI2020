@@ -9,7 +9,6 @@ int spaceCount = 0; // Счетчик количества пробелов, д�
 //функция считывания списка имен из файла
 template<typename StreamT>
 std::vector<std::string> getNames(StreamT &in) {
-    std::cout << "введите сиписок имен через enter" << std::endl;
     std::vector<std::string> names;
     std::string line;
 
@@ -29,7 +28,6 @@ void getRelationsMatrix(StreamT &in, std::vector<std::vector<bool>> &relationTab
     std::string line;
     int temp;
     int parent;
-
     while (std::getline(in, line) && !line.empty()) {
         std::istringstream str(line);
         if (!(str >> parent))
@@ -85,7 +83,7 @@ bool isFamilyWithDetails(int a, int b, std::vector<std::vector<bool>> &arr) {
         return true;
     } else {
         spaceCount++;
-        std::cout<<"-"<<std::endl;
+        std::cout << "-" << std::endl;
         for (int i = 0; i < arr.size(); i++) {
             if (arr[a][i]) {
                 arr[a][i] = false;
@@ -160,7 +158,6 @@ int main() {
         int readFormat = 0;
         std::cin >> readFormat;
         std::cin.ignore();
-
         std::ifstream in;
         std::vector<std::string> names;// массив имен жителей
 
@@ -175,6 +172,9 @@ int main() {
                 throw std::runtime_error("Файл не найден!");
             }
         } else if (readFormat == 2) {
+
+            std::cout << "введите сиписок имен через enter" << std::endl;
+            std::cout << "Конец ввода - пустая строка" << std::endl;
             names = getNames(std::cin);
         } else
             throw std::runtime_error("Неправильный формат ввода");
@@ -183,8 +183,15 @@ int main() {
         std::vector<std::vector<bool>> relationsMatrix = createArray(names.size());
 
         if (readFormat == 1) {
+
+
             getRelationsMatrix(in, relationsMatrix);
         } else {
+
+            std::cout
+                    << "Введитете номер родителя и номера его детей через пробел: <№ родителя> <№ ребенка 1> <№ ребенка 2> ..."
+                    << std::endl;
+            std::cout << "Конец ввода - пустая строка" << std::endl;
             getRelationsMatrix(std::cin, relationsMatrix);
         }
 
