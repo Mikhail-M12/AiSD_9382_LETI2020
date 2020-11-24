@@ -190,7 +190,7 @@ string* Beam::isContainsList(Beam second)
 
 void Beam::isContainsListHandlerWithOutput(Beam second, string* result_ptr, string* currentlyAt_ptr, int deepness)
 {
-    string buffer("  ", deepness);
+    string buffer(deepness, ' ');
 
     if (this->isEqual(second))
     {
@@ -241,12 +241,10 @@ void inputHandler(string whatToSearch, string whereToSearch)
         string result = *(beam2.isContainsListWithOutput(beam1));
         cout << "THE ANSWER IS " << result << '\n';
     }
-
 }
 
-int main()
+void introductionMessageView()
 {
-    cout << "Please, input binary tree to search and where to search.\n";
     cout << "Separator -- <,>, do not use space\n";
     cout << "Examples of trees: (any positive int numbers can be in brackets)\n";
     cout << "(1,1)\n";
@@ -254,8 +252,10 @@ int main()
     cout << "((1,1),(((2,1),(1,1)),(1,1)))\n";
     cout << "((((1,1),(1,1)),((1,1),(1,1))),(((1,1),(1,1)),((1,1),(1,1))))\n\n";
     cout << "q to exit\n";
+}
 
-
+void stdInputCase()
+{
     string whatToSearch, whereToSearch;
     cin >> whatToSearch;
     cin >> whereToSearch;
@@ -277,5 +277,44 @@ int main()
         cin >> whatToSearch;
         cin >> whereToSearch;
     }
+}
+
+void fileInputCase(string path)
+{
+    ifstream inFile;
+    inFile.open(path);
+    
+    string whatToSearch, whereToSearch;
+
+    while (    inFile >> whatToSearch && inFile >> whereToSearch)
+    {
+        try
+        {
+            Beam beam1(whatToSearch);
+            Beam beam2(whereToSearch);
+            inputHandler(whatToSearch, whereToSearch);
+        }
+        catch (const char* msg)
+        {
+            cerr << msg << '\n';
+        }
+    }
+    inFile.close();
+}
+
+int main(int argc, char *argv[])
+{
+    if (argc>= 2)
+    {
+        string flag(argv[1]);
+        string path(argv[2]);
+        if (flag.compare("-f") == 0)
+            fileInputCase(path); // No obvious way to overload the function
+        return 0;
+    }
+    cout << "Please, input binary tree to search and where to search.\n";
+    introductionMessageView();
+    stdInputCase();
+
     return 0;
 }
