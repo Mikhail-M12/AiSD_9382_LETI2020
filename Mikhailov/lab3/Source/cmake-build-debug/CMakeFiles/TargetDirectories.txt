@@ -1,3 +1,0 @@
-/home/dima/git/AiSD_9382_LETI2020/Mikhailov/lab3/Source/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/dima/git/AiSD_9382_LETI2020/Mikhailov/lab3/Source/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/dima/git/AiSD_9382_LETI2020/Mikhailov/lab3/Source/cmake-build-debug/CMakeFiles/lr3.dir
