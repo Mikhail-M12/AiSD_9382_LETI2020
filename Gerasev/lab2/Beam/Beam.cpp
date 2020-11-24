@@ -245,6 +245,7 @@ void inputHandler(string whatToSearch, string whereToSearch)
 
 void introductionMessageView()
 {
+    cout << "File input example: ./main -f test.txt\n\n";
     cout << "Separator -- <,>, do not use space\n";
     cout << "Examples of trees: (any positive int numbers can be in brackets)\n";
     cout << "(1,1)\n";
