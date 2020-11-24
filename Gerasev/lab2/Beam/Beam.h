@@ -31,6 +31,7 @@ private:
     BeamUnion beamUnion;
 
     void isContainsListHandler(Beam second, string* result_ptr, string* currentlyAt);
+    void isContainsListHandlerWithOutput(Beam second, string* result_ptr, string* currentlyAt_ptr, int deepness);
 
 public:
     Beam(string inputString = "(0, 0)");
@@ -40,6 +41,7 @@ public:
     bool isEqual(Beam second);
     bool isContains(Beam second);
     string* isContainsList(Beam second);
+    string* isContainsListWithOutput(Beam second);
 };
 
 

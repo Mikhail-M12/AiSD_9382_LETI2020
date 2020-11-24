@@ -36,9 +36,9 @@ int findMiddleComma(string input)
 
     if (openCounter != 0)
     {
-        cout << "Error: Invalid findMiddleComma call ";
-        cout << "on string " << input << '\n';
-        raise(SIGILL);
+        throw "Error: Invalid findMiddleComma call";
+        // raise(SIGILL);
+        return -1; // Ugly error handle, due to the requirements
     }
 
     return result;
@@ -46,30 +46,43 @@ int findMiddleComma(string input)
 
 Beam::Beam(string inputString)
 {
-    int massInput = -1, leverInput = -1;
-    sscanf(inputString.c_str(), "(%d,%d)", &massInput, &leverInput);
-    if (!(massInput == -1 || leverInput == -1))
+    if (inputString[0] != '(' && inputString[inputString.size() -1] != ')')
     {
-        beamUnion.values.mass = massInput;
-        beamUnion.values.lever = leverInput;
-        return;
-    }   
-
-    int middleComma = findMiddleComma(inputString);
-    string insides = inputString.substr(1, inputString.size() -2); // .substr(1, inputString.size() -1) on StackOverflow. It's not working for some reason.
-
-    string leftString = insides.substr(0, middleComma-1);
-    string rightString = insides.substr(middleComma);
-
-    if (!(leftString.empty() || rightString.empty()))
-    {
-        beamUnion.pointers.Left = new Beam(leftString);
-        beamUnion.pointers.Right = new Beam(rightString);
+        throw "Error: Invalid Input";
         return;
     }
 
-    cout << "Error: Invalid Input\n";
-    raise(SIGILL);
+    try
+    {
+        int massInput = -1, leverInput = -1;
+        sscanf(inputString.c_str(), "(%d,%d)", &massInput, &leverInput);
+        if (!(massInput == -1 || leverInput == -1))
+        {
+            beamUnion.values.mass = massInput;
+            beamUnion.values.lever = leverInput;
+            return;
+        }   
+
+        int middleComma = findMiddleComma(inputString);
+        string insides = inputString.substr(1, inputString.size() -2); // .substr(1, inputString.size() -1) on StackOverflow. It's not working for some reason.
+
+        string leftString = insides.substr(0, middleComma-1);
+        string rightString = insides.substr(middleComma);
+
+        if (!(leftString.empty() || rightString.empty()))
+        {
+            beamUnion.pointers.Left = new Beam(leftString);
+            beamUnion.pointers.Right = new Beam(rightString);
+            return;
+        }
+
+        throw "Error: Invalid Input";
+        // raise(SIGILL);
+    }
+    catch (const char* msg)
+    {
+        throw msg;
+    }
 }
 
 Beam::Beam(const Beam & beam) // Оператор копирования
@@ -175,22 +188,94 @@ string* Beam::isContainsList(Beam second)
     return result_ptr;
 }
 
-int main()
+void Beam::isContainsListHandlerWithOutput(Beam second, string* result_ptr, string* currentlyAt_ptr, int deepness)
 {
-    string whatToSearch, whereToSearch;
-    cin >> whatToSearch;
-    cin >> whereToSearch;
+    string buffer("  ", deepness);
 
+    if (this->isEqual(second))
+    {
+        cout << buffer << "Found the tree\n";
+        result_ptr->append(*currentlyAt_ptr);
+        result_ptr->append(" ");
+        *currentlyAt_ptr = currentlyAt_ptr->substr(0, currentlyAt_ptr->size() -1);
+        cout << buffer << "Go up, out this node\n";
+        return;
+    }
+
+    if (!isPointersNulls(beamUnion.pointers.Left, beamUnion.pointers.Right))
+    {
+        currentlyAt_ptr->append("0");
+        cout << buffer << "Go left\n";
+        beamUnion.pointers.Left->isContainsListHandlerWithOutput(second, result_ptr, currentlyAt_ptr, ++deepness);
+
+        currentlyAt_ptr->append("1");
+        cout << buffer << "Go right\n";
+        beamUnion.pointers.Right->isContainsListHandlerWithOutput(second, result_ptr, currentlyAt_ptr, ++deepness);
+    }
+
+    cout << buffer << "Go up, out this node\n";
+    *currentlyAt_ptr = currentlyAt_ptr->substr(0, currentlyAt_ptr->size() -1);;
+    return;
+}
+
+string* Beam::isContainsListWithOutput(Beam second)
+{
+    auto result_ptr = new string;
+    auto currentlyAt_ptr = new string;
+    cout << "Call the handler function\n";
+    this->isContainsListHandlerWithOutput(second, result_ptr, currentlyAt_ptr, 0);
+    return result_ptr;
+}
+
+void inputHandler(string whatToSearch, string whereToSearch)
+{
     Beam beam1(whatToSearch);
     Beam beam2(whereToSearch);
 
     if (beam1.isEqual(beam2))
     {
         cout << "BEAMS ARE EQUAL\n";
-        return 0;
+    }
+    else
+    {
+        string result = *(beam2.isContainsListWithOutput(beam1));
+        cout << "THE ANSWER IS " << result << '\n';
     }
 
-    string result = *(beam2.isContainsList(beam1));
-    cout << "THE ANSWER IS " << result << '\n';
+}
+
+int main()
+{
+    cout << "Please, input binary tree to search and where to search.\n";
+    cout << "Separator -- <,>, do not use space\n";
+    cout << "Examples of trees: (any positive int numbers can be in brackets)\n";
+    cout << "(1,1)\n";
+    cout << "((1,1),(1,1))\n";
+    cout << "((1,1),(((2,1),(1,1)),(1,1)))\n";
+    cout << "((((1,1),(1,1)),((1,1),(1,1))),(((1,1),(1,1)),((1,1),(1,1))))\n\n";
+    cout << "q to exit\n";
+
+
+    string whatToSearch, whereToSearch;
+    cin >> whatToSearch;
+    cin >> whereToSearch;
+
+    while (whatToSearch.compare("q") != 0)
+    {
+        try
+        {
+            Beam beam1(whatToSearch);
+            Beam beam2(whereToSearch);
+            inputHandler(whatToSearch, whereToSearch);
+        }
+        catch (const char* msg)
+        {
+            cerr << msg << '\n';
+        }
+
+        cout << "Please, input binary tree to search and where to search.\n";
+        cin >> whatToSearch;
+        cin >> whereToSearch;
+    }
     return 0;
 }
