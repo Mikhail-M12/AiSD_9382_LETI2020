@@ -2,7 +2,7 @@
 
 bool isBracketValid(int bracket)
 {
-    return bracket != string::npos;
+    return bracket != string::npos; // Contecst functions, fot better reading
 }
 
 bool isPointerNull(Beam* p)
@@ -14,6 +14,8 @@ bool isPointersNulls(Beam* p1, Beam* p2)
 {
     return (isPointerNull(p1) && isPointerNull(p2));
 }
+
+
 
 int findMiddleComma(string input)
 {
@@ -46,6 +48,7 @@ int findMiddleComma(string input)
 
 Beam::Beam(string inputString)
 {
+    // Parsing is going inside of constructors
     if (inputString[0] != '(' && inputString[inputString.size() -1] != ')')
     {
         throw "Error: Invalid Input";
@@ -77,7 +80,6 @@ Beam::Beam(string inputString)
         }
 
         throw "Error: Invalid Input";
-        // raise(SIGILL);
     }
     catch (const char* msg)
     {
@@ -89,7 +91,7 @@ Beam::Beam(const Beam & beam) // Оператор копирования
 {
     if (!isPointersNulls(beam.beamUnion.pointers.Left, beam.beamUnion.pointers.Right))
     {
-        beamUnion.pointers.Left = new Beam(*beam.beamUnion.pointers.Left);
+        beamUnion.pointers.Left = new Beam(*beam.beamUnion.pointers.Left); // Recursive copy
         beamUnion.pointers.Right = new Beam(*beam.beamUnion.pointers.Right);
     }
 
@@ -127,6 +129,7 @@ void Beam::view()
 
 bool Beam::isEqual(Beam second)
 {
+    // Not via overload of = because of specific usage
     if (!isPointersNulls(beamUnion.pointers.Left, beamUnion.pointers.Right) &&
         !isPointersNulls(second.beamUnion.pointers.Left, second.beamUnion.pointers.Right))
     {
@@ -159,6 +162,7 @@ bool Beam::isContains(Beam second)
 
 void Beam::isContainsListHandler(Beam second, string* result_ptr, string* currentlyAt_ptr)
 {
+    // Adresses are strings, not mass of bytes because the only purpose -- the output, no more
     if (this->isEqual(second))
     {
         result_ptr->append(*currentlyAt_ptr);
@@ -198,7 +202,7 @@ void Beam::isContainsListHandlerWithOutput(Beam second, string* result_ptr, stri
         result_ptr->append(*currentlyAt_ptr);
         result_ptr->append(" ");
         *currentlyAt_ptr = currentlyAt_ptr->substr(0, currentlyAt_ptr->size() -1);
-        cout << buffer << "Go up, out this node\n";
+        cout << buffer << "Go up, out of this node\n";
         return;
     }
 
@@ -213,7 +217,7 @@ void Beam::isContainsListHandlerWithOutput(Beam second, string* result_ptr, stri
         beamUnion.pointers.Right->isContainsListHandlerWithOutput(second, result_ptr, currentlyAt_ptr, ++deepness);
     }
 
-    cout << buffer << "Go up, out this node\n";
+    cout << buffer << "Go up, out of this node\n";
     *currentlyAt_ptr = currentlyAt_ptr->substr(0, currentlyAt_ptr->size() -1);;
     return;
 }
@@ -253,6 +257,9 @@ void introductionMessageView()
     cout << "((1,1),(((2,1),(1,1)),(1,1)))\n";
     cout << "((((1,1),(1,1)),((1,1),(1,1))),(((1,1),(1,1)),((1,1),(1,1))))\n\n";
     cout << "q to exit\n";
+
+    cout << "\nOutput explanations:\n";
+    cout << "\n0 in address == left node\n1 == right node\n";
 }
 
 void stdInputCase()
@@ -287,7 +294,7 @@ void fileInputCase(string path)
     
     string whatToSearch, whereToSearch;
 
-    while (    inFile >> whatToSearch && inFile >> whereToSearch)
+    while (inFile >> whatToSearch && inFile >> whereToSearch)
     {
         try
         {
@@ -305,7 +312,8 @@ void fileInputCase(string path)
 
 int main(int argc, char *argv[])
 {
-    if (argc>= 2)
+    // Comments are, at best, a necessary evil, nothing to celebrate -- Robert Martin
+    if (argc>= 2) // Arguments case
     {
         string flag(argv[1]);
         string path(argv[2]);
