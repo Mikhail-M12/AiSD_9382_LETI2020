@@ -2,7 +2,6 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <conio.h>
 
 #define NMAX 500
 using namespace std;
@@ -94,10 +93,10 @@ void fcn(std::istream &fin) {//функция для универсальной 
         return;
     }
     cout << "N-narny heap:\n";
-    printHeap(i, u);//вывод в форме кучи
+    printHeap(i, r);//вывод в форме кучи
     cout << "Define max root:\n";
     int* finallyArr = new int[i]();
-    int count = printRoot(i, u, finallyArr);//вывод пути от корня до листа с выбором наибольшего сына
+    int count = printRoot(i, r, finallyArr);//вывод пути от корня до листа с выбором наибольшего сына
     cout << "Max root is:\n";
     printFinallyRoot(finallyArr, count);
     memset(arr, 0, sizeof(int)*i);
@@ -131,8 +130,8 @@ int main() {
             delete[] name;
             delete[] filename;
         }
-        cout << "Do you want to countinue? (y/n)\n";
-        c = getch();
+        cout << "Do you want to continue? (y/n)\n";
+        cin >> c;
     } while (c == 'y' || c == 'Y');
     return 0;
 }
