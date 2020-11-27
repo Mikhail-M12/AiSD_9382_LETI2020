@@ -2,6 +2,11 @@
 #include "binSTree.h"
 #include <ctime> 
 
+bool is_digits(const std::string &str)
+{
+    return str.find_first_not_of("0123456789") == std::string::npos;
+}
+
 int main()
 {
 	srand(time(NULL));
@@ -41,9 +46,17 @@ int main()
          * Считывание данных из стандартного потока
          */
         std::cout<< "Enter count of elem"<< std::endl;
-        int count;
+        std::string count;
         std::cin >> count;
-        for (int i = 0; i < count; i++)
+        int value;
+        if (is_digits(count)){
+            value = std::atoi(count.c_str());
+            std::cerr << value;
+        } else{
+            std::cout << "Incorrect value\nError";
+            exit(1);
+        }
+        for (int i = 0; i < value; i++)
         {
             std::cin >> elem;
             /*
