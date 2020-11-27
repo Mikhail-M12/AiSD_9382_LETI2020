@@ -1,52 +1,18 @@
 #include <cstring>
 #include <string>
 #include <iostream>
-#include <cmath>
 #include <fstream>
+#include <conio.h>
 
 #define NMAX 500
 using namespace std;
 int arr[NMAX+1];
 
-/*oid heapify (int pos, int n, int u) {
-    while (u * pos + 1 < n) {
-        int max = u * pos + 1;
-        for (int k = 2;k < u + 1;k++)
-        if (u * pos + k < n && arr[u * pos + k] >= arr[max]) {
-            max = u * pos + k;
-        }
-        if (arr[pos] < arr[max]) {
-            swap(arr[pos], arr[max]);
-            pos = max;
-        } else
-            break;
-    }
-}
-
-void heapMake(int n, int u) {
-    for (int i = n - 1; i >= 0; i--) {
-        heapify(i, n, u);
-    }
-}
-void heapSort(int n, int u) {
-    heapMake(n, u);
-    while(n>0)
-    {
-        swap(arr[0],arr[n-1]);
-        n--;
-        heapify(0,n, u);
-    }
-}*/
-
-void printHeap(int n, int u, int q, int h) {//предназначена для вывода в форме кучи
+void printHeap(int n, int u) {//предназначена для вывода в форме кучи
     int k = 1, i = 0, y = 0;
     while (true) {
- /*       for (int r = 0;r < q*u*h*4 / (k + 1);r++)
-            cout << " ";*/
     while (i < k + y) {
         cout << arr[i] << "[" << i << "] ";//вывод сыновей
-/*        for (int r = 0;r < q*u*h*4 / (k + 1);r++)
-            cout << " ";*/
         i++;
         if (i == n) {
             y = -1;
@@ -61,17 +27,17 @@ void printHeap(int n, int u, int q, int h) {//предназначена для 
     }
 }
 
-void printRoot(int n, int u) {//предназначена для вывода пути от корня до листа с выбором наибольшего сына
-    int main = 0, max = 1, l = 1;
+int printRoot(int n, int u, int* &finallyArr) {//предназначена для вывода пути от корня до листа с выбором наибольшего сына
+    int main = 0, max = 1, l = 1, i = 0;
     cout << "It is " << l++ <<" level\n";
     cout << arr[0] << "[0]\n";
+    finallyArr[i++] = arr[0];
     while (true) {
         max = main + 1;
         if (max >= n) {
-            cout << "\n";
-            return;
+            return i;
         }
-        cout << "I will choose the biggest son from:\n";
+        cout << "Searching the biggest son from:\n";
         for (int k = 1; k < u + 1; k++) {
             if (main + k < n)
                 cout << arr[main + k] << " ";
@@ -81,67 +47,92 @@ void printRoot(int n, int u) {//предназначена для вывода �
         }
         cout << "\nIt is " << l++ <<" level\n";
         cout << arr[max] << "[" << max << "]\n";//вывод сына
+        finallyArr[i++] = arr[max];
         main = max * u;
     }
 }
 
+void printFinallyRoot(int* &finallyArr, int count) {//предназначена для окончательного вывода искомого пути
+    for (int i = 0;i < count;i++) {
+        std::cout << finallyArr[i] << " ";
+    }
+    cout << "\n";
+}
+
 void fcn(std::istream &fin) {//функция для универсальной работы с потоком ввода
-    int u = 0, i = 0, value, max = 0;
+    int u = 0, i = 0, value;
     char* str = new char[30]();
     while ((str[u] = fin.get()) != '\n') {//считывание значений и запись в массив
         if (str[u] == ' ') {
-            if (max <= u)
-                max = u;//максимальная длина значений
-            str[u] = '\n';
+            str[u] = '\0';
             u = -1;
-            value = stoi(str,nullptr, 10);
+            value = stoi(str, nullptr, 10);
             arr[i++] = value;
             delete[] str;
             str = new char[20]();
-        }  else if (!isdigit(str[u])) {
+        } else if (!isdigit(str[u])) {
             break;
         }
         u++;
     }
-    if (!arr[0]) {//проверка на неверные данные
-        cout << "Error data\n";
+    str[u] = '\0';
+    try {
+        value = stoi(str, nullptr, 10);//считывание последнего элемента
+        arr[i++] = value;
+    }
+    catch (std::invalid_argument) {
+        cout << "Error data\nYou entered the wrong data!\n";
+
+        delete[] str;
         return;
     }
-    value = stoi(str,nullptr, 10);//считывание последнего элемента
-    arr[i++] = value;
-    fin >> u;
-    value = 0;
-    for (int r = 0;r < i;) {
-        r = pow(u, value++);
+    int r;
+    fin >> r;
+    if (!r) {
+        cout << "Error data\nYou entered the wrong data!\n";
+        delete[] str;
+        return;
     }
     cout << "N-narny heap:\n";
-    printHeap(i, u, value, max);//вывод в форме кучи
-    cout << "Max root:\n";
-    printRoot(i, u);//вывод пути от корня до листа с выбором наибольшего сына
+    printHeap(i, u);//вывод в форме кучи
+    cout << "Define max root:\n";
+    int* finallyArr = new int[i]();
+    int count = printRoot(i, u, finallyArr);//вывод пути от корня до листа с выбором наибольшего сына
+    cout << "Max root is:\n";
+    printFinallyRoot(finallyArr, count);
+    memset(arr, 0, sizeof(int)*i);
     delete[] str;
 }
 
 
 int main() {
-    char n;
-    cout << "What stream do you want to use?(0 - cout, n - name of file)\n";
-    cin >> n;
-    if (n == '0') {
-        cout << "Write array of data! Write number of children!\n";
-        n = cin.get();
-        fcn(std::cin);
-    } else {
-        char *filename = new char[30]();//ввходные данные из файла
-        strcpy(filename, "Tests//");
-        strncat(filename, &n, 1);
-        strcat(filename, ".txt");
-        std::ifstream in(filename);
-        if (!in.is_open()) {
-            std::cout << "File wasn't opened!";
-            return 0;
+    char c;
+    do {
+        char n, *name = new char[100]();
+        cout << "What input stream would you like to use?\n(0 - from console, 1 - from file)\n";
+        cin >> n;
+        if (n == '0') {
+            cout << "Write array of data! Write number of children!\n";
+            n = cin.get();
+            fcn(std::cin);
+        } else {
+            cout << "Write the name of file:\n";
+            cin >> name;
+            char *filename = new char[30]();//ввходные данные из файла
+            strcpy(filename, "Tests//");
+            strcat(filename, name);
+            strcat(filename, ".txt");
+            std::ifstream in(filename);
+            if (!in.is_open()) {
+                std::cout << "File wasn't opened!";
+                return 0;
+            }
+            fcn(in);
+            delete[] name;
+            delete[] filename;
         }
-        fcn(in);
-        delete[] filename;
-    }
+        cout << "Do you want to countinue? (y/n)\n";
+        c = getch();
+    } while (c == 'y' || c == 'Y');
     return 0;
 }
