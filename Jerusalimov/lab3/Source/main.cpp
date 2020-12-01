@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <fstream>
 #include <iostream>
+#include <conio.h>
 
 
 using namespace std;
@@ -68,15 +69,12 @@ private:
             cout << "Examining expression of level " << depth << " : " << tree[i] << "\n";
             m = newNode(' ');
             m->l = newTree(tree, ++i, ++depth);
-           // --depth;
             avoid(tree, i);
-           // ++depth;
             printRec(depth);
             cout << "Examining sign " << tree[i] << "\n";
             m->content = tree[i++];
             avoid(tree, i);
             m->r = newTree(tree, i, ++depth);
-            //--depth;
             printRec(depth);
             cout << "Finished examining expression of level " << depth << " : " << tree[i] << "\n";
             ++i;
@@ -327,15 +325,13 @@ int main() {
         else {
             cout << input_filename << " doesn't exist!\n";
         }
-    }
-
-
-    if (command == 1) {
+    }else if (command == 1) {
         string s = "";
 
         cout << "\nEnter the expression (or \"!\" to quit): \n";
         getline(cin, s);
         while (s != "!") {
+
             int i = 0;
             int depth = 0;
             if (isEntryValid(s, i)) {//проверяем валидны ли входные данные
@@ -343,17 +339,43 @@ int main() {
                 cout<<"____________________________Create_a_sample_tree____________________________________\n";
                 bTree* tree = new bTree(s, i, depth);// создаем дерево, передавая строку и обрабатывая ее там
                 depth = 0;
-                cout<<"\n__________________________________Tree____________________________________________\n";
-                tree->printTree(depth);//строим дерево на экране
-                cout<<"\n__________________________________Rework__________________________________________\n";
-                tree->reWorkTree(depth);//Обрабатываем дерево, спускаемся в самые низы, и от туда изменяем дерево постепенно переходя выше. ((f1 *f2 )+(f1 *f3 )) = (f1*(f2+f3))
-                cout<<"\n__________________________________New_Tree________________________________________\n";
-                tree->printTree(depth);//строим новое дерево на экране
-                cout<<"\n__________________________________Result__________________________________________\n";
-                tree->printResult();// выводим результат
-                cout << "\n\n";
-                cout << "__________________________________________________________________________________\n\n";
-                delete tree;
+                int zachem=0;
+                bool isRework =false;
+                while(zachem != 3) {
+                    cout << "\n***************\nShow a sample tree - 1; \nRework tree - 2\nNext instruction - 3\n";
+                    cin >> zachem;
+                    if (zachem == 1) {
+                        cout<< "\n__________________________________Tree____________________________________________\n";
+                        tree->printTree(depth);//строим дерево на экране
+                    } else if (zachem == 2) {
+                        cout
+                                << "\n__________________________________Rework__________________________________________\n";
+                        tree->reWorkTree(
+                                depth);//Обрабатываем дерево, спускаемся в самые низы, и от туда изменяем дерево постепенно переходя выше. ((f1 *f2 )+(f1 *f3 )) = (f1*(f2+f3))
+                        isRework = true;
+                    }else if(zachem != 3){
+                        cout << "\nUnknown command, try again\n";
+                    }
+                }
+
+                zachem = 0;
+                while(zachem != 3) {
+                    cout << "\n***************\nShow a new tree - 1; \nResult - 2\nNew expression - 3\n";
+                    cin >> zachem;
+                    if(zachem == 1){
+                        cout << "\n__________________________________New_Tree________________________________________\n";
+                        tree->printTree(depth);//строим новое дерево на экране
+                    }else if(zachem == 2){
+                        cout << "\n__________________________________Result__________________________________________\n";
+                        tree->printResult();// выводим результат
+                    }else if(zachem != 3){
+                        cout << "\n\n";
+                        cout << "__________________________________________________________________________________\n\n";
+                        delete tree;
+                        cout << "\nEnter the expression (or \"!\" to quit): \n";
+                    }
+                }
+                cout << "\nEnter the expression (or \"!\" to quit): \n";
             }
             else if (s != "") {
                 cout << "Invalid entry, the tree wasn't created\n";
@@ -361,13 +383,9 @@ int main() {
             s = "";
             getline(cin, s);
         }
-    }
-    else {
+    }else {
         cout << "\nUnknown command, program finished\n";
     }
+    getch();
     return 0;
 }
-//((b*6)+(b*8))
-//((b*6)+(((b*7)+(b*5))))
-//(((2*b)+(6*b))+((8*b)+(7*b)))
-//(((2*b)+(6*b))+((8*b)+(7*b)))
