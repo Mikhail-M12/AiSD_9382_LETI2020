@@ -20,6 +20,7 @@ public:
     int s;
     WeakHeap(){}
     WeakHeap(int, std::istream&);
+    WeakHeap(std::ifstream&);
 
     void displayArray();
     void displayHeap(int i, int j, int col, int num);
