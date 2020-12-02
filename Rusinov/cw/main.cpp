@@ -128,9 +128,6 @@ class RBTree {
 
     // случай, когда нет корня
     void insertCase1(Node<Elem>* n) {
-
-
-
         waitNextStep();
         std::cout << "------Балансировка------" << std::endl;
         std::vector<Node<Elem>*> specialNodes {};
@@ -182,7 +179,6 @@ class RBTree {
 
     // случай, когда отец красный и есть красный дядя
     void insertCase3(Node<Elem>* n) {
-
         waitNextStep();
         std::cout << "------Балансировка------" << std::endl;
         std::vector<Node<Elem>*> specialNodes {};
@@ -262,7 +258,6 @@ class RBTree {
 
             rightRotate(n->parent);
 
-
             waitNextStep();
             specialNodes.clear();
             n = n->right;
@@ -340,8 +335,6 @@ public:
         // если node >= linker, то идем в правую ветку
         // когда нет след ветки, то вставляем туда элемент
         while (linker) {
-
-
             specialNodes.clear();
             waitNextStep();
             std::cout << "-----------------------------" << std::endl;
@@ -398,9 +391,18 @@ public:
 
 char userInput(RBTree<int>* tree) {
     system("clear");
-    int stuff;
+    int stuff = 1;
     std::cout << "Введите элемент, который хотите вставить: ";
+
     std::cin >> stuff;
+
+    while (std::cin.fail()) {
+      std::cout << "Не удалось считать число! Введите снова: ";
+      std::cin.clear();
+      std::cin.ignore(10, '\n');
+      std::cin >> stuff;
+    }
+
     tree->insert(stuff);
     std::vector<Node<int>*> specialNodes;
     std::cout << "-----Текущее дерево-----" << std::endl;
