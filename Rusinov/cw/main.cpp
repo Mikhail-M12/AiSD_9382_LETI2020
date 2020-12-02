@@ -28,14 +28,13 @@ void printTree(Node<int>* tree, int level, std::vector<Node<int>*> specialNodes)
         else if (tree->color == BLACK) std::cout << "\x1b[30m" << tree->data << "\x1b[0m" << std::endl;
         else std::cout << "\x1b[31m" << tree->data << "\x1b[0m" << std::endl;
         printTree(tree->left, level + 1, specialNodes);
-
     }
 }
 
 void waitNextStep() {
-    char s;
-    std::cout << "Введите любой символ, чтобы продолжить выполнение: ";
-    std::cin >> s;
+    char s = 0;
+    std::cout << "Чтобы продолжить выполнение программы, отправьте '+': ";
+    while (s != '+') std::cin >> s;
     system("clear");
 }
 
@@ -174,7 +173,6 @@ class RBTree {
             std::cout << "[СЛУЧАЙ 2] Рассматриваемый элемент красный, родитель красный, свойство нарушено!" << std::endl;
             insertCase3(n);
         }
-
     }
 
     // случай, когда отец красный и есть красный дядя
@@ -230,11 +228,9 @@ class RBTree {
         std::cout << "[СЛУЧАЙ 4] (ИЛИ рассматриваемый левый, а его отец правый)" << std::endl;
         std::cout << "Рассматриваемый элемент и его отец выделены" << std::endl;
 
-
         waitNextStep();
         // n правый сын и отец левый сын
         if ((n == n->parent->right) && (n->parent == g->left)) {
-
             std::cout << "------Балансировка------" << std::endl;
             printTree(root, 0, specialNodes);
             std::cout << "[СЛУЧАЙ 4] Рассматриваемый элемент - правый сын, его отец - левый сын" << std::endl;
@@ -255,7 +251,6 @@ class RBTree {
             printTree(root, 0, specialNodes);
             std::cout << "[СЛУЧАЙ 4] Рассматриваемый элемент - левый сын, его отец - правый сын" << std::endl;
             std::cout << "[СЛУЧАЙ 4] В таком случае необходимо выполнить правый поворот отца рассматриваемого элемента" << std::endl;
-
             rightRotate(n->parent);
 
             waitNextStep();
@@ -330,7 +325,6 @@ public:
         auto linker = root;
         std::vector<Node<int>*> specialNodes = {};
 
-
         // если node < linker, то идем в левую ветку
         // если node >= linker, то идем в правую ветку
         // когда нет след ветки, то вставляем туда элемент
@@ -342,33 +336,28 @@ public:
             printTree(getRoot(), 0, specialNodes);
             std::cout << "------Вставка элемента-------" << std::endl;
 
-
             if (newNode->data < linker->data) {
                 if (!linker->left) {
                     linker->left = newNode;
                     newNode->parent = linker;
-
                     specialNodes.clear();
                     waitNextStep();
                     std::cout << "-----------------------------" << std::endl;
                     specialNodes.push_back(newNode);
                     printTree(getRoot(), 0, specialNodes);
                     std::cout << "------Элемент вставлен-------" << std::endl;
-
                     break;
                 } else linker = linker->left;
             } else {
                 if (!linker->right) {
                     linker->right = newNode;
                     newNode->parent = linker;
-
                     specialNodes.clear();
                     waitNextStep();
                     std::cout << "-----------------------------" << std::endl;
                     specialNodes.push_back(newNode);
                     printTree(getRoot(), 0, specialNodes);
                     std::cout << "------Элемент вставлен-------" << std::endl;
-
                     break;
                 } else linker = linker->right;
             }
@@ -384,7 +373,6 @@ public:
             printTree(getRoot(), 0, specialNodes);
             std::cout << "-----------------------------" << std::endl;
         }
-
     }
 };
 
@@ -430,9 +418,9 @@ int main()
     std::cout << "|             в ходе выполнения алгоритма            |" << std::endl;
     std::cout << " ---------------------------------------------------- " << std::endl;
 
-    char start;
-    std::cout << "Для начала работы, введите любой символ: ";
-    std::cin >> start;
+    char start = 0;
+    std::cout << "Для начала работы, введите символ '+': ";
+    while (start != '+') std::cin >> start;
 
     auto* tree = new RBTree<int>;
     char flag = userInput(tree);
