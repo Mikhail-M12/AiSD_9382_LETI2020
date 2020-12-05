@@ -198,7 +198,7 @@ void fileInputCase(string path)
                 }
             }   
         }
-        cout << "Tree deepness ";
+        cout << "\n\nTree deepth ";
     }
     inFile.close();
 }
@@ -210,7 +210,6 @@ void stdInputCase() // No obvious ways to unite std input and file input case
 
     while (cin >> inputLevels && inputLevels >= 0)
     {
-        cout << "Do the loop\n";
         BinTree<int> tree(inputLevels);
 
         string inputAddress = "empty";
@@ -245,7 +244,7 @@ void stdInputCase() // No obvious ways to unite std input and file input case
             }   
         }
 
-        cout << "tree deepness ";
+        cout << "\n\nTree deepth ";
     }
 }
 
