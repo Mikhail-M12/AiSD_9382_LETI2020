@@ -16,6 +16,7 @@ private:
 
 void addByTreeAddress(string address, int offset, T value);
 
+
 public:
     BinTree(unsigned int levels = 0);
     BinTree(const BinTree<T> & binTree);
