@@ -6,23 +6,17 @@
 
 int depth = 0;
 
-enum Type {
-    OPERATOR, VAR
-};
-// Структура данных для хранения оператора, переменной или константы
 struct Node {
     std::string value;
-    std::vector<Node> childrens;
-    Type type;
+    Node *next; //следующий элемент в списке
+    Node *child; // начало подсписка
 };
-
-// Структура данных для хранения переменной (имя + значение)
 struct Var {
     std::string name; //имя переменной
     int val;  //значение переменной
 };
 
-//Функция преобразует строку в которой заданы имена и значения переменных в массив токенов, для удобства работы с выражением
+//Функция преобразует обрабатывает массив токенов и заносит переменные в массив переменных
 //также проверет корректность данного выражения
 template<typename IterT>
 void readVariables(std::vector<Var> *res, IterT &first, const IterT &last) {
@@ -31,7 +25,7 @@ void readVariables(std::vector<Var> *res, IterT &first, const IterT &last) {
     }
     if (*first == "(") {
         if (*(first + 3) != ")")
-            throw std::runtime_error("Неправильный формат ввода5");
+            throw std::runtime_error("Неправильный формат ввода");
         readVariables(res, ++first, last);
     } else if (*first == ")") {
 
@@ -57,13 +51,7 @@ void readVariables(std::vector<Var> *res, IterT &first, const IterT &last) {
         return;
     }
 }
-//Ф-ция выводит попарно имена и значения для каждой переменной
-void printVariables(std::vector<Var> *res) {
-    for (auto &i : *res) {
-        std::cout << "name : " << i.name << std::endl;
-        std::cout << "value : " << i.val << std::endl;
-    }
-}
+
 //Функция преобразует строку в массив токенов, для удобства работы с выражением
 template<typename StreamT>
 std::vector<std::string> getToken(StreamT &stream) {
@@ -111,75 +99,158 @@ bool isBinOperator(const std::string &s) {
 }
 
 template<typename IterT>
-void getSentence(IterT &first, const IterT &last, Node *&parent);
-//Ф-ция заносит оператор в дерево и считывает его аргументы
+bool checkRComas(IterT &first, const IterT &last);
+
+//Ф-ция проверяет проверяет может ли токен быть переменной
 template<typename IterT>
-void getOperator(IterT &first, const IterT &last, Node *&parent) {
+bool checkVars(IterT &first, const IterT &last) {
+    if (first >= last)
+        return false;
+    if (!isUnoOperator(*first) && !isBinOperator(*first) && (*first != "(") && (*first != ")"))
+        return true;
+    return false;
+}
+
+//Ф-ция проверяет проверяет может ли токен быть началом аргумента оператора
+template<typename IterT>
+bool checkArg(IterT &first, const IterT &last) {
+    if (first >= last)
+        return false;
+    if (checkVars(first, last))
+        return true;
+    if (checkRComas(first, last))
+        return true;
+    throw std::runtime_error("Неверные аргументы у оператора");
+}
+
+//Ф-ция проверяет проверяет может ли токен быть оператором
+template<typename IterT>
+bool checkOperators(IterT &first, const IterT &last) {
+    if (first >= last)
+        return false;
+    if (!isUnoOperator(*first) && !isBinOperator(*first))
+        return false;
+    else if (isUnoOperator(*first))
+        return checkArg(++first, last);
+    else if (isBinOperator(*first)) {
+        return checkArg(++first, last) && checkArg(++first, last);
+    }
+    return false;
+}
+
+//Ф-ция проверяет проверяет является ли токен закрывающей скобкой
+template<typename IterT>
+bool checkLComas(IterT &first, const IterT &last) {
+    if (first >= last)
+        return false;
+    if (*first == ")")
+        return true;
+    return false;
+}
+
+//Ф-ция проверяет проверяет является ли токен открывающей скобкой
+template<typename IterT>
+bool checkRComas(IterT &first, const IterT &last) {
+    if (first >= last)
+        return false;
+    if (*first == "(") {
+        if (!checkOperators(++first, last))
+            throw std::runtime_error("Ошибка оператора");
+        if (!checkLComas(++first, last))
+            throw std::runtime_error("Отсутствует закрывающая скобка");
+        return true;
+    }
+    return false;
+}
+
+template<typename IterT>
+bool checkSentence(IterT &first, const IterT &last) {
+    return checkRComas(first, last);
+}
+
+template<typename IterT>
+void getChild(IterT &first, const IterT &last, Node *&parent);
+
+
+//Ф-ция считывает следующий элемент списка
+template<typename IterT>
+void getNext(IterT &first, const IterT &last, Node *&parent) {
+    if (*first == "(")
+        first++;
+    if (*first == ")")
+        return;
+    parent->next = new Node{*first, nullptr, nullptr};
+    if (isBinOperator(*first) || isUnoOperator(*first)) {
+        getChild(++first, last, parent->next);
+    }
+    getNext(++first, last, parent->next);
+
+}
+
+
+//Ф-ция считывает начало подсписка
+template<typename IterT>
+void getChild(IterT &first, const IterT &last, Node *&parent) {
+    if (*first == "(")
+        first++;
+    if (*first == ")")
+        return;
+    parent->child = new Node{*first, nullptr, nullptr};
+    if (isBinOperator(*first) || isUnoOperator(*first)) {
+        getChild(++first, last, parent->child);
+    }
+    getNext(++first, last, parent->child);
+
+}
+
+//Ф-ция считывает начало подсписка
+template<typename IterT>
+void getList(IterT &first, const IterT &last, Node *&parent) {
 
     if (first >= last) {
         return;
     }
-    std::vector<Node> tmp;
-    Node atom = {*first, tmp, OPERATOR};
-    Node *next;
-    if (parent == nullptr) {
-        parent = new Node();
-        parent->value = *first;
-        parent->childrens = tmp;
-        parent->type = OPERATOR;
-        next = parent;
-    } else {
-        parent->childrens.push_back(atom);
-        next = &parent->childrens.back();
-    }
-    if (isBinOperator(*first)) {
-        getSentence(++first, last, next);
-        getSentence(++first, last, next);
-    } else {
-        getSentence(++first, last, next);
-    }
-}
-//Ф-ция рекурсивно обрабатывает скобки в выражении. Если выражение состоит из 1 части (например" 1, 0, a , b ...), заносит его в дерево
-template<typename IterT>
-void getSentence(IterT &first, const IterT &last, Node *&parent) {
-    if (first >= last) {
-        return;
-    }
     if (*first == "(") {
-        getOperator(++first, last, parent);
+        getList(++first, last, parent);
     } else if (*first == ")") {
-        getSentence(++first, last, parent);
-    } else {
-        std::vector<Node> tmp;
-        Node atom = {*first, tmp, VAR};
+        getList(++first, last, parent);
+    } else if (isBinOperator(*first) || isUnoOperator(*first)) {
+
         if (parent == nullptr) {
-            parent = new Node();
-            parent->value = *first;
-            parent->childrens = tmp;
-            parent->type = VAR;
-        } else {
-            parent->childrens.push_back(atom);
+            parent = new Node{*first, nullptr, nullptr};
         }
-        return;
+        getChild(++first, last, parent);
+    } else {
+        if (parent == nullptr) {
+            parent = new Node{*first, nullptr, nullptr};
+        }
     }
 }
+
 //Ф-ция выводит построенное дерево на экран
-void widthPrint(Node *parent, int &k) {
-    std::string sp(k, '\t');
-    std::cout << sp << parent->value << std::endl;
-    k++; // Глубина элемента
-    for (auto &i:parent->childrens) {
-        widthPrint(&i, k);
-        k--;
-    }
+void listPrint(Node *parent) {
+    if (parent == nullptr)
+        return;
+    std::string str(depth, ' ');
+    std::cout << str << parent->value << std::endl;
+    depth++;
+    listPrint(parent->child);
+    depth--;
+    listPrint(parent->next);
+
 }
+
 //Ф-ция возвращает значение переменной, принимая на вход имя переменной и массив заданных переменных. Если значение переменной не было найдено выводит сообщение об ошибке
 bool getVarValue(Node *a, const std::vector<Var> &Vars) {
-    for (auto &i:Vars)
-        if (i.name == a->value)
-            return i.val;
+
+    if (!isalpha(a->value.at(0)))
+        throw std::runtime_error("Имя переменной <" + a->value + "> неверно");
+        for (auto &i:Vars)
+            if (i.name == a->value)
+                return i.val;
     throw std::runtime_error("Значение переменной <" + a->value + "> не указано");
 }
+
 //Ф-ция выполняет  требуемую операцию, также проверяет корректность имен операторов
 bool doAction(const std::string &opName, bool a, bool b = false) {
     if (opName == "+")
@@ -196,61 +267,57 @@ bool doAction(const std::string &opName, bool a, bool b = false) {
 
 //Ф-ция рекурсивно вычисляет значение логического выражения, проходя по дереву в глубину и вычисляя значения узлов.
 bool Calculate(Node *parent, std::vector<Var> &Variables) {
-    if (parent->type == VAR) {
+    if (parent == nullptr) {
+        throw std::runtime_error("Неверный формат ввода");
+    }
+    if (parent->child == nullptr) {
         if (parent->value == "1")
             return true;
         else if (parent->value == "0")
             return false;
         else return getVarValue(parent, Variables);
     } else if (isUnoOperator(parent->value)) {
-        if (parent->childrens.size() != 1)
-            throw std::runtime_error("Неверное количество аргументов у <" + parent->value + ">");
-        else
-            return doAction(parent->value, Calculate(&parent->childrens.at(0), Variables));
-    } else if (parent->childrens.size() != 2)
-        throw std::runtime_error("Неверное количество аргументов у <" + parent->value + ">");
-    else
-        return doAction(parent->value, Calculate(&parent->childrens.at(0), Variables),
-                        Calculate(&parent->childrens.at(1), Variables));
+        return doAction(parent->value, Calculate(parent->child, Variables));
+    } else
+        return doAction(parent->value, Calculate(parent->child, Variables),
+                        Calculate(parent->child->next, Variables));
 }
+
 //Ф-ция рекурсивно вычисляет значение логического выражения, проходя по дереву в глубину и вычисляя значения узлов.
 //Выводит порядок действий
 bool CalculateWithDetails(Node *parent, std::vector<Var> &Variables) {
-    if (parent->type == VAR) {
+    if (parent == nullptr) {
+        throw std::runtime_error("Неверный формат ввода");
+    }
+    if (parent->child == nullptr) {
         if (parent->value == "1")
             return true;
         else if (parent->value == "0")
             return false;
         else return getVarValue(parent, Variables);
     } else if (isUnoOperator(parent->value)) {
-        if (parent->childrens.size() != 1)
-            throw std::runtime_error("Неверный формат заиси>");
-        else {
-            depth++;
-            bool a = CalculateWithDetails(&parent->childrens.at(0), Variables);
-
-            std::string sp(depth, '\t');
-            bool res = doAction(parent->value, a);
-            std::cout << sp << "( " << parent->value << " " << a << " ) = " << res << std::endl;
-
-            depth--;
-            return res;
-        }
-    } else if (parent->childrens.size() != 2)
-        throw std::runtime_error("Неверное количество аргументов у <" + parent->value + ">");
-    else {
         depth++;
-        bool a = CalculateWithDetails(&parent->childrens.at(0), Variables);
-        bool b = CalculateWithDetails(&parent->childrens.at(1), Variables);
-
-        bool res = doAction(parent->value, a, b);
+        bool a = CalculateWithDetails(parent->child, Variables);
 
         std::string sp(depth, '\t');
-        std::cout<<sp << "( " << parent->value << " " << a << " " << b << " ) = " << res << std::endl;
+        bool res = doAction(parent->value, a);
+        std::cout << sp << "( " << parent->value << " " << a << " ) = " << res << std::endl;
+
+        depth--;
+        return res;
+    } else {
+        depth++;
+        bool a = CalculateWithDetails(parent->child, Variables);
+        bool b = CalculateWithDetails(parent->child->next, Variables);
+
+        bool res = doAction(parent->value, a, b);
+        std::string sp(depth, '\t');
+        std::cout << sp << "( " << parent->value << " " << a << " " << b << " ) = " << res << std::endl;
         depth--;
         return res;
     }
 }
+
 //Функция выводит массив токенов
 void printTokens(const std::vector<std::string> &Tokens) {
     for (auto &i:Tokens)
@@ -293,7 +360,7 @@ int main() {
                     break;
                 }
                 default:
-                    throw std::runtime_error("Неветный формат ввода");
+                    throw std::runtime_error("Неверное действие");
             }
             if (!TokensVar.empty()) {
                 if ((*TokensVar.begin() != "(") || (*(TokensVar.end() - 1) != ")"))
@@ -301,8 +368,12 @@ int main() {
                 auto beg = TokensVar.begin() + 1, last = TokensVar.end() - 1;
                 readVariables(&Variables, beg, last);
             }
+
             auto beg = TokensSentence.begin(), last = TokensSentence.end();
-            getSentence(beg, last, head);
+            if (!checkSentence(beg, last))
+                throw std::runtime_error("Неверный формат ввода");
+            beg = TokensSentence.begin(), last = TokensSentence.end();
+            getList(beg, last, head);
             int action;
             std::cout << " 1 - вывести значения переменных, \n"
                          " 2 - вывести выражение,\n"
@@ -331,8 +402,7 @@ int main() {
                         break;
                     }
                     case 5: {
-                        int k = 0;
-                        widthPrint(head, k);
+                        listPrint(head);
                         break;
                     }
                     case 0: {
@@ -343,7 +413,6 @@ int main() {
                         break;
                 }
             }
-
             int temp;
             std::cout << "Для повторного ввода нажмите 1, для выхода - любую другую клавишу" << std::endl;
             std::cin >> temp;
@@ -353,6 +422,6 @@ int main() {
         }
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
-        return 0;
     }
+    return 0;
 }
