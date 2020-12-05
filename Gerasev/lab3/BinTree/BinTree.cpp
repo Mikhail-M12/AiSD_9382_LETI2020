@@ -15,9 +15,22 @@ BinTree<T>::BinTree(unsigned int inputLevels) // Counting from 0
 }
 
 template <typename T>
+BinTree<T>::BinTree(const BinTree<T> & binTree) // Copy operator
+{
+    treeData = new T[levelsToMasSize(levels)];
+    for (int i=0; i< levelsToMasSize(levels); i++)
+    {
+        treeData[i] = binTree.treeData[i];
+    }
+}
+
+template <typename T>
 BinTree<T>::~BinTree()
 {
-    delete treeData;
+    if (treeData != nullptr)
+    {
+        delete treeData;
+    }
 }
 
 template <typename T>
@@ -35,7 +48,8 @@ void BinTree<T>::viewData()
 template <typename T>
 void BinTree<T>::addByDataAddress(int address, T value)
 {
-    treeData[address] = value;
+    if (address <= levelsToMasSize(levels))
+        treeData[address] = value;
 }
 
 template <typename T>
@@ -73,31 +87,13 @@ int treeAddressToDataAddress(string address)
     return (offset + binToDec(binAddress));
 }
 
-template <typename T>
-bool BinTree<T>::isContainsAtLeastTwoFast(T value)
-{
-    int counter = 0;
-    if (value == 0)
-    {
-        cout << "Error: Wrong value, can't be empty\n";
-        raise(SIGILL);
-    }
-
-    for (int i=0; i < levelsToMasSize(levels); i++)
-    {
-        if (treeData[i] == value) counter++;
-    }
-
-    return (counter >= 2);
-}
-
 unsigned int RECURSION_DEEPNESS = 0;
 
 template <typename T>
 int BinTree<T>::howManyRecursiveHandler(int node, T value)
 {
     RECURSION_DEEPNESS++;
-    string buffer(RECURSION_DEEPNESS*4, ' ');
+    string buffer(RECURSION_DEEPNESS, ' ');
 
     cout << buffer << "in node " << node << '\n';
 
@@ -105,6 +101,7 @@ int BinTree<T>::howManyRecursiveHandler(int node, T value)
     if (node >= levelsToMasSize(levels))
     {
         cout << buffer << "There is no such node in tree, go out of the function\n";
+        RECURSION_DEEPNESS--;
         return result;
     }
 
@@ -143,20 +140,31 @@ bool BinTree<T>::isContainsAtLeastTwoRecursive(T value)
     return (howManyRecursive(value) >= 2);
 }
 
+void inputHandler(BinTree<int> tree, int inputValue)
+{
+    if (inputValue <= 0)
+    {
+        cout << "inputValue can't be <= 0\n";
+        return;
+    }
+
+    if (tree.isContainsAtLeastTwoRecursive(inputValue)) {
+        cout << "There are 2 or more of " << inputValue << '\n';
+    } else {
+        cout << "There is 1 or less of " << inputValue << '\n';
+    }   
+}
+
 void fileInputCase(string path)
 {
     ifstream inFile;
     inFile.open(path);
     
-    unsigned int size;
-    string treeData;
-    
+    cout << "Tree deepth ";
     int inputLevels;
 
     while (inFile >> inputLevels)
     {
-        cout << "tree deepness ";
-
         BinTree<int> tree(inputLevels);
 
         string inputAddress = "empty";
@@ -174,34 +182,41 @@ void fileInputCase(string path)
             cout << "\ninputAddress is " << inputAddress << '\n';
         }
 
-        cout << "\nValue to find, is there >= 2 of them ";
-        inFile >> inputValue;
-
-        if (tree.isContainsAtLeastTwoRecursive(inputValue))
+        cout << "\nValue to find, is there >= 2 of them \n";
+        if(inFile >> inputValue)
         {
-            cout << "There are 2 or more of " << inputValue << '\n';
-            return;
+            if (inputValue <= 0)
+            {
+                cout << "inputValue can't be <= 0\n";
+            }
+            else
+            {
+                if (tree.isContainsAtLeastTwoRecursive(inputValue)) {
+                    cout << "There are 2 or more of " << inputValue << '\n';
+                } else {
+                    cout << "There is 1 or less of " << inputValue << '\n';
+                }
+            }   
         }
-
-        cout << "There is 1 or less of " << inputValue << '\n';
+        cout << "Tree deepness ";
     }
     inFile.close();
 }
 
-void stdInputCase()
+void stdInputCase() // No obvious ways to unite std input and file input case
 {
-    cout << "tree deepness ";
+    cout << "Tree deepth ";
     int inputLevels;
-    cin >> inputLevels;
 
-    while (inputLevels >= 0)
+    while (cin >> inputLevels && inputLevels >= 0)
     {
+        cout << "Do the loop\n";
         BinTree<int> tree(inputLevels);
 
         string inputAddress = "empty";
         int inputValue = 0;
 
-        while (inputValue != 0 || !(inputAddress.empty()))
+        while (inputValue != 0 || !(inputAddress.empty())) // empty exist because we need a way to call the first node
         {
             tree.addByTreeAddress(inputAddress, inputValue);
             tree.viewData();
@@ -214,19 +229,23 @@ void stdInputCase()
         }
 
         cout << "\nValue to find, is there >= 2 of them ";
-        cin >> inputValue;
-
-        if (tree.isContainsAtLeastTwoRecursive(inputValue))
+        if (cin >> inputValue)
         {
-            cout << "There are 2 or more of " << inputValue << '\n';
-            return;
+            if (inputValue <= 0)
+            {
+                cout << "inputValue can't be <= 0\n";
+            }
+            else
+            {
+                if (tree.isContainsAtLeastTwoRecursive(inputValue)) {
+                    cout << "There are 2 or more of " << inputValue << '\n';
+                } else {
+                    cout << "There is 1 or less of " << inputValue << '\n';
+                }
+            }   
         }
 
-        cout << "There is 1 or less of " << inputValue << '\n';
-
         cout << "tree deepness ";
-        int inputLevels;
-        cin >> inputLevels;
     }
 }
 
@@ -234,6 +253,7 @@ void introductionMessageView()
 {
     cout << "File input example: ./main -f test.txt\n\n";
     cout << "Examples of input see in inputExamples file\n";
+    cout << "0 == empty node of tree\n";
     cout << "-1 in tree depth to exit\n";
 
     cout << "\n0 in address == left node\n1 == right node\n";
@@ -241,6 +261,7 @@ void introductionMessageView()
 
 int main(int argc, char *argv[])
 {
+    cout << "\n\n\n";
     if (argc>= 2) // Arguments case
     {
         string flag(argv[1]);
@@ -251,7 +272,6 @@ int main(int argc, char *argv[])
     }
     introductionMessageView();
     stdInputCase();
-    
     return 0;
 }
 
