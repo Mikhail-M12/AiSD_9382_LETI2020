@@ -1,19 +1,59 @@
+#include <windows.h>
 #include <iostream>
-#include<string>
 #include <fstream>
+#include <algorithm>
+#include <vector>
+#include <ctime>
 #include <conio.h>
-
 using namespace std;
 void printDep(int depth){
     for(int i = 0; i < depth; ++i){
         cout<<"/\\";
     }
 }
-/*
-В этой сортировке мы делим данные на четные и нечетные индексы, а затем сравниваем их.
- Четные строго со следующим числом, т.е нечетным.
- После чего делаем сдвиг и сравниваем уже нечетные/четные.
-*/
+
+template < typename T>
+void BubleSort(T &array, size_t n){
+    int i = 0;
+    bool t = true;
+    int depth = 0;
+    while (t) {
+        t = false;
+        ++depth;
+        for(int j = 0; j < n-i-1;++j){
+            cout<<"Sort to "<<n-i-1<<" index\n";
+            if (array[j] > array[j + 1]){
+                printDep(depth);
+                cout<<"array["<<j<<"] > array["<<j+1<<"]: "<< array[j] <<" > "<<array[j + 1]<<" True\n";
+                printDep(depth);
+                cout<<"array{";
+                for(int out =0; out<n;++out){
+                    cout<<array[out]<<", ";
+                }
+                cout<<"}\n";
+                swap(array[j], array[j + 1]);
+                printDep(depth);
+                cout<<"swap: array["<<j<<"] -> array["<<j+1<<"]\n";
+                printDep(depth);
+                t = true;
+                cout<<"new array{";
+                for(int out =0; out<n;++out){
+                    cout<<array[out]<<", ";
+                }
+                cout<<"}\n\n";
+            }else {
+                printDep(depth);
+                cout<<"array["<<j<<"] > array["<<j+1<<"]: "<< array[j] <<" > "<<array[j + 1]<<" Lie\n";
+                printDep(depth);
+                cout<<"move on!\n\n";
+            }
+        }
+        i = i + 1;
+    }
+    cout<<"Tumber of rounds->"<<depth<<'\n';
+}
+
+
 template < typename T>
 void oddEvenSorting(T &array, size_t N) {
     cout<<"\nSorting start!\n______________________________________________________________\n";
@@ -21,10 +61,10 @@ void oddEvenSorting(T &array, size_t N) {
     int depth = 0;
     for (size_t i = 0; i < N; i++) {
         ++depth;
-        // (i % 2) ? 0 : 1 возвращает 1, если i четное, 0, если i не четное
-        size_t j = (i % 2) ? 0 : 1;
+        // (i % 2) ? 0 : 1 ?????????? 1, ???? i ??????, 0, ???? i ?? ??????
+
         bool split = (i % 2) ? 0 : 1;
-        for (; j + 1 < N; j += 2) {
+        for (size_t j = (i % 2) ? 0 : 1; j + 1 < N; j += 2) {
 
             if (array[j] > array[j + 1]) {
                 printDep(depth);
@@ -69,45 +109,66 @@ void oddEvenSorting(T &array, size_t N) {
             }
         }
     }
+    cout<<"Tumber of rounds->"<<depth<<'\n';
 }
 
-void writeToFile(const string filename, const string arg) {
+void writeToFile(string filename,int arg) {
     ofstream output;
     output.open(filename, ios::app);
     output << arg;
     output.close();
 }
+void writeToFile(string filename,string arg1) {
+    ofstream output;
+    output.open(filename, ios::app);
+    output << arg1;
+    output.close();
+}
 
-
-bool CheckTheInput(string arr, bool &Exit, bool choise){
-    if (arr.length() == 1 && arr[0] == '!') {
+void CheckTheInput(int* arr, bool &Exit, bool choise, int len, bool choiseSort){
+    if (len == 1 && arr[0] == '!') {
         Exit = false;
-    } else if (arr.length() == 1) {
+    } else if (len == 1) {
         cout << "In array one element : " << arr << "\n\n\n";
-    } else if (arr.length() == 0) {
-        cout << "\nAmount of elements: " << arr.length() << "\n";
+    } else if (len == 0) {
+        cout << "\nAmount of elements: " << len << "\n";
         cout << "Empty array!\n\n\n";
     } else {
-        cout << "\nAmount of elements: " << arr.length() << '\n';
-        cout << "What indexes can we go by:\n1) even/odd\n2) odd/even\n";
-        oddEvenSorting(arr, arr.length());
+        if(choiseSort) {
+            cout << "\nAmount of elements: " << len << '\n';
+            cout << "What indexes can we go by:\n1) even/odd\n2) odd/even\n";
+            oddEvenSorting(arr, len);
+        }else BubleSort(arr,len);
         if(!choise) {
-            writeToFile("output.txt", "\nSorted array is: ");
-            writeToFile("output.txt", arr);
+            writeToFile("output.txt","\nSorted array is: ");
+            for(int i=0;i<len;++i) {
+                writeToFile("output.txt", arr[i]);
+                writeToFile("output.txt", " ");
+            }
         }
-        cout << "Sorted array is: " << arr << "\n____________________________________________\n\n";
+        cout << "Sorted array is: ";
+        for(int i =0; i < len; ++i)cout<< arr[i]<<' ';
+
+
     }
+}
+int comp (const int *i, const int *j)
+{
+    return *i - *j;
 }
 
 int main() {
     bool Exit = true;
-    bool choise = true;
+    bool choiseFileOrConsole = true;
+    bool choiseSort;
+    int len=0;
+    int* copyArray;
+    cout<<"Choise the sort, 1 - odd/even \t 0 - Bubble sort optimized;\n";
+    cin >> choiseSort;
     cout << "Enter : 0 - File Input, 1 - Console input: ";
-    cin>>choise;
-    cin.ignore();
-    cout<<'\n';
-    if(!choise){
-         //-----Ввод с файла-----//
+    cin >> choiseFileOrConsole;
+    cout <<'\n';
+    if(!choiseFileOrConsole){
         string input_filename;
         const string output_filename = "output.txt";
         ifstream in;
@@ -122,12 +183,17 @@ int main() {
         in.open(input_filename);
 
         if (in.is_open()) {
-            string s = "";
-
-            getline(in, s);
+            in >> len;
+            int* some = new int[len];
+            copyArray = new int[len];
             writeToFile("output.txt", "Initial array: ");
-            writeToFile("output.txt", s);
-            CheckTheInput(s,Exit,choise);
+            for(int i = 0; i < len; ++i){
+                in >> some[i];
+                writeToFile("output.txt", some[i]);
+                writeToFile("output.txt", " ");
+                copyArray[i] = some[i];
+            }
+            CheckTheInput(some,Exit,choiseFileOrConsole,len, choiseSort);
 
         }
         else {
@@ -135,13 +201,25 @@ int main() {
         }
 
     }else {
-        string arr = "";
-        while (Exit) {
-            cout << "Input data or \'!\' to quit: ";
-            getline(cin, arr);
-            CheckTheInput(arr, Exit,choise);
+        cout<<"Array length: ";
+        cin>>len;
+        int* elem = new int[len];
+        copyArray = new int[len];
+        cout << "\nInput data or \'!\' to quit: \n";
+        for(int i=0; i < len; ++i){
+            cout<<i<<" elem: ";
+            std::cin >> elem[i];
+            copyArray[i] = elem[i];
+            cout<<'\n';
         }
+        CheckTheInput(elem, Exit,choiseFileOrConsole, len,choiseSort);
+
+
     }
+    qsort(copyArray, len, sizeof(int),(int(*) (const void *, const void *)) comp);
+    cout<<"\nSorted by qsort:";
+    for(int i = 0; i <len; ++i)cout<<copyArray[i]<<" ";
+    cout << "\n____________________________________________\n\n";
     getch();
     return 0;
 }
