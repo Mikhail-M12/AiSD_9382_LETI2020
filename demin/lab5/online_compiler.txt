@@ -1,0 +1,2 @@
+https://onlinegdb.com/H1oBMqYiD
+Готовая ссылка на компилятор с кодом и тестовыми данными (test*.txt)
