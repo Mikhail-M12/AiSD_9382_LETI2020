@@ -204,6 +204,7 @@ class RBTree {
             g->color = RED;
             insertCase1(g);
         } else {
+            std::cout << "------Балансировка------" << std::endl;
             specialNodes.push_back(n);
             printTree(root, 0, specialNodes);
             std::cout << "[СЛУЧАЙ 3] У рассматриваемого элемента нет красного дяди" << std::endl;
@@ -325,54 +326,59 @@ public:
         auto linker = root;
         std::vector<Node<int>*> specialNodes = {};
 
+
         // если node < linker, то идем в левую ветку
         // если node >= linker, то идем в правую ветку
         // когда нет след ветки, то вставляем туда элемент
         while (linker) {
-            specialNodes.clear();
-            waitNextStep();
             std::cout << "-----------------------------" << std::endl;
             specialNodes.push_back(linker);
             printTree(getRoot(), 0, specialNodes);
             std::cout << "------Вставка элемента-------" << std::endl;
 
+
             if (newNode->data < linker->data) {
                 if (!linker->left) {
                     linker->left = newNode;
                     newNode->parent = linker;
+
                     specialNodes.clear();
                     waitNextStep();
                     std::cout << "-----------------------------" << std::endl;
                     specialNodes.push_back(newNode);
                     printTree(getRoot(), 0, specialNodes);
                     std::cout << "------Элемент вставлен-------" << std::endl;
+
                     break;
                 } else linker = linker->left;
             } else {
                 if (!linker->right) {
                     linker->right = newNode;
                     newNode->parent = linker;
+
                     specialNodes.clear();
                     waitNextStep();
                     std::cout << "-----------------------------" << std::endl;
                     specialNodes.push_back(newNode);
                     printTree(getRoot(), 0, specialNodes);
                     std::cout << "------Элемент вставлен-------" << std::endl;
+
                     break;
                 } else linker = linker->right;
             }
+            specialNodes.clear();
+            waitNextStep();
         }
 
-        insertCase1(newNode);
-        restoreRoot(newNode);
-
-        if (!root->left && !root->right) {
-            waitNextStep();
+        if (!newNode->parent) {
+            newNode->color = BLACK;
             std::cout << "------Вставлен корень--------" << std::endl;
             specialNodes.push_back(root);
-            printTree(getRoot(), 0, specialNodes);
+            printTree(newNode, 0, specialNodes);
             std::cout << "-----------------------------" << std::endl;
-        }
+            specialNodes.clear();
+        } else insertCase1(newNode);
+        restoreRoot(newNode);
     }
 };
 
@@ -385,10 +391,10 @@ char userInput(RBTree<int>* tree) {
     std::cin >> stuff;
 
     while (std::cin.fail()) {
-      std::cout << "Не удалось считать число! Введите снова: ";
-      std::cin.clear();
-      std::cin.ignore(10, '\n');
-      std::cin >> stuff;
+        std::cout << "Не удалось считать число! Введите снова: ";
+        std::cin.clear();
+        std::cin.ignore(10, '\n');
+        std::cin >> stuff;
     }
 
     tree->insert(stuff);
@@ -398,7 +404,7 @@ char userInput(RBTree<int>* tree) {
     std::cout << "------------------------" << std::endl;
 
     char flag;
-    std::cout << "Если хотите продолжить ввод, отправьте '+': ";
+    std::cout << "Если хотите остановить ввод, отправьте '-': ";
     std::cin >> flag;
     return flag;
 }
@@ -424,7 +430,7 @@ int main()
 
     auto* tree = new RBTree<int>;
     char flag = userInput(tree);
-    while (flag == '+') flag = userInput(tree);
+    while (flag != '-') flag = userInput(tree);
 
     return 0;
 }
