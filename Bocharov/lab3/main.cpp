@@ -225,6 +225,7 @@ void printSentenceReverse(std::vector<std::string> &Tokens) {
         else
             std::cout << *i << " ";
 }
+
 //вывод дерева на экран
 void printTree(const std::unique_ptr<Node> &head) {
     depth++;
@@ -256,7 +257,7 @@ bool subst(std::unique_ptr<Node> &head) {
             int d = std::stoi(head->right_->value_) - std::stoi(head->left_->value_);
 
             std::cout << "Совершено действие: " << head->right_->value_ << " " << head->value_ << " "
-                      << head->left_->value_<< " ="<< d << std::endl;
+                      << head->left_->value_ << " =" << d << std::endl;
             head->value_ = std::to_string(d);
             head->left_ = nullptr;
             head->right_ = nullptr;
@@ -265,89 +266,106 @@ bool subst(std::unique_ptr<Node> &head) {
     return subst(head->left_) || subst(head->right_);
 }
 
+//Функция выводит меню для выбора действия с выражением
+void printMenu() {
+    std::cout << " 1 - вывести дерево, \n"
+                 " 2 - вывести формулу,\n"
+                 " 3 - заменить все разности с константами,\n"
+                 " 0 - выход" << std::endl;
+}
+
+//Функция производит выбранное пользователем действие
+void doAct(std::unique_ptr<Node> &head) {
+    std::vector<std::string> result;
+    int action;
+    while ((std::cin >> action) && (action != 0)) {
+        switch (action) {
+            case 1: {
+                std::cout << "Вывод дерева" << std::endl;
+                printTree(head);
+                depth = 0;
+                break;
+            }
+            case 2: {
+                std::cout << "Вывод выражения" << std::endl;
+                result.clear();
+                TreeToSentence(head, result);
+                printSentenceReverse(result);
+                break;
+            }
+            case 3: {
+                std::cout << "Замена операций вычитания" << std::endl;
+                while (subst(head));
+                break;
+            }
+            case 0: {
+                break;
+            }
+            default:
+                std::cout << "Выбрано неверное действие" << std::endl;
+                break;
+        }
+    }
+}
+
+
+//Функция строит дерево по формуле
+void readPostfixFormula(std::vector<std::string> Tokens, std::unique_ptr<Node> &head) {
+    if (Tokens.empty())
+        throw std::runtime_error("Пустое выражение!");
+    auto end = Tokens.begin(), beg = Tokens.end() - 1;
+    readSentence(beg, end, head);
+    printMenu();
+    doAct(head);
+}
+
+//Функция запрашивает у пользователя формат ввода и формирует массив токенов
+void launch(std::unique_ptr<Node> &head) {
+    std::vector<std::string> Tokens;
+    int readFormat;
+    while (1) {
+        std::cout << "0 - считать из файла, 1 - считать с консоли" << std::endl;
+        std::cin >> readFormat;
+        std::cin.ignore();
+        switch (readFormat) {
+            case 0: {
+                std::cout << "Введите имя файла : ";
+                std::ifstream in;
+                std::string fileName;
+                std::cin >> fileName;
+                in.open(fileName);
+                if (in) {
+                    Tokens = getToken(in);
+                } else
+                    throw std::runtime_error("Файл не найден!");
+                in.close();
+                break;
+            }
+            case 1: {
+                std::cout << "Введите выражение в постфиксной форме. Например : a b + c * d e f g * + / -"
+                          << std::endl;
+                Tokens = getToken(std::cin);
+                break;
+            }
+            default: {
+                throw std::runtime_error("Неверное действие");
+            }
+        }
+        readPostfixFormula(Tokens, head);
+        int temp;
+        std::cout << "Для повторного ввода нажмите 1, для выхода - любую другую клавишу" << std::endl;
+        std::cin >> temp;
+        std::cin.ignore();
+        if (temp != 1)
+            break;
+        head.reset();
+    }
+}
+
 int main() {
     std::unique_ptr<Node> head;
-    std::vector<std::string> Tokens;
-    std::vector<std::string> result; // итоговое выражение
-    int readFormat;
     try {
-        while (1) {
-            std::cout << "0 - считать из файла, 1 - считать с консоли" << std::endl;
-            std::cin >> readFormat;
-            std::cin.ignore();
-            switch (readFormat) {
-                case 0: {
-                    std::cout << "Введите имя файла : ";
-                    std::ifstream in;
-                    std::string fileName;
-                    std::cin >> fileName;
-                    in.open(fileName);
-                    if (in) {
-                        Tokens = getToken(in);
-                    } else
-                        throw std::runtime_error("Файл не найден!");
-                    in.close();
-                    break;
-                }
-                case 1: {
-                    std::cout << "Введите выражение в постфиксной форме. Например : a b + c * d e f g * + / -"
-                              << std::endl;
-                    Tokens = getToken(std::cin);
-                    break;
-                }
-                default:
-                    throw std::runtime_error("Неверное действие");
-            }
-
-            if (Tokens.empty())
-                throw std::runtime_error("Пустое выражение!");
-            auto end = Tokens.begin(), beg = Tokens.end() - 1;
-            readSentence(beg, end, head);
-
-            int action;
-            std::cout << " 1 - вывести дерево, \n"
-                         " 2 - вывести формулу,\n"
-                         " 3 - заменить все разности с константами,\n"
-                         " 0 - выход" << std::endl;
-            while ((std::cin >> action) && (action != 0)) {
-                switch (action) {
-                    case 1: {
-                        std::cout<<"Вывод дерева"<<std::endl;
-                        printTree(head);
-                        depth = 0;
-                        break;
-                    }
-                    case 2: {
-
-                        std::cout<<"Вывод выражения"<<std::endl;
-                        result.clear();
-                        TreeToSentence(head, result);
-                        printSentenceReverse(result);
-                        break;
-                    }
-                    case 3: {
-                        std::cout<<"Замена операций вычитания"<<std::endl;
-                        while (subst(head));
-                        break;
-                    }
-                    case 0: {
-                        break;
-                    }
-                    default:
-                        std::cout << "Выбрано неверное действие" << std::endl;
-                        break;
-                }
-            }
-            int temp;
-            std::cout << "Для повторного ввода нажмите 1, для выхода - любую другую клавишу" << std::endl;
-            std::cin >> temp;
-            std::cin.ignore();
-            if (temp != 1)
-                break;
-            head.reset();
-            result.clear();
-
-        }
+        launch(head);
     }
     catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
