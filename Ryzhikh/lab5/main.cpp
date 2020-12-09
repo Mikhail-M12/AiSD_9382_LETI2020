@@ -102,13 +102,9 @@ void frequency(std::wstring message)//вывод частот символов встроке
 }
 int main()
 {
-	//SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
-	//SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
 	system("chcp 1251");
 	std::locale system("");//для кириллицы
 	std::locale::global(system);//для кириллицы
-	//SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
-	//SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
 	std::wcout << L"С чем вы хотите работать (f - file, c - console, остальное - quit)" << '\n';
 	std::wstring message;
 	wchar_t c;
@@ -121,7 +117,6 @@ int main()
 		std::wstring input;
 		std::wcin.ignore();
 		std::getline(std::wcin, input);
-		//std::wcin >> input;
 		File file(input);
 		file.readFile(message);
 		break;
@@ -134,6 +129,8 @@ int main()
 	default:
 		return 0;
 	}
+	if (message.length() == 0)
+		return 0;
 	std::wcout << L"Входная строка : " << message << '\n' << '\n';
 	frequency(message);
 		std::wstring codeHuff, codeSF;
