@@ -1,28 +1,28 @@
 #include "file.h"
 File::File(std::wstring file)
 {
-	fInput = new std::wifstream; //ñîçäàíèå îáúåêòà wifstream
+	fInput = new std::wifstream; //ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° wifstream
 	try
 	{
 		fInput->open(file);
-		//îòêðûòèå ôàéëà
+		//Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ðµ Ñ„Ð°Ð¹Ð»Ð°
 		if (!fInput->is_open())
 			throw 1;
 	}
 	catch (int)
 	{
-		std::cerr << "Íå óäàëîñü îòêðûòü ôàéë!\n";
+		std::cerr << "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚ÑŒ Ñ„Ð°Ð¹Ð»!\n";
 		exit(0);
 	}
 }
 File::~File()
 {
 	if (fInput->is_open())
-		fInput->close();//çàêðûòèå ôàéëà
+		fInput->close();//Ð·Ð°ÐºÑ€Ñ‹Ñ‚Ð¸Ðµ Ñ„Ð°Ð¹Ð»Ð°
 	if (fInput != nullptr)
 		delete fInput;
 }
-void File::readFile(std::wstring& message)//ñ÷èòûâàíèå ñòðîê ñôàéëà
+void File::readFile(std::wstring& message)//ÑÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ðµ ÑÑ‚Ñ€Ð¾Ðº ÑÑ„Ð°Ð¹Ð»Ð°
 {
 	std::getline(*fInput, message);
 	//*fInput >> message;

@@ -2,5 +2,5 @@
 #define DECODING_H
 #include <string>
 #include "binarytree.h"
-std::wstring decoding(BinaryTree* bt, std::wstring message);//фукцния декодирования сообщение(объявление)
+std::wstring decoding(BinaryTree* bt, std::wstring message);//С„СѓРєС†РЅРёСЏ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ СЃРѕРѕР±С‰РµРЅРёРµ(РѕР±СЉСЏРІР»РµРЅРёРµ)
 #endif // DECODING_H

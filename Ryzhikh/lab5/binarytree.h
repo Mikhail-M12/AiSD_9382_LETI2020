@@ -7,17 +7,17 @@ typedef std::wstring Elem;
 class BinaryTree
 {
 public:
-	BinaryTree(BinaryTree* left, BinaryTree* right);//конструктор
-	BinaryTree(Elem elem, int num);//конструктор
-	BinaryTree(std::vector<BinaryTree*>& vect);//конструктор
-	Elem getRoot();//возвращает значение корня
-	BinaryTree* getLeft();//возвращает левое поддерево
-	BinaryTree* getRight();//возвращает правое поддерево
-	void setRight(BinaryTree* bt);//устанавливает правое поддерево
-	void setLeft(BinaryTree* bt);//устанавливает левое поддерево
-	int getNum();//возвращает вес корня
-	void setNum(int num);//устанавливает вес корня
-	void printBT(int level = 0);//изображает дерево в видеуступчатого списка
+	BinaryTree(BinaryTree* left, BinaryTree* right);//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
+	BinaryTree(Elem elem, int num);//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
+	BinaryTree(std::vector<BinaryTree*>& vect);//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
+	Elem getRoot();//РІРѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РєРѕСЂРЅСЏ
+	BinaryTree* getLeft();//РІРѕР·РІСЂР°С‰Р°РµС‚ Р»РµРІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
+	BinaryTree* getRight();//РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂР°РІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
+	void setRight(BinaryTree* bt);//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РїСЂР°РІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
+	void setLeft(BinaryTree* bt);//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ Р»РµРІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
+	int getNum();//РІРѕР·РІСЂР°С‰Р°РµС‚ РІРµСЃ РєРѕСЂРЅСЏ
+	void setNum(int num);//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РІРµСЃ РєРѕСЂРЅСЏ
+	void printBT(int level = 0);//РёР·РѕР±СЂР°Р¶Р°РµС‚ РґРµСЂРµРІРѕ РІ РІРёРґРµСѓСЃС‚СѓРїС‡Р°С‚РѕРіРѕ СЃРїРёСЃРєР°
 	void printCods();
 	void
 		getCods(std::vector<std::pair<std::wstring, std::wstring>>& vec,
@@ -28,7 +28,7 @@ private:
 	BinaryTree* right = nullptr;
 	int num;
 };
-void destroy(BinaryTree* tree); //освобождение памяти
-BinaryTree* createBinaryTreeHuff(std::vector<BinaryTree*>& elements);//создает дерево Хаффмана
-BinaryTree* createBinaryTreeSF(BinaryTree* tree, std::vector<BinaryTree*> elements);//создает дерево Шеннона-Фано
+void destroy(BinaryTree* tree); //РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё
+BinaryTree* createBinaryTreeHuff(std::vector<BinaryTree*>& elements);//СЃРѕР·РґР°РµС‚ РґРµСЂРµРІРѕ РҐР°С„С„РјР°РЅР°
+BinaryTree* createBinaryTreeSF(BinaryTree* tree, std::vector<BinaryTree*> elements);//СЃРѕР·РґР°РµС‚ РґРµСЂРµРІРѕ РЁРµРЅРЅРѕРЅР°-Р¤Р°РЅРѕ
 #endif // BINARYTREEHUFF_H

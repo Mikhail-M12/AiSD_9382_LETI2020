@@ -1,24 +1,24 @@
 #include "binarytree.h"
 #include <iostream>
-template<class T> void swp(T & el1, T & el2)//меняет элементы местами
+template<class T> void swp(T & el1, T & el2)//РјРµРЅСЏРµС‚ СЌР»РµРјРµРЅС‚С‹ РјРµСЃС‚Р°РјРё
 {
 	T temp = el1;
 	el1 = el2;
 	el2 = temp;
 }
-BinaryTree::BinaryTree(BinaryTree* left, BinaryTree* right)//конструктор
+BinaryTree::BinaryTree(BinaryTree* left, BinaryTree* right)//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 {
 	this->left = left;
 	this->right = right;
 	this->num = left->getNum() + right->getNum();
 	this->root = left->root + right->root;
 }
-BinaryTree::BinaryTree(Elem elem, int num)//конструктор
+BinaryTree::BinaryTree(Elem elem, int num)//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 {
 	this->root = elem;
 	this->num = num;
 }
-BinaryTree::BinaryTree(std::vector<BinaryTree*>& vect)//конструктор
+BinaryTree::BinaryTree(std::vector<BinaryTree*>& vect)//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 {
 	std::sort(vect.begin(), vect.end(), [](BinaryTree* el1, BinaryTree* el2)
 		{
@@ -36,7 +36,7 @@ BinaryTree::BinaryTree(std::vector<BinaryTree*>& vect)//конструктор
 	this->root = temp;
 	this->num = n;
 }
-void destroy(BinaryTree* tree)//очищение памяти
+void destroy(BinaryTree* tree)//РѕС‡РёС‰РµРЅРёРµ РїР°РјСЏС‚Рё
 {
 	if (tree != nullptr)
 	{
@@ -45,27 +45,27 @@ void destroy(BinaryTree* tree)//очищение памяти
 		delete tree;
 	}
 }
-Elem BinaryTree::getRoot()//возвращает корень дерева
+Elem BinaryTree::getRoot()//РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕСЂРµРЅСЊ РґРµСЂРµРІР°
 {
 	return this->root;
 }
-BinaryTree* BinaryTree::getRight()//возвращает правое поддерево
+BinaryTree* BinaryTree::getRight()//РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂР°РІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
 {
 	return this->right;
 }
-BinaryTree* BinaryTree::getLeft()//возвращает левое поддерево
+BinaryTree* BinaryTree::getLeft()//РІРѕР·РІСЂР°С‰Р°РµС‚ Р»РµРІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
 {
 		return this->left;
 }
-int BinaryTree::getNum()//возвращает вес корня дерева
+int BinaryTree::getNum()//РІРѕР·РІСЂР°С‰Р°РµС‚ РІРµСЃ РєРѕСЂРЅСЏ РґРµСЂРµРІР°
 {
 	return this->num;
 }
-void BinaryTree::setNum(int num)//устанавливает вес корня дерева
+void BinaryTree::setNum(int num)//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РІРµСЃ РєРѕСЂРЅСЏ РґРµСЂРµРІР°
 {
 	this->num = num;
 }
-void BinaryTree::printBT(int level)//рекурсивно изображает дерево в виде уступчатого списка
+void BinaryTree::printBT(int level)//СЂРµРєСѓСЂСЃРёРІРЅРѕ РёР·РѕР±СЂР°Р¶Р°РµС‚ РґРµСЂРµРІРѕ РІ РІРёРґРµ СѓСЃС‚СѓРїС‡Р°С‚РѕРіРѕ СЃРїРёСЃРєР°
 {
 	if (left != nullptr)
 		left->printBT(level + 1);
@@ -74,27 +74,27 @@ void BinaryTree::printBT(int level)//рекурсивно изображает дерево в виде уступча
 	if (right != nullptr)
 		right->printBT(level + 1);
 }
-void BinaryTree::setLeft(BinaryTree* bt)//устанавливает левое поддерево
+void BinaryTree::setLeft(BinaryTree* bt)//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ Р»РµРІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
 {
 	this->left = bt;
 }
-void BinaryTree::setRight(BinaryTree* bt)//устанавливает правое поддерево
+void BinaryTree::setRight(BinaryTree* bt)//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РїСЂР°РІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
 {
 	this->right = bt;
 }
 BinaryTree* createBinaryTreeHuff(std::vector<BinaryTree*>&
-	elements)//строится дерево Хаффмана
+	elements)//СЃС‚СЂРѕРёС‚СЃСЏ РґРµСЂРµРІРѕ РҐР°С„С„РјР°РЅР°
 {
-	//если в векторе остался один элемент, то этот элемент является построенным деревом Хаффмана и он возвращается из функции
+	//РµСЃР»Рё РІ РІРµРєС‚РѕСЂРµ РѕСЃС‚Р°Р»СЃСЏ РѕРґРёРЅ СЌР»РµРјРµРЅС‚, С‚Рѕ СЌС‚РѕС‚ СЌР»РµРјРµРЅС‚ СЏРІР»СЏРµС‚СЃСЏ РїРѕСЃС‚СЂРѕРµРЅРЅС‹Рј РґРµСЂРµРІРѕРј РҐР°С„С„РјР°РЅР° Рё РѕРЅ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ РёР· С„СѓРЅРєС†РёРё
 		if (elements.size() == 1)
 			return elements[0];
 	BinaryTree* temp1 = elements[elements.size() - 1];
 	BinaryTree* temp2 = elements[elements.size() - 2];
-	elements.pop_back(); //удаляем элемент из конца вектора
-	elements.pop_back(); //удаляем элемент из конца вектора
-	BinaryTree* parent = new BinaryTree(temp1, temp2);//создаем бинарное дерево,в котором temp1 и temp2 будут потомками
-		elements.push_back(parent); //добавляем новое дерево в вектор
-		//перемещаем на нужное место добавленный элемент(чтобы вектор был поубыванию)
+	elements.pop_back(); //СѓРґР°Р»СЏРµРј СЌР»РµРјРµРЅС‚ РёР· РєРѕРЅС†Р° РІРµРєС‚РѕСЂР°
+	elements.pop_back(); //СѓРґР°Р»СЏРµРј СЌР»РµРјРµРЅС‚ РёР· РєРѕРЅС†Р° РІРµРєС‚РѕСЂР°
+	BinaryTree* parent = new BinaryTree(temp1, temp2);//СЃРѕР·РґР°РµРј Р±РёРЅР°СЂРЅРѕРµ РґРµСЂРµРІРѕ,РІ РєРѕС‚РѕСЂРѕРј temp1 Рё temp2 Р±СѓРґСѓС‚ РїРѕС‚РѕРјРєР°РјРё
+		elements.push_back(parent); //РґРѕР±Р°РІР»СЏРµРј РЅРѕРІРѕРµ РґРµСЂРµРІРѕ РІ РІРµРєС‚РѕСЂ
+		//РїРµСЂРµРјРµС‰Р°РµРј РЅР° РЅСѓР¶РЅРѕРµ РјРµСЃС‚Рѕ РґРѕР±Р°РІР»РµРЅРЅС‹Р№ СЌР»РµРјРµРЅС‚(С‡С‚РѕР±С‹ РІРµРєС‚РѕСЂ Р±С‹Р» РїРѕСѓР±С‹РІР°РЅРёСЋ)
 	for (auto i = elements.end() - 1; i != elements.begin(); i--)
 	{
 		if ((*i)->getNum() >= (*(i - 1))->getNum())
@@ -109,28 +109,28 @@ BinaryTree* createBinaryTreeHuff(std::vector<BinaryTree*>&
 	return createBinaryTreeHuff(elements);
 }
 BinaryTree* createBinaryTreeSF(BinaryTree* tree, std::vector<BinaryTree*>
-	elements)//строится дерево Фано- Шеннона
+	elements)//СЃС‚СЂРѕРёС‚СЃСЏ РґРµСЂРµРІРѕ Р¤Р°РЅРѕ- РЁРµРЅРЅРѕРЅР°
 {
-	//если длина корня дерева равна 1, то возвращаем это дерево
+	//РµСЃР»Рё РґР»РёРЅР° РєРѕСЂРЅСЏ РґРµСЂРµРІР° СЂР°РІРЅР° 1, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµРј СЌС‚Рѕ РґРµСЂРµРІРѕ
 	if (tree->getRoot().length() == 1)
 	{
 			return tree;
 	}
-	std::wstring rootString = tree->getRoot(); //получаем значение корня
-	std::wstring rootBTLeft = L"";//строка для корня левого поддерева
-	std::wstring rootBTRight = L"";//строка для корня правового поддерева
-	int weightBTLeft = 0;//вес для корня левого поддерева
-	int weightBTRight = 0;//вес для корня правого поддерева
-	int lastWeight;//для веса корня последнего элемента, добавленного в правое поддерево
-		std::wstring lastSymb;//для корня последнего элементы, который будет добавлен в правое поддерево
-		for (auto i : rootString) //проходимся по каждому символу корня
+	std::wstring rootString = tree->getRoot(); //РїРѕР»СѓС‡Р°РµРј Р·РЅР°С‡РµРЅРёРµ РєРѕСЂРЅСЏ
+	std::wstring rootBTLeft = L"";//СЃС‚СЂРѕРєР° РґР»СЏ РєРѕСЂРЅСЏ Р»РµРІРѕРіРѕ РїРѕРґРґРµСЂРµРІР°
+	std::wstring rootBTRight = L"";//СЃС‚СЂРѕРєР° РґР»СЏ РєРѕСЂРЅСЏ РїСЂР°РІРѕРІРѕРіРѕ РїРѕРґРґРµСЂРµРІР°
+	int weightBTLeft = 0;//РІРµСЃ РґР»СЏ РєРѕСЂРЅСЏ Р»РµРІРѕРіРѕ РїРѕРґРґРµСЂРµРІР°
+	int weightBTRight = 0;//РІРµСЃ РґР»СЏ РєРѕСЂРЅСЏ РїСЂР°РІРѕРіРѕ РїРѕРґРґРµСЂРµРІР°
+	int lastWeight;//РґР»СЏ РІРµСЃР° РєРѕСЂРЅСЏ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р°, РґРѕР±Р°РІР»РµРЅРЅРѕРіРѕ РІ РїСЂР°РІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
+		std::wstring lastSymb;//РґР»СЏ РєРѕСЂРЅСЏ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚С‹, РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµС‚ РґРѕР±Р°РІР»РµРЅ РІ РїСЂР°РІРѕРµ РїРѕРґРґРµСЂРµРІРѕ
+		for (auto i : rootString) //РїСЂРѕС…РѕРґРёРјСЃСЏ РїРѕ РєР°Р¶РґРѕРјСѓ СЃРёРјРІРѕР»Сѓ РєРѕСЂРЅСЏ
 		{
-			for (auto j : elements)//проходимся по каждому элементу вектора
+			for (auto j : elements)//РїСЂРѕС…РѕРґРёРјСЃСЏ РїРѕ РєР°Р¶РґРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ РІРµРєС‚РѕСЂР°
 			{
 				if (i == j->getRoot()[0])
 				{
-					//если текущий вес корня правого поддерева меньше половины веса дерева, то
-						//добавляем к правому поддереву еще один элемент, иначе добавляем элемент к левому поддереву
+					//РµСЃР»Рё С‚РµРєСѓС‰РёР№ РІРµСЃ РєРѕСЂРЅСЏ РїСЂР°РІРѕРіРѕ РїРѕРґРґРµСЂРµРІР° РјРµРЅСЊС€Рµ РїРѕР»РѕРІРёРЅС‹ РІРµСЃР° РґРµСЂРµРІР°, С‚Рѕ
+						//РґРѕР±Р°РІР»СЏРµРј Рє РїСЂР°РІРѕРјСѓ РїРѕРґРґРµСЂРµРІСѓ РµС‰Рµ РѕРґРёРЅ СЌР»РµРјРµРЅС‚, РёРЅР°С‡Рµ РґРѕР±Р°РІР»СЏРµРј СЌР»РµРјРµРЅС‚ Рє Р»РµРІРѕРјСѓ РїРѕРґРґРµСЂРµРІСѓ
 						if (weightBTRight <= tree->getNum() / 2)
 						{
 							rootBTRight += j->getRoot();
@@ -146,8 +146,8 @@ BinaryTree* createBinaryTreeSF(BinaryTree* tree, std::vector<BinaryTree*>
 				}
 			}
 		}
-	//проверяем получили ли минимальную разницу между весами корней правого и левого поддерева
-		//если нет, то удаляем из правого поддерева последний элемент и ставим его в начало левого поддерева
+	//РїСЂРѕРІРµСЂСЏРµРј РїРѕР»СѓС‡РёР»Рё Р»Рё РјРёРЅРёРјР°Р»СЊРЅСѓСЋ СЂР°Р·РЅРёС†Сѓ РјРµР¶РґСѓ РІРµСЃР°РјРё РєРѕСЂРЅРµР№ РїСЂР°РІРѕРіРѕ Рё Р»РµРІРѕРіРѕ РїРѕРґРґРµСЂРµРІР°
+		//РµСЃР»Рё РЅРµС‚, С‚Рѕ СѓРґР°Р»СЏРµРј РёР· РїСЂР°РІРѕРіРѕ РїРѕРґРґРµСЂРµРІР° РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ Рё СЃС‚Р°РІРёРј РµРіРѕ РІ РЅР°С‡Р°Р»Рѕ Р»РµРІРѕРіРѕ РїРѕРґРґРµСЂРµРІР°
 		int diff = weightBTRight - weightBTLeft;
 	if (abs(weightBTRight - lastWeight - (weightBTLeft + lastWeight)) <= diff)
 	{
