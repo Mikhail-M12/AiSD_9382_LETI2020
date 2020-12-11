@@ -1,0 +1,14 @@
+!!! attention
+ab коллизия1_1
+ba коллизия1_2
+do делать
+hello привет
+no нет
+how как
+yes да
+you вы
+тор thor_collision
+орт orth_collision
+рот mouth_collision
+очень very
+наверное may_be
