@@ -45,9 +45,9 @@ void compareResults(int* mas1, int size1, int* mas2, int size2)
         res = false;
 
     if (res) {
-        cout << "Expexted and actual results are the same\n";
+        cout << "Expected and actual results are the same\n";
     } else {
-        cout << "Expexted and actual results are NOT the same\n";
+        cout << "Expected and actual results are NOT the same\n";
     }
 }
 
@@ -100,6 +100,7 @@ void shakerSort(int* mas, int size)
 
 void outputResult(int* inputMas, int size)
 {
+    // All mass handle here
     cout << "Input mas -- ";
     printMas(inputMas, size);
 
@@ -120,19 +121,28 @@ void outputResult(int* inputMas, int size)
 
 void stdInputCase()
 {
+    // Standart input
+    // Will continue untill size of mass <= 0
+    cout << "The input will continue untill size of mass <= 0\n";
     int size;
     cin >> size;
-    int inputMas[size] = { 0 };
-    for (int i=0; i<size; i++)
+    while (size > 0)
     {
-        cin >> inputMas[i];
-    }
+        int inputMas[size] = { 0 };
+        for (int i=0; i<size; i++)
+        {
+            cin >> inputMas[i];
+        }
 
-    outputResult(inputMas, size);
+        outputResult(inputMas, size);
+        cout << "-1 to stop\n";
+        cin >> size;
+    }
 }
 
 void fileInputCase(string path)
 {
+    // File input case
     ifstream inFile;
     inFile.open(path);
 
@@ -142,6 +152,7 @@ void fileInputCase(string path)
     {
         int mas[size];
         for (int i=0; i<size && inFile >> mas[i]; i++);
+        cout << "\n\n\n";
         outputResult(mas, size);
     }
 }
