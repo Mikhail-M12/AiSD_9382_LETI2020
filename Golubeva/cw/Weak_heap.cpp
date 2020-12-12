@@ -1,5 +1,7 @@
 #include "Weak_heap.h"
 #include <limits>
+#include <cstring>
+#include <cctype>
 
 #define GETFLAG(r, x) ((r[(x) >> 3] >> ((x) & 7)) & 1) //если в качестве "левого" потомка родителя
 
@@ -9,9 +11,7 @@
 
 WeakHeap::~WeakHeap(){
   if (!wheap.empty())
-    wheap.clear();
-  delete this;
-    
+    wheap.clear();    
 }
 
 //вычисляет логарифм от b по основанию a
@@ -19,6 +19,30 @@ double log(int a, int b)
 {
     return log(b) / log(a);
 }
+
+//проверяет, что строка состоит из цифр
+bool str_is_digit(std::string s){
+
+  int size=s.size();
+
+  int j=0;
+
+  if (s[0]=='-'){
+      j+=1;
+            
+  }
+ 
+  for (int i=j;i<size;i++){
+
+      if (!isdigit(s[i])){
+
+          return false;
+          }
+  }
+
+  return true;
+}
+
 
 void WeakHeap::displayHeap(int i_1, int j_1, int col, int num){
 
@@ -237,33 +261,55 @@ void WeakHeap::displayArray()
 
 WeakHeap* WeakHeap::consoleInputHeap(){
     int count=0;
-    std::cout<<"Введите количество элементов в массиве\n";
-    std::cin>>count;
-   
-    while (count<=0||!std::cin){
-     
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        try{//проверяем корректность ввода количества элементов
-          std::cout<<"Введите количество\n";
-          std::cin>>count;
-          
-          if (!std::cin)
-              throw "Некорректное значение количества элементов, введите целое положительное число\n";
-        }    
-        catch(const char* s){
-            std::cout<<s;
-            std::cin.clear();
-        }
-      
-    }
+    int member;
+    std::string str;
 
-    std::cout<<"Введите элементы через пробел\n";
-    WeakHeap* wh=new WeakHeap(count, std::cin);
+
+    while (count<=0){
+        std::cout<<"Введите количество элементов в массиве или введите Quit/Q/q для выхода в главное меню\n";
+
+        std::cin>>str;
+        if (str=="Q"||str=="Quit"||str=="q"){
+            return nullptr;
+        }
+        try{
+          count = std::stoi(str);
+        }catch(std::invalid_argument&){
+          std::cout<<"Вы ввели строку\n";
+          continue;
+        }
+            if (count<=0)
+                std::cout<<"Количество элементов должно быть положительным\n";
+            
+    }
+    WeakHeap* wh=new WeakHeap();
+    
+    
+    while(wh->size!=count){
+        std::cout<<"Введите элементы через пробел(осталось ввести "<<count-wh->size<<" элементов)\n";
+        std::cout<<"Введите элемент или введите Quit/Q/q для выхода в главное меню\n";
+        std::cin>>str;
+        if (str=="Q"||str=="Quit"||str=="q"){
+            delete wh;
+            return nullptr;
+        }
+        try{
+          member = std::stoi(str);
+        }catch(std::invalid_argument&){
+          std::cout<<"Некорректное значение элемента"<<str<<"\n";
+          continue;
+        }
+            wh->wheap.push_back(member);
+            wh->size+=1;
+        
+    }
+   
     return wh;
 }
 
 WeakHeap* WeakHeap::fileInputHeap(){
     int count=0;
+    std::string str;
     std::ifstream file("input.txt");
     while(file.fail())
     try{
@@ -277,110 +323,43 @@ WeakHeap* WeakHeap::fileInputHeap(){
       std::cout<<s;
       std::string r;
       std::ifstream file("input.txt");
-      std::cout<<"Исправьте файл, чтобы он открывался и сообщите об этом программе, введя какое-нибудь сообщение\n";
+      std::cout<<"Исправьте файл, чтобы он открывался и сообщите об этом программе, введя какое-нибудь сообщение или введите Quit/Q/q для выхода в главное меню\n";
       std::cin>>r;
+      if (r=="Q"||r=="Quit"||r=="q"){
+            return nullptr;
+        }
 
     }
-    WeakHeap* wh= new WeakHeap(file);
-    wh->displayArray();
+    file>>str;
+
+    try{
+          count = std::stoi(str);
+          if (count<=0){
+            std::cout<<"Количество элементов должно быть положительным, невозможно продолжить ввод из файла\n\n";
+            file.close();
+            return nullptr;
+        }
+
+        }catch(std::invalid_argument&){
+          std::cout<<"Некорректное значение количества элементов, невозможно продолжить ввод из файла\n\n";
+          file.close();
+          return nullptr;
+        }
+
+    WeakHeap* wh= new WeakHeap();
+    for (int i=0;i<count;i++){
+        file>>str;
+
+        try{
+            wh->wheap.push_back(std::stoi(str));
+            wh->size+=1;
+        }catch(std::invalid_argument&){
+            std::cout<<"Некорректное значение элемента "<<str<<", невозможно продолжить ввод из файла\n\n";
+            file.close();
+            delete wh;
+            return nullptr;
+        }
+    }
     file.close();
     return wh;
 }
-
-WeakHeap::WeakHeap(std::ifstream& file){
-    int count=0;
-
-    file>>count;
-
-    while (count<=0||!std::cin){
-      
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        try{//проверяем корректность ввода количества элементов
-            std::cout<<"Введите количество\n";
-            std::cin>>count;
-            
-            if (!std::cin)
-                throw "Некорректное значение количества элементов, введите целое положительное число\n";
-        }    
-        catch(const char* s){
-            std::cout<<s;
-            std::cin.clear();
-        }
-      
-    }
-    std::cout<<"Нам нужно считать из файла "<< count<< " элементов\n";
-    size=count;
-    int i=0;
-    int f=0;
-    int member=0;
-
-    while (!file.eof()&&i<count)
-    {
-      file>>member;
-      wheap.push_back(member);
-      i+=1;
-    }
-
-    while (i<count){//проверяем, что считали из файла достаточное количество элементов{
-        count=size-i;
-        if (count!=0)
-            std::cout<<"Осталось считать "<<count<<" элементов\n";
-            while (!f){
-                
-                try{//проверяем корректность ввода количества элементов
-                    for (int i=0;i<count;i++){
-                      std::cin>>member;
-                      wheap.push_back(member);
-                    }
-                    if (!std::cin){
-                      wheap.clear();
-                      count=size;
-                      i=0;
-                      throw "Некорректное значение элемента. Введите все элементы снова\n";
-                    }
-                    else{
-                      f=1; 
-                      i=count;
-                    }     
-                }    
-                catch(const char* s){
-                    std::cout<<s;
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                }
-              }  
-    }
-    file.close();
-}
-
-WeakHeap::WeakHeap(int count, std::istream& stream){
-
-
-    int member=0;
-    size=count;
-    int f=0;
-    int count_input_elem=0;
-    int i=0;
-
-      while (!f){
-        
-        try{//проверяем корректность ввода количества элементов
-            for (int i=0;i<count;i++){
-              stream>>member;
-              wheap.push_back(member);
-            }
-            if (! stream){
-              wheap.clear();
-              throw "Некорректное значение элемента. Введите все элементы снова\n";
-            }
-            else
-              f=1;    
-        }    
-        catch(const char* s){
-            std::cout<<s;
-            std::cin.clear();
-            stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-      }  
-}    
-

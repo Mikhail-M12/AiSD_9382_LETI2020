@@ -15,12 +15,10 @@ class WeakHeap{
 public:
 
     std::vector <int> wheap;
-    int size;
+    int size=0;
     unsigned char* r=nullptr;
     int s;
     WeakHeap(){}
-    WeakHeap(int, std::istream&);
-    WeakHeap(std::ifstream&);
 
     void displayArray();
     void displayHeap(int i, int j, int col, int num);
