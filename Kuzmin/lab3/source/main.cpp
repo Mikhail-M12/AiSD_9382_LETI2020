@@ -1,0 +1,177 @@
+
+#include <iostream>
+#include <cstring>
+
+class BinTree {
+public:
+	int size = 100;
+	char* elementsArray = new char[size]; //массив, в котором хранятся элементы деерва
+	BinTree() {
+		for (int i = 0; i < size; i++)
+			elementsArray[i] = '_'; //инициализируется "пустым" символом
+	}
+	friend void printLKP(BinTree* b, int index);
+	bool isLeaf(int index) {
+		return (!strchr("+-*", elementsArray[index])); //функция проверяет, является ли элемент "листом"
+	}
+	int getRightElemIndex(int index) {
+		return index * 2 + 2; //возвращает индекс правого потомка
+	}
+	int getLeftElemIndex(int index) {
+		return index * 2 + 1; //возвращает индекс левого потомка
+	}
+
+	bool areEqualElements(int index1, int index2) { //проверка идентичности двух элементов
+
+	
+		if (isLeaf(index1) && isLeaf(index2)) {
+
+			if
+				(elementsArray[index1] == elementsArray[index2])
+			{
+				std::cout << "Элементы-листья " << elementsArray[index1] << " и " << elementsArray[index2] << " равны\n";
+				return true;
+			}
+			else {
+				std::cout << "Элементы-листья " << elementsArray[index1] << " и " << elementsArray[index2] << " нe равны\n";
+				return false;
+			}
+		}
+
+		else if (isLeaf(index1) == isLeaf(index2)) {
+			std::cout << "Проверка ";//если оба элемента поддеревья, то далее проверяются их потомки
+			printLKP(this, index1);
+			std::cout << " и ";
+			printLKP(this, index2);
+			return areEqualElements(getLeftElemIndex(index1), getLeftElemIndex(index2))
+				&& areEqualElements(getRightElemIndex(index1), getRightElemIndex(index2));
+		}
+		else return false;
+	}
+
+	char sign(int i) {
+	
+			std::cout << "Знак  " << "\"" <<elementsArray[i] << "\"\n";
+			return elementsArray[i];
+
+	}
+
+	void transform() { //замена поддеревьев вида (f + f) на (2 * f)
+		int i = 0;
+		for (int i = 0; i < size; i++)
+			if (!isLeaf(i)) {
+				std::cout << "Проверка поддерева: ";
+				printLKP(this, i);
+				std::cout << "\n";
+				std::cout << "Проверка равенства элементов ";
+				printLKP(this, getLeftElemIndex(i));
+				std::cout << " и ";
+				printLKP(this, getRightElemIndex(i));
+				std::cout << "\n";
+				if (areEqualElements(getLeftElemIndex(i), getRightElemIndex(i)) && sign(i) == '+') {
+
+					std::cout << "Поддерево ";
+					printLKP(this, i);
+					std::cout << " соответствует виду (f+f). Производится замена на ";
+					elementsArray[i * 2 + 1] = '2';
+					elementsArray[getRightElemIndex(i * 2 + 1)] = '_';
+					elementsArray[getLeftElemIndex(i * 2 + 1)] = '_';
+					elementsArray[i] = '*';
+					printLKP(this, i);
+					std::cout << "\n";
+				}
+				else {
+					std::cout << "Поддерево ";
+					printLKP(this, i);
+					std::cout << " не соответствуют формуле (f + f)\n";
+				}
+			}
+	}
+};
+void readBinTree(BinTree* b, int index, FILE* f);
+
+
+void printLKP(BinTree* b, int index = 0) {//вывод дерева-формула
+
+	if (index < b->size && b->elementsArray[index] != '_') {
+
+		if (!b->isLeaf(index))
+			std::cout << "(";
+		printLKP(b, index * 2 + 1);
+		std::cout << b->elementsArray[index];
+		printLKP(b, index * 2 + 2);
+		if (!b->isLeaf(index))
+			std::cout << ")";
+	}
+}
+
+//функции для считывания дерева
+void readLeftElem(BinTree* b, int index, FILE* f) {
+	
+	
+	b->elementsArray[index * 2 + 1] = fgetc(f);
+	std::cout << "Левый потомок = " << b->elementsArray[index * 2 + 1] << "\n";
+	readBinTree(b, index * 2 + 1, f);
+}
+void readRightElem(BinTree* b, int index, FILE* f) {
+	b->elementsArray[index * 2 + 2] = fgetc(f);
+	std::cout << "Правый потомок = " << b->elementsArray[index * 2 + 2]<<"\n";
+	readBinTree(b, index * 2 + 2, f);
+
+}
+void readBinTree(BinTree* b, int index, FILE* f) {
+
+		if (index == 0) {
+			
+			b->elementsArray[index] = fgetc(f);
+			std::cout << "\nПостроение дерева-формулы\n";
+		}
+	
+	if (strchr("+-*", b->elementsArray[index])) {
+		std::cout << "Считывание левого потомка для элемента " << b->elementsArray[index] << "\n";
+		readLeftElem(b, index, f);
+		std::cout << "Считывание правого потомка для элемента " << b->elementsArray[index] << "\n";
+		readRightElem(b, index, f);
+    std::cout<<"Построено поддерево ";
+    printLKP(b,index);
+    std::cout << "\n";
+	}
+
+}
+
+int main()
+{
+
+
+	BinTree bt;
+	char* c = new char[300];
+	char* a = new char[20];
+	setlocale(LC_ALL, "Russian");
+	while (strcmp(a, "1\n") && strcmp(a, "2\n")) {
+		std::cout << "Обработка бинарного дерева. Введите 1 для ввода дерева с консоли или 2 для ввода с файла\n";
+		fgets(a, 20, stdin);
+	}
+	if (strcmp(a, "1\n") == 0) {
+		std::cout << "Введите дерево в префиксной форме: ";
+		readBinTree(&bt, 0, stdin);
+	}
+	else {
+		FILE* f1 = fopen("test.txt", "r+");
+		std::cout << "Содержимое файла: ";
+		while (fgets(c, 300, f1)) std::cout << c;
+		f1 = fopen("test.txt", "r+");
+		std::cout << "\n";
+		readBinTree(&bt, 0, f1);
+		fclose(f1);
+	}
+
+	std::cout << "Дерево-формула: ";
+	printLKP(&bt);
+
+	std::cout << "\n\nВывод преобразованного дерева-формулы с заменой поддеревьев вида (f + f) на (2 * f):\n";
+	bt.transform();
+	std::cout << "Результат: ";
+	printLKP(&bt, 0);
+	std::cout << "\n";
+
+}
