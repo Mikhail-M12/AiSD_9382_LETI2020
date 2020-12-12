@@ -1,0 +1,3 @@
+Ссылка на онлайн компилятор с 5 лабораторной работой:
+
+https://repl.it/@BabylonExile/AlgIStrDMikhailov9382lab5#main.cpp
