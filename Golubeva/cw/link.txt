@@ -1,0 +1,5 @@
+Ссылка на проект:
+https://repl.it/@Name0000/TurquoiseInexperiencedScriptinglanguages#input.txt
+
+Чтобы запустить, нужно ввести в консоли "./main"
+Чтобы поменять входные значения для ввода из файла, нужно поменять их в "input.txt"
