@@ -16,7 +16,6 @@ string readFile(const string& file_name) {
     return ss.str(); // Возвращает строку
 }
 
-
 template <typename T=string>
 class Hash {
 private:
@@ -28,7 +27,6 @@ public:
     Hash() {
         table.reserve(size);
     }
-
     // Хеш функция реализованная адаптивным методом
     int hashFunction(T value) {
         int s = 0;
@@ -37,7 +35,6 @@ public:
         // возвращает ключ
         return s % size;
     }
-
     // Вставка elem
     void insertElem(T value) {
         // Расчитываем ключ от значения
@@ -45,25 +42,37 @@ public:
         // Добавляем в соответствующую ячейку таблицы
         table[key].push_back(value);
     }
-
+    // Пояснения к хеш функции
+    void howHash(T value) {
+        int s = 0;
+        std::cout << "In the loop we go through the element summing up its symbols from ASCII" << '\n';
+        for(int i = 0 ; i < value.length(); i++) {
+            s += value[i];
+            std::cout << "Sum " << i + 1 << " symbol(s) "<< s << '\n';
+        }
+        std::cout << "Modulo division of the sum by the size of the table, and we get the key : ";
+        std::cout << "\x1b[32m" << s % size << "\x1b[0m" << '\n';
+        std::cout << '\n';
+    }
     // Пояснения для вставки
     void howInsert(T value) {
         // Расчитываем ключ от значения
         int key = hashFunction(value);
-        std::cout << "For this we have to find its key using a hash function." << '\n';
-        std::cout << "Using adaptive hash function we get the key: " << key << '\n';
-        std::cout << "When we find the key we just need to insert the \"" << value << "\" into the " << key << " chain of the table." << '\n';
+        std::cout << "\nFor this we have to find its key using a hash function." << '\n';
+        // Пояснения для ключа
+        howHash(value);
+        std::cout << "When we find the key we just need to insert the \""<< "\x1b[4;32m" << value << "\x1b[0m" << "\" into the " << "\x1b[32m" << key << "\x1b[0m" << " chain of the table." << "\n\n";
     }
     // Пояснения для удаления
     void howDelete(T value) {
         // Расчитываем ключ от значения
         int key = hashFunction(value);
-        std::cout << "For this we have to find its key using a hash function." << '\n';
-        std::cout << "Using adaptive hash function we get the key: " << key << '\n';
-        std::cout << "When we find the key we just need to delete the \"" << value << "\" from the " << key << " chain of the table." << '\n';
-        std::cout << "To do this in the loop we go through the " << key << " chain in search of a \"" << value << "\" and if we meet it we delete it." << '\n';
+        std::cout << "\nFor this we have to find its key using a hash function." << '\n';
+        // Пояснения для ключа
+        howHash(value);
+        std::cout << "When we find the key we just need to delete the \""<< "\x1b[4;32m" << value << "\x1b[0m" << "\" from the " << "\x1b[32m" << key << "\x1b[0m" << " chain of the table." << '\n';
+        std::cout << "To do this in the loop we go through the " << "\x1b[32m" << key << "\x1b[0m" << " chain in search of a \"" << "\x1b[4;32m" << value << "\x1b[0m" << "\" and if we meet it we delete it." << "\n\n";
     }
-
    // Удаление элемента
    void deleteElem(T value) {
        // получаем хеш-индекс ключа
@@ -77,21 +86,19 @@ public:
            }
        }
    }
-
     void displayHash() {
         // Обходим всю таблицу
         cout << "\n";
         for (int i = 0; i < size; i++) {
-            cout << i;
+            cout << "\x1b[36m" <<  i << "\x1b[0m";
             // Выводим элементы цепочки
             for (auto x : table[i]) {
-                cout << " --> " << x;
+                cout << "\x1b[35m --> \x1b[0m" << x;
             }
             cout << "\n";
         }
         cout << "\n";
    }
-
 };
 
 
@@ -107,49 +114,47 @@ int main(int argc, char const *argv[]) {
         table.insertElem(tokens[i]);
     }
     // Выводим строку считанную из файла
-    cout << "You entered: ";
-    cout << iss.str() << '\n';
+    cout << "\x1b[35mYou entered: \x1b[0m" << iss.str() << "\n";
+    std::cout << "For each of these elements, the key is calculated using a hash function and it is placed in the corresponding cell of the table." << '\n';
     // Выводим хэш таблицу
-    cout << "Hash table" << "\n";
+    cout << "\n\x1b[1mHash table\x1b[0m" << "\n";
     table.displayHash();
 
     string input;
-
-    cout << "To remove type :  \"!delete\" \n"
-            "To insert type : \"!insert\" \n"
-            "To exit type : \"!exit\" \n\n";
-
     while(true) {
+        cout << "\x1b[31mTo remove type : \"1\"\x1b[0m \n"
+                "\x1b[32mTo insert type : \"2\"\x1b[0m \n"
+                "\x1b[33mTo leave type :  \"3\"\x1b[0m \n\n";
         // Считываем значение введенное пользователем
         std::cout << "Your input : ";
         cin >> input;
         // Для удаления элеммента
-        if (input == "!delete") {
+        if (input == "1") {
             std::cout << "You want delete : ";
             cin >> input;
             table.howDelete(input);
             table.deleteElem(input);
-            std::cout << "Hash table after delete" << '\n';
+            std::cout << "\x1b[1mHash table after delete\x1b[0m" << '\n';
             table.displayHash();
         }
         // Для добавления элемента
-        else if (input == "!insert") {
+        else if (input == "2") {
             std::cout << "You want insert : ";
             cin >> input;
             table.howInsert(input);
             table.insertElem(input);
-            std::cout << "Hash table after insert" << '\n';
+            std::cout << "\x1b[1mHash table after insert\x1b[0m" << '\n';
             table.displayHash();
         }
         // Для выхода
-        else if (input == "!exit") {
+        else if (input == "3") {
             break;
         }
         // Иначе
         else {
-            std::cout << "Incorrect input please try again." << '\n';
+            std::cout << "\nIncorrect input please try again." << '\n';
         }
     }
-    std::cout << "Program end !" << '\n';
+    std::cout << "\nProgram end !" << '\n';
     return 0;
 }
