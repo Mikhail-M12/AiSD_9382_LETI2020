@@ -22,6 +22,7 @@ public:
     ~BinarySearchTree();
 
     void view(int d = 0);
+    void draw(string buffer = "", bool isLast = true);
 
     int getQuantityOfNodes();
     void updateQuantityOfNodes();

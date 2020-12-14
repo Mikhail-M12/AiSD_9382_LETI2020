@@ -8,25 +8,6 @@ BinarySearchTree::BinarySearchTree(int inputData)
     pointers.right = nullptr;
 }
 
-BinarySearchTree* buildTree(char* input, BinarySearchTree* prevTree = nullptr)
-{
-    int data = 0;
-    char* tail;
-    sscanf(input, "%d %s", &data, tail);
-
-    if (!data)
-    {
-        if (prevTree == nullptr)
-            return buildTree(tail, new BinarySearchTree(data));
-        else
-        {
-            prevTree->insert(data);
-            return buildTree(tail, prevTree);
-        }
-    }
-    return prevTree;
-}
-
 BinarySearchTree::~BinarySearchTree()
 {
     if (pointers.left != nullptr)
@@ -51,7 +32,6 @@ void BinarySearchTree::updateQuantityOfNodes()
         quantityOfNodesRight = pointers.right->getQuantityOfNodes();
 
     quantityOfNodes = 1 + quantityOfNodesLeft + quantityOfNodesRight;
-    cout << "quantityOfNodes is " << quantityOfNodes << '\n';
 }
 
 BinarySearchTree* BinarySearchTree::find(int inputData)
@@ -134,7 +114,6 @@ BinarySearchTree* BinarySearchTree::insertInRoot(int inputData)
 
 BinarySearchTree* BinarySearchTree::insert(int inputData)
 {
-    srand(time(0));
     int randNumber = rand();
     srand(randNumber);
 
@@ -142,11 +121,8 @@ BinarySearchTree* BinarySearchTree::insert(int inputData)
     if (randNumber%(quantityOfNodes + 1) == 0)
         stopHere = true;
     
-    cout << "\n\ninputData is " << inputData << '\n';
-    cout << "quantityOfNodes is " << quantityOfNodes << '\n';
-    cout << "Stop here is " << stopHere << '\n';
-    cout << "Call on tree \n";
-    view();
+    cout << "\nquantityOfNodes is " << quantityOfNodes << '\n';
+    cout << "stopHere is " << stopHere << '\n';
 
     if (stopHere)
         return insertInRoot(inputData);
@@ -181,12 +157,45 @@ void BinarySearchTree::view(int d)
         pointers.right->view(d+1);
 }
 
+void BinarySearchTree::draw(string buffer, bool isLast)
+{
+    string branch = "├";
+    string pipe = "|";
+    string end = "└";
+    string dash = "─";
+
+    if (isLast)
+    {
+        cout << buffer << end << dash << data << '\n';
+        buffer += "  ";
+    }
+
+    else
+    {
+        cout << buffer << pipe << dash << data << '\n';
+        buffer += pipe + " ";
+    }
+
+    if (pointers.right != nullptr)
+        pointers.right->draw(buffer, false);
+    else
+        cout << buffer << branch << dash << " empty\n";
+
+
+    if (pointers.left != nullptr)
+        pointers.left->draw(buffer, true);
+    else
+        cout << buffer << end << dash << " empty\n";
+}
+
 int main()
 {
+    srand(time(0));
+
     int data;
     cin >> data;
     BinarySearchTree* bt_ptr = new BinarySearchTree(data); 
-
+    cin >> data;
 
     while (data != 0)
     {
@@ -194,6 +203,6 @@ int main()
         cin >> data;
     }
 
-    bt_ptr->view();
+    bt_ptr->draw();
     return 0;
 }
