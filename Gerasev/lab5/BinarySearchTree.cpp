@@ -8,6 +8,17 @@ BinarySearchTree::BinarySearchTree(int inputData)
     pointers.right = nullptr;
 }
 
+BinarySearchTree::BinarySearchTree(const BinarySearchTree & binarySearchTree) // Copy operator
+{
+    data = binarySearchTree.data;
+
+    if (binarySearchTree.pointers.left != nullptr)
+        pointers.left = new BinarySearchTree(*binarySearchTree.pointers.left);
+
+    if (binarySearchTree.pointers.right != nullptr)
+        pointers.right = new BinarySearchTree(*binarySearchTree.pointers.right);
+}
+
 BinarySearchTree::~BinarySearchTree()
 {
     if (pointers.left != nullptr)
@@ -123,6 +134,53 @@ BinarySearchTree* BinarySearchTree::insert(int inputData)
     return this;
 }
 
+BinarySearchTree* join(BinarySearchTree* smallerTree, BinarySearchTree* biggerTree)
+{
+    if (smallerTree == nullptr)
+        return biggerTree;
+    if (biggerTree == nullptr)
+        return smallerTree;
+
+    int randNumber = rand();
+    srand(randNumber);
+    bool  goSmaller = false;
+    if (randNumber%(smallerTree->getQuantityOfNodes() + biggerTree->getQuantityOfNodes()) < smallerTree->getQuantityOfNodes())
+         goSmaller = true;
+
+    if (goSmaller) {
+        smallerTree->pointers.right = join(smallerTree->pointers.right, biggerTree);
+        smallerTree->updateQuantityOfNodes();
+        return smallerTree;
+    } else {
+        biggerTree->pointers.left = join(smallerTree, biggerTree->pointers.left);
+        biggerTree->updateQuantityOfNodes();
+        return biggerTree;
+    }
+}
+
+BinarySearchTree* BinarySearchTree::deleteFirst(int inputData)
+{
+    if (inputData == data)
+    {
+        BinarySearchTree* res = join(pointers.left, pointers.right);
+        return res;
+    }
+
+    if (inputData < data)
+    {
+        if (pointers.left != nullptr)
+            pointers.left = pointers.left->deleteFirst(inputData);
+    }
+
+    else
+    {
+        if (pointers.right != nullptr)
+            pointers.right = pointers.right->deleteFirst(inputData);
+    }
+
+    return this;
+}
+
 void BinarySearchTree::draw(string buffer, bool isLast)
 {
     string branch = "├";
@@ -160,16 +218,38 @@ int main()
 
     int data;
     cin >> data;
-    BinarySearchTree* bt_ptr = new BinarySearchTree(data); 
+    BinarySearchTree* bt1_ptr = new BinarySearchTree(data); 
     cin >> data;
 
     while (data != 0)
     {
-        bt_ptr = bt_ptr->insert(data);
+        bt1_ptr = bt1_ptr->insert(data);
         cin >> data;
     }
 
-    bt_ptr->draw();
+    bt1_ptr->draw();
+    // cout << "\n\n";
+
+    // cin >> data;
+    // BinarySearchTree* bt2_ptr = new BinarySearchTree(data); 
+    // cin >> data;
+
+    // while (data != 0)
+    // {
+    //     bt2_ptr = bt2_ptr->insert(data);
+    //     cin >> data;
+    // }
+
+    // bt2_ptr->draw();
+    // cout << "\n\n";
+
+    // BinarySearchTree* res = join(bt1_ptr, bt2_ptr);
+    // res->draw();
+
+    cin >> data;
+    bt1_ptr = bt1_ptr->deleteFirst(data);
+    bt1_ptr->draw();
+
 
     return 0;
 }

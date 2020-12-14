@@ -18,7 +18,7 @@ public:
     unsigned int quantityOfNodes; // For random bin search tree only
 
     BinarySearchTree(int data = 0);
-    BinarySearchTree(string input);
+    BinarySearchTree(const BinarySearchTree & binarySearchTree); // Copy operator
     ~BinarySearchTree();
 
     void draw(string buffer = "", bool isLast = true);
