@@ -1,0 +1,131 @@
+f(15) : 
+-------------------------------------------------------------------
+startf: f(15)::\
+	startf: f(7)::\
+		startf: f(3)::\
+			startf: f(1)::\
+
+			/endf f(1)::1
+
+			startf: f(1)::\
+
+			/endf f(1)::1
+
+		/endf /f(3)::2
+
+		startf: f(2)::\
+			startf: f(1)::\
+
+			/endf f(1)::1
+
+		/endf /f(2)::1
+
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+	/endf /f(7)::7
+
+	startf: f(5)::\
+		startf: f(2)::\
+			startf: f(1)::\
+
+			/endf f(1)::1
+
+		/endf /f(2)::1
+
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+	/endf /f(5)::4
+
+	startf: f(3)::\
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+	/endf /f(3)::2
+
+	startf: f(3)::\
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+	/endf /f(3)::2
+
+	startf: f(2)::\
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+	/endf /f(2)::1
+
+	startf: f(2)::\
+		startf: f(1)::\
+
+		/endf f(1)::1
+
+	/endf /f(2)::1
+
+	startf: f(1)::\
+
+	/endf f(1)::1
+
+	startf: f(1)::\
+
+	/endf f(1)::1
+
+	startf: f(1)::\
+
+	/endf f(1)::1
+
+	startf: f(1)::\
+
+	/endf f(1)::1
+
+	startf: f(1)::\
+
+	/endf f(1)::1
+
+	startf: f(1)::\
+
+	/endf f(1)::1
+
+	startf: f(1)::\
+
+	/endf f(1)::1
+
+	startf: f(1)::\
+
+	/endf f(1)::1
+
+/endf /f(15)::25
