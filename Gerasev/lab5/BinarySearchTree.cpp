@@ -34,24 +34,6 @@ void BinarySearchTree::updateQuantityOfNodes()
     quantityOfNodes = 1 + quantityOfNodesLeft + quantityOfNodesRight;
 }
 
-BinarySearchTree* BinarySearchTree::find(int inputData)
-{
-    if (data == inputData)
-        return this;
-    
-    if (inputData < data)
-    {
-        if (pointers.left == nullptr) return nullptr;
-        return (pointers.left->find(inputData));
-    }
-
-    else
-    {
-        if (pointers.right == nullptr) return nullptr;
-        return (pointers.right->find(inputData));
-    }
-}
-
 BinarySearchTree* BinarySearchTree::rotateLeft() // (A, (B, C)) -> ((A, B), C))
 {
     BinarySearchTree* right = pointers.right;
@@ -94,22 +76,16 @@ BinarySearchTree* BinarySearchTree::insertInRoot(int inputData)
         }
     }
 
+    if (pointers.right == nullptr)
+    {
+        pointers.right = new BinarySearchTree(inputData);
+        return this;
+    }
     else
     {
-        if (pointers.right == nullptr)
-        {
-            pointers.right = new BinarySearchTree(inputData);
-            return this;
-        }
-        else
-        {
-            pointers.right = pointers.right->insertInRoot(inputData);
-            return rotateLeft();
-        }
+        pointers.right = pointers.right->insertInRoot(inputData);
+        return rotateLeft();
     }
-
-    cout << "ERROR, unexpected behavour on insertInRoot metod\n";
-    return nullptr;
 }
 
 BinarySearchTree* BinarySearchTree::insert(int inputData)
@@ -120,12 +96,13 @@ BinarySearchTree* BinarySearchTree::insert(int inputData)
     bool stopHere = false;
     if (randNumber%(quantityOfNodes + 1) == 0)
         stopHere = true;
-    
-    cout << "\nquantityOfNodes is " << quantityOfNodes << '\n';
-    cout << "stopHere is " << stopHere << '\n';
 
     if (stopHere)
-        return insertInRoot(inputData);
+    {
+        BinarySearchTree* res = insertInRoot(inputData);
+        updateQuantityOfNodes();
+        return res;
+    }
 
     if (inputData < data)
     {
@@ -144,17 +121,6 @@ BinarySearchTree* BinarySearchTree::insert(int inputData)
 
     updateQuantityOfNodes();
     return this;
-}
-
-void BinarySearchTree::view(int d)
-{
-    string buff(d, ' ');
-    cout << buff << data << '\n';
-    
-    if (pointers.left != nullptr)
-        pointers.left->view(d+1);
-    if (pointers.right != nullptr)
-        pointers.right->view(d+1);
 }
 
 void BinarySearchTree::draw(string buffer, bool isLast)
@@ -204,5 +170,6 @@ int main()
     }
 
     bt_ptr->draw();
+
     return 0;
 }

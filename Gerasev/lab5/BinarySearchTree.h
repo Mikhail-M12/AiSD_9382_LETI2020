@@ -21,13 +21,11 @@ public:
     BinarySearchTree(string input);
     ~BinarySearchTree();
 
-    void view(int d = 0);
     void draw(string buffer = "", bool isLast = true);
 
     int getQuantityOfNodes();
     void updateQuantityOfNodes();
 
-    BinarySearchTree* find(int data);
     BinarySearchTree* rotateLeft();
     BinarySearchTree* rotateRight();
 
