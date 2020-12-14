@@ -212,44 +212,85 @@ void BinarySearchTree::draw(string buffer, bool isLast)
         cout << buffer << end << dash << " empty\n";
 }
 
-int main()
+void greetingMessage()
 {
-    srand(time(0));
+    cout << "\nFile input example -- ./main -f input.txt\n\n";
+    cout << "Hello. Please input null terminated ";
+    cout << "sequence of numbers.\nThe programm will make ";
+    cout << "binary out of them.\nThen input a number, to ";
+    cout << "delete it from the tree.\n";
+}
 
+BinarySearchTree* stdInputTree()
+{
     int data;
     cin >> data;
-    BinarySearchTree* bt1_ptr = new BinarySearchTree(data); 
+    BinarySearchTree* tree = new BinarySearchTree(data); 
     cin >> data;
 
     while (data != 0)
     {
-        bt1_ptr = bt1_ptr->insert(data);
+        tree = tree->insert(data);
         cin >> data;
     }
+    return tree;
+}
 
-    bt1_ptr->draw();
-    // cout << "\n\n";
+void stdInputCase()
+{
+    BinarySearchTree* tree = stdInputTree(); 
 
-    // cin >> data;
-    // BinarySearchTree* bt2_ptr = new BinarySearchTree(data); 
-    // cin >> data;
+    cout << "\nYour tree -- \n";
+    tree->draw();
 
-    // while (data != 0)
-    // {
-    //     bt2_ptr = bt2_ptr->insert(data);
-    //     cin >> data;
-    // }
-
-    // bt2_ptr->draw();
-    // cout << "\n\n";
-
-    // BinarySearchTree* res = join(bt1_ptr, bt2_ptr);
-    // res->draw();
-
+    int data;
+    cout << "\nNumber to delete -- ";
     cin >> data;
-    bt1_ptr = bt1_ptr->deleteFirst(data);
-    bt1_ptr->draw();
+    tree = tree->deleteFirst(data);
+
+    cout << "\nThe result -- \n";
+    tree->draw();
+}
+
+void fileInputCase(string path)
+{
+    ifstream fin;
+    fin.open(path);
+
+    int data;
+    fin >> data;
+    BinarySearchTree* tree = new BinarySearchTree(data); 
+
+    while (fin >> data)
+    {
+        tree = tree->insert(data);
+    }
+
+    cout << "\nYour tree -- \n";
+    tree->draw();
 
 
+    cout << "\nNumber to delete -- ";
+    cin >> data;
+
+    tree->deleteFirst(data);
+
+    cout << "\nResult -- \n";
+    tree->draw();
+}
+
+int main(int argc, char *argv[])
+{
+    srand(time(0));
+    if (argc>= 2) // Arguments case
+    {
+        string flag(argv[1]);
+        string path(argv[2]);
+        if (flag.compare("-f") == 0)
+            fileInputCase(path); // No obvious way to overload the function
+        return 0;
+    }
+    greetingMessage();
+    stdInputCase();
     return 0;
 }
