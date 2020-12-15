@@ -30,6 +30,12 @@ struct HashTable {
         }
         arr_.at(k) = n.symbol_;
     }
+    char getElement(std::string s)
+    {
+        int k = getHash(arr_.size(), s);
+        std::cout<<"Найден код : "<< s <<"  Хэш : "<< k<<std::endl;
+        return arr_.at(k);
+    }
 };
 
 int getLog(int a);
@@ -122,15 +128,16 @@ bool readCode(StreamT &in, int codeSize, std::string &temp) {
 }
 
 template<typename StreamT>
-std::string deCode(StreamT &in, int codeSize, const HashTable &hTable) {
+std::string deCode(StreamT &in, int codeSize,  HashTable &hTable) {
     std::string res;
     std::string temp;
+    char c;
     int k;
     while (readCode(in, codeSize, temp)) {
-        k = getHash(hTable.arr_.size(), temp);
-        if (hTable.arr_.at(k) == '\0')
+        c = hTable.getElement(temp);
+        if (c == '\0')
             throw std::runtime_error("Неопознанный код " + temp);
-        res.push_back(hTable.arr_.at(k));
+        res.push_back(c);
     }
     return res;
 }
