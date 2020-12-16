@@ -36,79 +36,53 @@ RandomBinarySearchTree* createTree(char data, RandomBinarySearchTree* randomBina
     return randomBinarySearchTree;
 }
 
+RandomBinarySearchTree* findMax(RandomBinarySearchTree* root) {
 
-RandomBinarySearchTree* searchLowest(RandomBinarySearchTree* randomBinarySearchTree, RandomBinarySearchTree* temp) {
-    // if there is left subtree
-    if (randomBinarySearchTree->left) searchLowest(randomBinarySearchTree->left, temp);
-    // if subtree hasn't right subtree
-    else if (!randomBinarySearchTree->right) {
-        temp->data = randomBinarySearchTree->data;
-        temp->count = randomBinarySearchTree->count;
-        if (randomBinarySearchTree->parent->right->data == randomBinarySearchTree->data)
-            randomBinarySearchTree->parent->right = nullptr;
-        else if (randomBinarySearchTree->parent->left->data == randomBinarySearchTree->data)
-            randomBinarySearchTree->parent->left = nullptr;
-        return temp;
-        //if left subtree has right subtree
-    } else if (randomBinarySearchTree->right) {
-        temp->data = randomBinarySearchTree->data;
-        temp->count = randomBinarySearchTree->count;
-        randomBinarySearchTree->data = randomBinarySearchTree->right->data;
-        randomBinarySearchTree->count = randomBinarySearchTree->right->count;
-        randomBinarySearchTree->left = randomBinarySearchTree->right->left;
-        randomBinarySearchTree->right = randomBinarySearchTree->right->right;
-        return temp;
+    if(root == nullptr) return nullptr;
+
+    while(root->right) {
+        root = root->right;
     }
+    return root;
 }
-
-void removeElem(RandomBinarySearchTree* randomBinarySearchTree) {
-    if (!randomBinarySearchTree->parent && !randomBinarySearchTree->left && !randomBinarySearchTree->right && randomBinarySearchTree->count ==1) {
-        delete randomBinarySearchTree;
-        cout<<"empty tree";
-        exit(1);
+RandomBinarySearchTree* deleteNode(RandomBinarySearchTree* root, char data, bool replaced) {
+    //cannot find tree
+    if(root == nullptr) {
+        cout<<"There no element\n";
+        return root;
     }
-    // if there is more then 1 element with this value
-    if (randomBinarySearchTree->count > 1) randomBinarySearchTree->count--;
-    // remove leaf
-    else if (!randomBinarySearchTree->left && !randomBinarySearchTree->right && randomBinarySearchTree->count == 1) {
-        if (randomBinarySearchTree->parent->right->data == randomBinarySearchTree->data)
-            randomBinarySearchTree->parent->right = nullptr;
-        else if (randomBinarySearchTree->parent->left->data == randomBinarySearchTree->data)
-            randomBinarySearchTree->parent->left = nullptr;
+    else if(data < root->data)
+        root->left = deleteNode(root->left, data, replaced);
+    else if (data > root->data)
+        root->right = deleteNode(root->right, data, replaced);
+    else {
+        //there no subtree
+        if (root->count > 1 && replaced) root->count--;
+        else if (!root->parent && !root->left && !root->right) {
+            cout<<"empty tree";
+            exit(1);
+        }
+        else if(root->right == nullptr && root->left == nullptr){
+            delete root;
+            root = nullptr;
+        }
+            //has right subtree
+        else if(root->right == nullptr) {
+            root = root->left;
+        }
+        // has left subtree
+        else if(root->left == nullptr) {
+            root= root->right;
+        }
+            // has two subtrees
+        else {
+            RandomBinarySearchTree* temp = findMax(root->left);
+            root->data = temp->data;
+            root->count = temp->count;
+            root->left = deleteNode(root->left, temp->data, false);
+        }
     }
-
-    //if remove node has only left subtree
-    else if (randomBinarySearchTree->left && !randomBinarySearchTree->right) {
-        randomBinarySearchTree->data = randomBinarySearchTree->left->data;
-        randomBinarySearchTree->count = randomBinarySearchTree->left->count;
-        randomBinarySearchTree->left = randomBinarySearchTree->left->left;
-        if (randomBinarySearchTree->left)
-            randomBinarySearchTree->right = randomBinarySearchTree->left->right;
-    }
-    // if remove node has only right subtree
-    else if (!randomBinarySearchTree->left && randomBinarySearchTree->right)  {
-        randomBinarySearchTree->data = randomBinarySearchTree->right->data;
-        randomBinarySearchTree->count = randomBinarySearchTree->right->count;
-        randomBinarySearchTree->left = randomBinarySearchTree->right->left;
-        randomBinarySearchTree->right = randomBinarySearchTree->right->right;
-    }
-    //if remove leaf has left and right subtree
-    else if (randomBinarySearchTree->left && randomBinarySearchTree->right)  {
-        RandomBinarySearchTree* temp = randomBinarySearchTree;
-        randomBinarySearchTree = searchLowest(randomBinarySearchTree->right, temp);
-    }
-
-}
-
-void search(char elem, RandomBinarySearchTree* randomBinarySearchTree) {
-    // cannot find element in tree
-    if (!randomBinarySearchTree) {
-        cout<<"There no this element\n";
-        return;
-    }
-    if (elem < randomBinarySearchTree->data) search(elem, randomBinarySearchTree->left);
-    else if (elem > randomBinarySearchTree->data) search(elem, randomBinarySearchTree->right);
-    else removeElem(randomBinarySearchTree);
+    return root;
 }
 
 void printLKP(RandomBinarySearchTree* randomBinarySearchTree) {
@@ -124,7 +98,7 @@ void removeElement(RandomBinarySearchTree* randomBinarySearchTree, int mode) {
         do {
             cout<<"If you want to stop press '+'\nEnter remove element:\n";
             cin>>removeElem;
-            search(removeElem, randomBinarySearchTree);
+            randomBinarySearchTree = deleteNode(randomBinarySearchTree, removeElem, true);
             cout<<"LKP of tree:\n";
             printLKP(randomBinarySearchTree);
             cout<<"\n";//
@@ -142,7 +116,7 @@ void removeElement(RandomBinarySearchTree* randomBinarySearchTree, int mode) {
             //reading file char by char
             fin>>removeElem;
             if (!fin.eof()) {
-                search(removeElem, randomBinarySearchTree);
+                randomBinarySearchTree = deleteNode(randomBinarySearchTree, removeElem, true);
                 cout<<"LKP of tree:\n";
                 printLKP(randomBinarySearchTree);
                 cout<<"\n";
