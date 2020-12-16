@@ -12,6 +12,7 @@
 #include "QRegExp"
 #include <regex>
 #include <QPushButton>
+#include <QRadioButton>
 class cw : public QMainWindow
 {
     Q_OBJECT
@@ -27,6 +28,11 @@ public:
 	QPushButton* deleteButton;
 	QPushButton* stopButton;
 	QPushButton* continueButton;
+	QPushButton* stepButton;
+	QRadioButton* automodeButton;
+	bool step = false;
+	bool automode = false;
+
 	QLineEdit* input;
 	QRegExp elemRegExp;
 	QRegExp treapRegExp;
@@ -34,6 +40,7 @@ public:
 	void paintElem(QPainter* painter, TreapElem* e, QRect* qr, float xcoef);
 	void paintTreap(QPainter* painter, Treap treap);
 	void DelayMs(int ms);
+
 	void visualisedInsert(TreapElem*& root, TreapElem a);
 	void visualisedRotateRight(TreapElem*& root);
 	void visualisedRotateLeft(TreapElem*& root);
@@ -42,6 +49,8 @@ public:
 public slots:
 	void insertButtonClicked();
 	void deleteButtonClicked();
+	void stepButtonClicked();
+	void automodeButtonClicked();
 
 private:
     Ui::cwClass ui;

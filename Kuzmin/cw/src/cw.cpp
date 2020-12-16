@@ -7,14 +7,7 @@ cw::cw(QWidget *parent)
     : QMainWindow(parent)
 {
 	ui.setupUi(this);
-
 	this->setMinimumSize(800, 600);
-
-	//окно для ввода элемента
-	input = new QLineEdit(this);
-	input->setGeometry(QRect(400, 0, 100, 60));
-	input->setFont(QFont("Tahoma", 13, 13));
-	input->setFocus();
 
 	//регулярные выражения для проверки корректности ввода
 	elemRegExp = QRegExp("\\s*\\(\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*\\)\\s*");
@@ -24,6 +17,12 @@ cw::cw(QWidget *parent)
 	//окно для вывода содержимого файла
 	fileTextLabel = new QLabel(this);
 	fileTextLabel->setGeometry(QRect(0, 650, 800, 60));
+
+	//кнопка для включения/выключения автоматического режима
+	automodeButton = new QRadioButton(convertedString("Автоматический режим"), this);
+	automodeButton->setGeometry(QRect(0, 400, 500, 60));
+	automodeButton->setFont(QFont("Tahoma", 13, 13));
+	connect(automodeButton, SIGNAL(clicked()), this, SLOT(automodeButtonClicked()));
 
 	//обработка файла
 	std::ifstream fs("treap.txt");
@@ -70,21 +69,43 @@ cw::cw(QWidget *parent)
 	insertButton = new QPushButton("INSERT", this);
 	insertButton->setGeometry(QRect(0, 120, 100, 50));
 	connect(insertButton, SIGNAL(clicked()), this, SLOT(insertButtonClicked()));
-	insertButton->setFocusPolicy(Qt::ClickFocus);
+	insertButton->setFocusPolicy(Qt::StrongFocus);
 
 	//кнопка для удаления элемента
 	deleteButton = new QPushButton("DELETE", this);
 	deleteButton->setGeometry(QRect(120, 120, 100, 50));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteButtonClicked()));
-	deleteButton->setFocusPolicy(Qt::ClickFocus);
+	deleteButton->setFocusPolicy(Qt::StrongFocus);
+
+	//кнопка для совершения следующего шага алгоритма
+	stepButton = new QPushButton("NEXT STEP", this);
+	stepButton->setGeometry(QRect(0, 450, 100, 50));
+	connect(stepButton, SIGNAL(clicked()), this, SLOT(stepButtonClicked()));
+	stepButton->setFocusPolicy(Qt::StrongFocus);
+
+
+	//окно для ввода элемента
+	input = new QLineEdit(this);
+	input->setGeometry(QRect(400, 0, 100, 60));
+	input->setFont(QFont("Tahoma", 13, 13));
+	input->setFocusPolicy(Qt::StrongFocus);
 }
 
 //функция осуществляющая задержку приложения(используется при визулизации)
-void cw::DelayMs(int ms) {
+void cw::DelayMs(int ms){
+	
 	QTime dieTime = QTime::currentTime().addMSecs(ms);
-	while (QTime::currentTime() < dieTime) {
-		QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+	if (automode)
+		while (QTime::currentTime() < dieTime) {
+			QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 	}
+	else {
+		while (1){
+			if (step) break;
+			QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+		}	
+	}
+	step = false;
 }
 
 //получение содержимого файла, с которого вводится дерамида
@@ -116,9 +137,9 @@ void cw::paintElem(QPainter* painter, TreapElem* e, QRect* qr, float xcoef = 150
 		painter->setBrush(Qt::white);
 		painter->drawText(*qr, Qt::AlignCenter, *e);
 		connectElemes(painter, e, e->left, *qr, QRect(qr->x() - xcoef, qr->y() + 100, qr->width(), qr->height()));
-		paintElem(painter, e->left, new QRect(qr->x() - xcoef, qr->y() + 100, qr->width(), qr->height()), xcoef / 3 * 2);
+		paintElem(painter, e->left, new QRect(qr->x() - xcoef, qr->y() + 100, qr->width(), qr->height()), xcoef / 2);
 		connectElemes(painter, e, e->right, *qr, QRect(qr->x() + xcoef, qr->y() + 100, qr->width(), qr->height()));
-		paintElem(painter, e->right, new QRect(qr->x() + xcoef, qr->y() + 100, qr->width(), qr->height()), xcoef / 3 * 2);
+		paintElem(painter, e->right, new QRect(qr->x() + xcoef, qr->y() + 100, qr->width(), qr->height()), xcoef /  2);
 	}
 	else return;
 }
@@ -235,8 +256,8 @@ void cw::visualisedInsert(TreapElem*& root, TreapElem a) {
 	//повороты (если требуется)
 	if (root->left && root->left->prior > root->prior) {
 		actionLabel->setText(convertedString("Значение приоритета левого потомка ") + QString(*root->left)
-		+ convertedString(" больше чем значение приоритета текущего элемента ") + QString(*root)
-		+ convertedString("\nОсуществляется поворот направо\n"));
+			+ convertedString(" больше чем значение приоритета текущего элемента ") + QString(*root)
+			+ convertedString("\nОсуществляется поворот направо вокруг элемента ") + QString(*root));
 
 		visualisedRotateRight(root);
 		update();
@@ -245,7 +266,7 @@ void cw::visualisedInsert(TreapElem*& root, TreapElem a) {
 	if (root->right && root->right->prior > root->prior) {
 		actionLabel->setText(convertedString("Значение приоритета правого потомка: ") + QString(*root->right) 
 		+ convertedString(" больше чем значение приоритета текущего элемента ") + QString(*root)
-		+ convertedString("\nОсуществляется поворот налево\n"));
+			+ convertedString("\nОсуществляется поворот налево вокруг элемента ") + QString(*root));
 		
 		visualisedRotateLeft(root);
 		update();
@@ -286,7 +307,7 @@ void cw::visualisedDelete(TreapElem*& root, TreapElem a) {
 			if (root->left->prior < root->right->prior){
 
 				actionLabel->setText(convertedString("Правый потомок элемента имеет больший приоритет, чем левый\n"));
-				actionLabel->setText(actionLabel->text() + convertedString("Осуществляется поворот налево"));
+				actionLabel->setText(actionLabel->text() + convertedString("\nОсуществляется поворот налево вокруг элемента ") + QString(*root));
 				// Поворот налево
 				visualisedRotateLeft(root);
 
@@ -296,7 +317,7 @@ void cw::visualisedDelete(TreapElem*& root, TreapElem a) {
 			//если у правого потомка больший приоритет, то тогда делается поворот налево
 			else{
 				actionLabel->setText(convertedString("Левый потомок элемента имеет меньший приоритет, чем правый\n"));
-				actionLabel->setText(actionLabel->text() + convertedString("Осуществляется поворот направо"));
+				actionLabel->setText(actionLabel->text() +convertedString("\nОсуществляется поворот направо вокруг элемента ") + QString(*root));
 				// Поворот налевo
 				visualisedRotateRight(root);
 
@@ -340,7 +361,7 @@ void cw::visualisedDelete(TreapElem*& root, TreapElem a) {
 //обработчик нажатия на кнопку удаления
 void cw::deleteButtonClicked() {
 
-	
+	automodeButton->setDisabled(1);
 	bool correct = elemRegExp.exactMatch(input->text());//проверка ввода при помощи регулярного выражения
 	if (correct) { //если ввод корректен, запускается алгоритм удаления, кнопки для удаления и вставка становятся неактивными
 				   //как и окно для ввода элемента
@@ -363,11 +384,11 @@ void cw::deleteButtonClicked() {
 	deleteButton->setDisabled(0);
 	insertButton->setDisabled(0);
 	input->setDisabled(0);
-	input->setFocus();
+	automodeButton->setDisabled(0);
 }
 //обработчик нажатия на кнопку вставки
 void cw::insertButtonClicked(){
-
+	automodeButton->setDisabled(1);
 	bool correct = elemRegExp.exactMatch(input->text()); //проверка ввода при помощи регулярного выражения
 	if (correct) { //если ввод корректен, запускается алгоритм вставки, кнопки для удаления и вставка становятся неактивными
 				   //как и окно для ввода элемента
@@ -388,5 +409,21 @@ void cw::insertButtonClicked(){
 	deleteButton->setDisabled(0);
 	insertButton->setDisabled(0);
 	input->setDisabled(0);
-	input->setFocus();
+	automodeButton->setDisabled(0);
+}
+//обработка нажатия на кнопку "автоматический режим"
+void cw::automodeButtonClicked() {
+	if (automode == false) {
+		automode = true;
+		stepButton->setDisabled(1);
+	}
+	else {
+		automode = false;
+		stepButton->setDisabled(0);
+	}
+}
+//обработка нажатия на кнопку "следующий шаг"
+void cw::stepButtonClicked(){
+	if (!input->isEnabled())
+	step = true;
 }
