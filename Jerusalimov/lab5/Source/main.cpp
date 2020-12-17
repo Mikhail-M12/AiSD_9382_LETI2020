@@ -21,9 +21,9 @@ public:
     TREE() { duk = nullptr; }
     ~TREE();
     TREE **GetDuk() { return &duk; }
-    void Search(int num, int* count);
-    void Tree (int, TREE **,char side,int depth, int parrent);
-    void TreeFromFile (int n,TREE **p,ifstream& in,char side,int depth,int parrent);
+    void Search(int num, int* count,int n);
+    void Tree (int, TREE **,char side,int depth, int parrent,bool dataShow);
+    void TreeFromFile (int n,TREE **p,ifstream& in,char side,int depth,int parrent,bool dataShow);
     void print1(TREE ** root, short x, short y, short a, char c);
     void printDepth(int depth);
     void Vyvod (TREE **, int);
@@ -40,19 +40,28 @@ TREE::~TREE(){
     delete duk;
 }
 
-void TREE::Search(int num,int* count) {
+void TREE::Search(int num,int* count,int n) {
     if(this->duk != nullptr){
-        duk->Search(num,count);
+        duk->Search(num,count,n);
     }else{
         TREE *l =this->Left, *r = this->Right;
         if(l != nullptr){
-            l->Search(num, count);
+            l->Search(num, count,n);
         }
         if(r != nullptr){
-            r->Search(num, count);
+            r->Search(num, count,n);
         }
+
         if(Key == num) {
+            cout<<"\n\tFound!"<<"\n________________________________________\n";
+            cout<<Key<<" == "<<num<<'\n';
+            Vyvod(&duk,n);
+
             *count += 1;
+            cout<<"Count = "<< *count<<".\n________________________________________\n";
+        }else{
+            Vyvod(&duk,n);
+            cout<<Key<<" != "<<num<<'\n';
         }
 
     }
@@ -75,12 +84,19 @@ int main ()
                 exit (0);
                 break;
             case 1:
-                cout<<"1 - Console. 2 - File";
+                cout<<"1 - Console. 2 - File\n";
                 if(!(cin>>fileOrConsole)) {
                     cout<<"Eror you should input only digit\n";
                     cin.clear();
                 }else {
                     if (fileOrConsole == 2) {
+                        cout<<"Show logs?\n 1 - Yes. 0 - No\n";
+                        bool logs;
+                        if(!(cin>>logs)){
+                            cout<<"Eror you should input only digit\n";
+                            cin.clear();
+                            break;
+                        }
                         string input_filename;
                         const string output_filename = "output.txt";
                         ifstream in;
@@ -93,20 +109,27 @@ int main ()
                         in.open(input_filename);
                         if (in.is_open()) {
                             in >> n;
-                            A.TreeFromFile(n, A.GetDuk(), in, 'k', depth, 0);
+                            A.TreeFromFile(n, A.GetDuk(), in, 'k', depth, 0,logs);
                             in.close();
                             cout << "A draft of the received data:\n";
                             A.Vyvod(A.GetDuk(), n);
                         }
 
                     } else {
+                        cout<<"Show logs?\n 1 - Yes. 0 - No\n";
+                        bool logs;
+                        if(!(cin>>logs)){
+                            cout<<"Eror you should input only digit\n";
+                            cin.clear();
+                            break;
+                        }
                         cout << "Enter the number of vertices -...\n";
                         if((cin >> n)){
                             if (n == 0) {
                                 cout << "Empty array!\n";
                             } else {
                                 cout << "Enter keys...\n";
-                                A.Tree(n, A.GetDuk(), 'k', depth, 0);
+                                A.Tree(n, A.GetDuk(), 'k', depth, 0,logs);
                                 cout << "A draft of the received data:\n";
                                 A.Vyvod(A.GetDuk(), n);
 
@@ -135,10 +158,11 @@ int main ()
                 cout << "Enter the item you are looking for - ...\n";
                 if(!(cin >> search)){
                     cout<<"Eror input should be digit!";
+                }else {
+                    A.Search(search, &count,n);
+                    cout << "Elemet : " << search << " amount " << count << '\n';
+                    count = 0;
                 }
-                A.Search(search, &count);
-                cout<<"Elemet : "<<search <<" amount "<< count<<'\n';
-                count = 0;
                 system ("pause");
                 break;
             default:
@@ -149,7 +173,7 @@ int main ()
     }
 
 }
-void TREE::TreeFromFile (int n,TREE **p,ifstream& in,char side,int depth, int parrent){
+void TREE::TreeFromFile (int n,TREE **p,ifstream& in,char side,int depth, int parrent,bool dataShow){
     TREE *now;
     int x,nl,nr;
     ++depth;
@@ -159,105 +183,140 @@ void TREE::TreeFromFile (int n,TREE **p,ifstream& in,char side,int depth, int pa
     {
         nl = n/2;
         nr = n - nl - 1;
-        in>>x;
+        if(!(in>>x)){
+
+            cout<<"Eror input should be digit!\n";
+           in.close();
+            return;
+        }
         now = new TREE;
         (*now).Key = x;
-        printDepth(depth);
-        if(side == 'l'){
-            cout<<"Add Left children = "<< x<<";\n";
+        if(dataShow == 1){
+            cout<<"\n___________________\n";
             printDepth(depth);
-            cout<<"His parrent is = "<< parrent<<";\n";
-            if(nl+nr==0){
+
+            if(side == 'l'){
+                cout<<"Add Left children = "<< x<<";\n";
                 printDepth(depth);
-                cout<<"reached the leaf = "<<x<<'\n';
-            }else {
+                cout<<"His parrent is = "<< parrent<<";\n";
+                if(nl+nr==0){
+                    printDepth(depth);
+                    cout<<"reached the leaf = "<<x<<'\n';
+                    cout<<"\t  "<<parrent<<"\n\t /\n\t"<<x<<"\n";
+                    cout<<"       / \\\n";
+                    cout<<"   "<<"null   null\n";
+                }else {
+                    printDepth(depth);
+                    cout<<"Became a tree node...\n";
+                    cout<<"\t  "<<parrent<<"\n\t /\n\t"<<x<<"\n";
+
+                }
+            }else if(side == 'r'){
+                cout<<"Add Right children = "<< x<<" ;\n";
                 printDepth(depth);
-                cout<<"Became a tree node...\n";
+                cout<<"His parrent is = "<< parrent<<";\n";
+                if(nl+nr==0){
+
+                    printDepth(depth);
+                    cout<<"reached the leaf = "<<x<<'\n';
+                    cout<<"\t "<<parrent<<"\n\t  \\\n\t   "<<x<<"\n";
+                    cout<<"\t  / \\\n";
+                    cout<<"      "<<"null    null\n";
+                }else {
+                    printDepth(depth);
+                    cout << "Became a tree node...\n";
+                    cout<<"\t "<<parrent<<"\n\t  \\\n\t   "<<x<<"\n";
+
+                }
+            }else if(side == 'k'){
+                cout<<"Add Root = "<< x<<" ;\n";
             }
-        }else if(side == 'r'){
-            cout<<"Add Right children = "<< x<<" ;\n";
-            printDepth(depth);
-            cout<<"His parrent is = "<< parrent<<";\n";
-            if(nl+nr==0){
-                printDepth(depth);
-                cout<<"reached the leaf = "<<x<<'\n';
-            }else {
-                printDepth(depth);
-                cout << "Became a tree node...\n";
-            }
-        }else if(side == 'k'){
-            cout<<"Add Root = "<< x<<" ;\n";
+            cout<<"\n___________________\n";
         }
-        cout<<"\n___________________\n";
+
         //else {
-       //     cout<<"in a node "<<x<<" - "<<nl+nr<<" childrens\n";
-       // }
-        TreeFromFile (nl,&((*now).Left),in,'l',depth, x);
+        //     cout<<"in a node "<<x<<" - "<<nl+nr<<" childrens\n";
+        // }
+        TreeFromFile (nl,&((*now).Left),in,'l',depth, x,dataShow);
         --depth;
-        TreeFromFile (nr,&((*now).Right), in, 'r',depth,x);
+        TreeFromFile (nr,&((*now).Right), in, 'r',depth,x,dataShow);
         *p = now;
 
     }
     --depth;
 }
 
-void TREE::Tree (int n,TREE **p,char side,int depth,int parrent){
-// Построение идеально сбалансированного
-//           дерева с n вершинами.
-// *p - указатель на корень дерева.
+void TREE::Tree (int n,TREE **p,char side,int depth,int parrent,bool dataShow)
+{
 
     TREE *now;
-    int x,nl,nr;
+    int x, nl, nr;
     ++depth;
     now = *p;
-    if  (n==0) *p = NULL;
-    else
-    {
-        nl = n/2;
+    if (n == 0) *p = NULL;
+    else {
+        nl = n / 2;
         nr = n - nl - 1;
-        if(!(cin>>x)){
+        if (!(cin >> x)) {
 
-            cout<<"Eror input should be digit!\n";
+            cout << "Eror input should be digit!\n";
             cin.clear();
-            exit(0);
-        }
-        else {
+            return;
+        } else {
             now = new TREE;
             (*now).Key = x;
-            printDepth(depth);
-            if (side == 'l') {
-                cout << "Add Left children = " << x << ";\n";
+            if (dataShow == 1) {
                 printDepth(depth);
-                cout << "His parrent is = " << parrent << ";\n";
-                if (nl + nr == 0) {
+                if (side == 'l') {
+                    cout << "Add Left children = " << x << " ;\n";
                     printDepth(depth);
-                    cout << "reached the leaf = " << x << '\n';
-                } else {
+                    cout << "His parrent is = " << parrent << ";\n";
+                    if (nl + nr == 0) {
+                        printDepth(depth);
+                        cout << "reached the leaf = " << x << '\n';
+                        cout << "\t  " << parrent << "\n\t /\n\t" << x << "\n";
+                        cout << "       / \\\n";
+                        cout << "   " << "null   null\n";
+                    } else {
+                        printDepth(depth);
+                        cout << "Became a tree node...\n";
+                        cout << "\t  " << parrent << "\n\t /\n\t" << x << "\n";
+
+                    }
+                } else if (side == 'r') {
+                    cout << "Add Right children = " << x << " ;\n";
                     printDepth(depth);
-                    cout << "Became a tree node...\n";
+                    cout << "His parrent is = " << parrent << ";\n";
+                    if (nl + nr == 0) {
+
+                        printDepth(depth);
+                        cout << "reached the leaf = " << x << '\n';
+                        cout << "\t " << parrent << "\n\t  \\\n\t   " << x << "\n";
+                        cout << "\t  / \\\n";
+                        cout << "      " << "null    null\n";
+                    } else {
+                        printDepth(depth);
+                        cout << "Became a tree node...\n";
+                        cout << "\t " << parrent << "\n\t  \\\n\t   " << x << "\n";
+
+                    }
+                } else if (side == 'k') {
+                    cout << "Add Root = " << x << " ;\n";
                 }
-            } else if (side == 'r') {
-                cout << "Add Right children = " << x << " ;\n";
-                printDepth(depth);
-                cout << "His parrent is = " << parrent << ";\n";
-                if (nl + nr == 0) {
-                    printDepth(depth);
-                    cout << "reached the leaf = " << x << '\n';
-                } else {
-                    printDepth(depth);
-                    cout << "Became a tree node...\n";
-                }
-            } else if (side == 'k') {
-                cout << "Add Root = " << x << " ;\n";
+                cout << "\n___________________\n";
             }
-            cout << "\n___________________\n";
-            Tree(nl, &((*now).Left), 'l', depth, x);
-            Tree(nr, &((*now).Right), 'r', depth, x);
-            *p = now;
+                Tree(nl, &((*now).Left), 'l', depth, x, dataShow);
+                Tree(nr, &((*now).Right), 'r', depth, x, dataShow);
+                *p = now;
         }
     }
     --depth;
 }
+
+
+
+
+
 
 void TREE::Vyvod (TREE **w,int l)
 // Изображение бинарного дерева, заданного
@@ -280,30 +339,25 @@ void GoToXY (short x, short y)
     SetConsoleCursorPosition(StdOut, coord);
 }
 
-void TREE::print1(TREE ** root, short x, short y, short a, char c)
-{
-    if ((*root) != nullptr)
-    {
-        if (a>0 && c!='k')
-        {
-            if (c=='l')
-                x-=10*a;
+void TREE::print1(TREE ** root, short x, short y, short a, char c) {
+    if ((*root) != nullptr) {
+        if (a > 0 && c != 'k') {
+            if (c == 'l')
+                x -= 10 * a;
             else
-                x+=10*a;
-        }
-        else
-        if (c!='k')
-            if (c=='l')
-                x-=4;
+                x += 10 * a;
+        } else if (c != 'k')
+            if (c == 'l')
+                x -= 4;
             else
-                x+=4;
+                x += 4;
 
-        GoToXY (x,y+=2);
+        GoToXY(x, y += 2);
 
         a--;
 
-        cout<<((**root).Key);
-            print1(&((*root)->Left), x, y, a, 'l');
-            print1(&((*root)->Right), x, y, a, 'r');
+        cout << ((**root).Key);
+        print1(&((*root)->Left), x, y, a, 'l');
+        print1(&((*root)->Right), x, y, a, 'r');
     }
 }
