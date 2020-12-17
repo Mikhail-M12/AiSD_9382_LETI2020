@@ -149,14 +149,11 @@ void deCode(StreamT &in, Node *head, std::string &res) {
 
 template<typename StreamT>
 void readCountTable(StreamT &in, std::vector<Symbol> &symbols) {
-    std::cout<<"dd"<<std::endl;;
     std::string line;
     char c;
     int weight;
     in >> std::noskipws;
-    std::cout<<"dd"<<std::endl;
-    while (std::getline(in, line) && !line.empty()&&line.size()!=1) {
-        std::cout<<"GG"<<line<<std::endl;;
+    while (std::getline(in, line) && !line.empty()) {
         std::istringstream str(line);
         str >> c;
         str >> weight;
@@ -262,9 +259,7 @@ void initHahmanCodes(Node *head, std::string code, std::vector<Symbol> &S) {
 
     head->code_ = code;
     if (head->symbols_.values_.size() == 1) {
-        std::cout << S.at(head->symbols_.values_.at(0).value_).code_ << std::endl;
         S.at(head->symbols_.values_.at(0).value_).code_ = head->code_;
-        std::cout << S.at(head->symbols_.values_.at(0).value_).code_ << std::endl;
     }
     initHahmanCodes(head->left_, head->code_ + "0", S);
     initHahmanCodes(head->right_, head->code_ + "1", S);
@@ -349,9 +344,9 @@ void askAction(StreamT &in) {
 
             time = clock() - time;
 
-            std::cout << "Кол-во символов в исходном сообщении - " << atoms.weight_
+            std::cout<<"Исходное сообщение - "<< message << "\nКол-во символов в исходном сообщении - " << atoms.weight_
                       << "\nРазмер Кода - " << res.size() <<
-                      "\nРазмер при равномерном кодировании - " << getLog(atoms.values_.size()) * atoms.weight_
+                      "\nРазмер кода при равномерном кодировании - " << getLog(atoms.values_.size()) * atoms.weight_
                       << "\nВремя работы алгоритмма - " << (double) time / CLOCKS_PER_SEC
                       << std::endl;
 
@@ -359,7 +354,7 @@ void askAction(StreamT &in) {
             std::ofstream fout;
             fout.open(outFileName);
             fout << res<<std::endl;
-            fout << "Кол-во символов в исходном сообщении - " << atoms.weight_
+            fout<<"Исходное сообщение - "<< message << "\nКол-во символов в исходном сообщении - " << atoms.weight_
                       << "\nРазмер Кода - " << res.size() <<
                       "\nРазмер при равномерном кодировании - " << getLog(atoms.values_.size()) * atoms.weight_
                       << "\nВремя работы алгоритмма - " << (double) time / CLOCKS_PER_SEC
@@ -387,7 +382,8 @@ void askAction(StreamT &in) {
 
             time = clock() - time;
 
-            std::cout << "Кол-во символов в исходном сообщении - " << atoms.weight_
+
+            std::cout<<"Исходное сообщение - "<< message << "\nКол-во символов в исходном сообщении - " << atoms.weight_
                       << "\nРазмер Кода - " << res.size() <<
                       "\nРазмер при равномерном кодировании - " << getLog(atoms.values_.size()) * atoms.weight_
                       << "\nВремя работы алгоритмма - " << (double) time / CLOCKS_PER_SEC
@@ -398,23 +394,20 @@ void askAction(StreamT &in) {
             fout.open(outFileName);
 
             fout << res<<std::endl;
-            fout << "Кол-во символов в исходном сообщении - " << atoms.weight_
+            fout<<"Исходное сообщение - "<< message << "\nКол-во символов в исходном сообщении - " << atoms.weight_
                       << "\nРазмер Кода - " << res.size() <<
                       "\nРазмер при равномерном кодировании - " << getLog(atoms.values_.size()) * atoms.weight_
                       << "\nВремя работы алгоритмма - " << (double) time / CLOCKS_PER_SEC
                       << std::endl;
             fout.close();
-
             break;
         }
         case 3: {
-            std::cout<<"dd"<<std::endl;
             clock_t time;
 
             time = clock();
             std::vector<Symbol> symbols(256); //для кодирования
             Symbols atoms;
-
 
             readCountTable(in, symbols);
             cutZeroes(symbols, atoms);
@@ -429,11 +422,8 @@ void askAction(StreamT &in) {
             Node *head = new Node(atoms, "");
             S_F_Code(head, symbols);
 
-            for(auto &i:atoms.values_)
-            {
-                std::cout<<i.value_<<std::endl;
-            }
 
+            printTreeCode(head);
             std::string result;
 
             deCode(in, head, result);
@@ -474,6 +464,9 @@ void askAction(StreamT &in) {
 
             std::string result;
 
+
+            printTreeCode(head);
+
             deCode(in, head, result);
 
             time = clock() - time;
@@ -495,7 +488,6 @@ void askAction(StreamT &in) {
         }
         default:
             break;
-
     }
 }
 
