@@ -1,5 +1,0 @@
-hello здравствуйте
-see видеть
-perhaps может быть
-specify уточнять
-interrupt прерывать
