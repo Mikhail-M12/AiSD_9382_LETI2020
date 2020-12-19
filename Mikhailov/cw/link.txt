@@ -1,0 +1,3 @@
+Ссылка на онлайн компилятор с программой:
+
+https://repl.it/@BabylonExile/AlgIStrDMikhailovcw#main.cpp
