@@ -3,7 +3,7 @@
 
 #include "def.h"
 
-Tree *buildCodeTreeFano(ElemArr curFreq, bool output, std::ofstream &info);
-Tree *buildCodeTreeHuffman(ElemArr curFreq, bool output, std::ofstream &info);
+Tree *buildCodeTreeFano(ElemArr curFreq, bool output);
+Tree *buildCodeTreeHuffman(ElemArr curFreq, bool output);
 
 #endif //FANOHUFFMAN_H_

@@ -1,27 +1,21 @@
+#include <Windows.h>
 #include <cmath>
 #include "fanohuffman.h"
 
-Tree *buildCodeTreeFano(ElemArr curFreq, bool output, std::ofstream &info) {
-  if (output) {
-    std::cout << "Symbols: ";
-    info << "Symbols: ";
-  }
+Tree *buildCodeTreeFano(ElemArr curFreq, bool output) {
   // Quit recursion
   if (curFreq.size() == 0) {
-    if (output) {
+    if (output)
       std::cout << "No symbol -> empty node\n";
-      info << "No symbol -> empty node\n";
-    }
     return nullptr;
   }
-  // Symbol leaf case
+  // Symbol -> leaf case
   if (curFreq.size() == 1) {
     std::string s;
     s.push_back(curFreq.begin()->first);
-    if (output) {
+    if (output)
       std::cout << s << " One symbol -> node {" << s << ", nullptr, nullptr}" << "\n";
-      info << s << " One symbol -> node {" << s << ", nullptr, nullptr}" << "\n";
-    }
+    // Creating node from symbo
     return new Tree(new Tree::node({s, curFreq[0].second}, nullptr, nullptr));
   }
   // Count average frequency
@@ -32,45 +26,60 @@ Tree *buildCodeTreeFano(ElemArr curFreq, bool output, std::ofstream &info) {
     sum += f.second;
   }
   long avg = sum / 2;
-  if (output) {
-    std::cout << "/" << nodestr << "/ Sum: " << sum << " Average: " << avg << "\n";
-    info << "/" << nodestr << "/ Sum: " << sum << " Average: " << avg << "\n";
-  }
   // Splitting current array by frequency
   long cursum = 0, last = sum;
   auto iter = curFreq.begin();
   int strcnt = 0;
-  while (last > fabs(cursum + (iter->second) - avg)) {
+  while (last > std::abs(cursum + (iter->second) - avg)) {
     cursum += iter->second;
-    last = abs(cursum - avg);
+    last = std::abs(cursum - avg);
     iter++;
     strcnt++;
   }
+  // Print demo output
   if (output) {
-    std::cout << "  left: " << nodestr.substr(0, strcnt) << "(" << cursum << ")\n"
-              << "  right: " << nodestr.substr(strcnt) << "(" << sum - cursum << ")\n";
-    info << "  left: " << nodestr.substr(0, strcnt) << "(" << cursum << ")\n"
-         << "  right: " << nodestr.substr(strcnt) << "(" << sum - cursum << ")\n";
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+    std::cout << "/";
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 12));
+    std::cout << nodestr.substr(0, strcnt);
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 10));
+    std::cout << nodestr.substr(strcnt);
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 14));
+    std::cout << "/ Sum: " << sum << " Average: " << avg << "\n";
+    std::cout << "  left: ";
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 12));
+    std::cout << nodestr.substr(0, strcnt);
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 14));
+    std::cout << "(" << cursum << ")\n" << "  right: ";
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 10));
+    std::cout << nodestr.substr(strcnt);
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 14));
+    std:: cout << "(" << sum - cursum << ")\n";
   }
   // Building left and right subtree
   ElemArr left(curFreq.begin(), iter);
   ElemArr right(iter, curFreq.end());
-  return new Tree(new Tree::node({nodestr, cursum}, buildCodeTreeFano(left, output, info),
-                                 buildCodeTreeFano(right, output, info)));
+  return new Tree(new Tree::node({nodestr, cursum}, buildCodeTreeFano(left, output),
+                                 buildCodeTreeFano(right, output)));
 }
 
 typedef std::vector<Tree *> Forest;
 
-void HuffmanIter(Forest &forest, bool output, std::ofstream &info) {
+std::string prev;
+
+void HuffmanIter(Forest &forest, bool output) {
   // Printing forest
+  HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
   if (output) {
     std::cout << "Current forest:\n  ";
-    info << "Current forest:\n  ";
-    for (auto &e : forest) {
-      std::cout << e->getNode().first << "(" << e->getNode().second << ") ";
-      info << e->getNode().first << "(" << e->getNode().second << ") ";
+    for (int i = 0; i < forest.size(); i++) {
+      if (forest[i]->getNode().first == prev) 
+        SetConsoleTextAttribute(h, WORD(1 << 4 | 12));
+      else if (i >= forest.size() - 2)
+        SetConsoleTextAttribute(h, WORD(1 << 4 | 10));
+      std::cout << forest[i]->getNode().first << "(" << forest[i]->getNode().second << ") ";
+      SetConsoleTextAttribute(h, WORD(1 << 4 | 14));
     }
-    info << "\n";
     std::cout << "\n";
   }
 
@@ -83,14 +92,18 @@ void HuffmanIter(Forest &forest, bool output, std::ofstream &info) {
 
   // Printing new node
   if (output) {
-    std::cout << "  Sum nodes: " << prelast->getNode().first << "("
-              << prelast->getNode().second << ") and " << last->getNode().first
-              << "(" << last->getNode().second << ")\n";
-    std::cout << "  Result: " << nodestr << "(" << sum << ")\n";
-    info << "  Sum nodes: " << prelast->getNode().first << "("
-              << prelast->getNode().second << ") and " << last->getNode().first
-              << "(" << last->getNode().second << ")\n";
-    info << "  Result: " << nodestr << "(" << sum << ")\n";
+    std::cout << "  Sum nodes: ";
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 10));
+    std::cout << prelast->getNode().first << "(" << prelast->getNode().second << ")";
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 14));
+    std::cout << " and ";
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 10));
+    std::cout << last->getNode().first << "(" << last->getNode().second << ")\n";
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 14));
+    std::cout << "  Result: ";
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 12));
+    std::cout << nodestr << "(" << sum << ")\n";
+    SetConsoleTextAttribute(h, WORD(1 << 4 | 14));
   }
 
   // Creating new node
@@ -100,6 +113,8 @@ void HuffmanIter(Forest &forest, bool output, std::ofstream &info) {
     forest.push_back(new Tree(newNode));
     return;
   }
+
+  // Finding index for new element
   auto iter = forest.end();
   iter--;
   
@@ -111,12 +126,15 @@ void HuffmanIter(Forest &forest, bool output, std::ofstream &info) {
 
   // Inserting new node in forest
   forest.insert(iter, new Tree(newNode));
+  prev = newNode->info.first;
 }
 
 // Building code tree function
-Tree *buildCodeTreeHuffman(ElemArr curFreq, bool output, std::ofstream &info) {
+Tree *buildCodeTreeHuffman(ElemArr curFreq, bool output) {
+  prev = "";
   Forest forest;
 
+  // Creating forest from element array
   for (auto &e : curFreq) {
     std::string nodestr;
     char c = e.first;
@@ -124,7 +142,9 @@ Tree *buildCodeTreeHuffman(ElemArr curFreq, bool output, std::ofstream &info) {
     Tree *t = new Tree(new Tree::node({nodestr, e.second}, nullptr, nullptr));
     forest.push_back(t);
   }
+  // Merging last two elements while it is possible
   while (forest.size() > 1)
-    HuffmanIter(forest, output, info);
+    HuffmanIter(forest, output);
+  if (output) std::cout << "Result node: " << forest[0]->getNode().first << "\n";
   return forest[0];
 }
