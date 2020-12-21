@@ -531,7 +531,7 @@ string StrWorker::createHashTable(string input, int num) {
     output += to_string(hTable.getItemCounter());
     output += "\nКоллизий: ";
     output += to_string(maxIter - 1);
-    //output += "\nМаксимальное число итераций одной вставки: " + to_string(maxIter);
+    output += "\nМаксимальное число итераций одной вставки: " + to_string(maxIter);
     output += "\nЧисло итераций всех вставок: ";
     output += to_string(sumIter);
     output += "\n";
