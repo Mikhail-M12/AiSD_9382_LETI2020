@@ -4,7 +4,8 @@
 #include <cmath>
 
 #define MAX_NUMBER 1000
-#define MAX_COUNT_OF_TREES 100
+#define MAX_COUNT_OF_TREES 10
+#define MAX_NUMBER_WORST_CASE 8
 static bool mode;
 
 using namespace std;
@@ -19,11 +20,11 @@ struct RandomBinarySearchTree {
 };
 
 struct Results {
-    int countOfTrees;// count of trees
-    int* countOfNumbersInTree;// array with counts of numbers in trees
-    int* depth;// depth of trees
-    double* averageIterationsOfInsert;// average count of iteration
-    double* averageIterationsOfDeletion;// average count of deletion
+    int* countOfTrees;// count of trees
+    int** countOfNumbersInTree;// array with counts of numbers in trees
+    int** depth;// depth of trees
+    double** averageIterationsOfInsert;// average count of iteration
+    double** averageIterationsOfDeletion;// average count of deletion
 };
 
 
@@ -153,11 +154,6 @@ int height(RandomBinarySearchTree* randomBinarySearchTree) {
     else return height(randomBinarySearchTree->right) + 1;
 }
 
-bool searchIdeal(RandomBinarySearchTree* randomBinarySearchTree) {
-    if (randomBinarySearchTree == nullptr) return true;
-    return  (searchIdeal(randomBinarySearchTree->left) && searchIdeal(randomBinarySearchTree->right)
-    && abs(height(randomBinarySearchTree->left) - height(randomBinarySearchTree->right)) <= 1);
-}
 
 int searchAndInsert(int data, RandomBinarySearchTree* randomBinarySearchTree, RandomBinarySearchTree* parent) {
     if (!randomBinarySearchTree) {
@@ -184,7 +180,7 @@ int maxDepth(RandomBinarySearchTree* randomBinarySearchTree) {
     else return maxDepth(randomBinarySearchTree->left) + 1;
 }
 
-void generateInsertElements(RandomBinarySearchTree** randomBinarySearchTree, int countOfTrees, Results* results) {
+void generateInsertElements(RandomBinarySearchTree** randomBinarySearchTree, int countOfTrees, Results* results, int index) {
     int countOfInsert, iteration, sumOfIteration = 0, depth;
     cout<<"Enter count of element which will be insert\n";
     do cin>>countOfInsert; while(countOfInsert <= 0);
@@ -208,7 +204,7 @@ void generateInsertElements(RandomBinarySearchTree** randomBinarySearchTree, int
         }
 
         depth = maxDepth(randomBinarySearchTree[i]);
-        results->depth[i] = depth;
+        results->depth[index][i] = depth;
         for (int j = 0; j < countOfInsert; j++) {
             iteration = searchAndInsert(randomElements[j], randomBinarySearchTree[i], randomBinarySearchTree[i]);
             sumOfIteration+= iteration;
@@ -217,14 +213,14 @@ void generateInsertElements(RandomBinarySearchTree** randomBinarySearchTree, int
                 cout<<"Count of iterations(height): "<<iteration<<".\n";
             }
         }
-        results->averageIterationsOfInsert[i] = static_cast<double>(sumOfIteration)/countOfInsert;
+        results->averageIterationsOfInsert[index][i] = static_cast<double>(sumOfIteration)/countOfInsert;
         sumOfIteration = 0;
         if (mode) cout<<endl;
     }
 
 }
 
-void generateRemoveElements(RandomBinarySearchTree** randomBinarySearchTree, int countOfTrees, Results* results) {
+void generateRemoveElements(RandomBinarySearchTree** randomBinarySearchTree, int countOfTrees, Results* results, int index) {
     int countOfDeletion = 0, sumOfIterations = 0, tmp = 0;
     bool empty = false;
     cout<<"\nEnter count of element which will be delete\n";
@@ -253,124 +249,152 @@ void generateRemoveElements(RandomBinarySearchTree** randomBinarySearchTree, int
             if (empty) tmp++;
             empty = false;
             if (!randomBinarySearchTree[i]) {
+                tmp+= countOfDeletion - j;
                 break;
             }
         }
-        results->averageIterationsOfDeletion[i]  = countOfDeletion == tmp? static_cast<double>(sumOfIterations)/countOfDeletion: static_cast<double>(sumOfIterations)/(countOfDeletion - tmp);
+        results->averageIterationsOfDeletion[index][i]  = countOfDeletion == tmp? static_cast<double>(sumOfIterations)/countOfDeletion: static_cast<double>(sumOfIterations)/(countOfDeletion - tmp);
         sumOfIterations = 0;
         tmp = 0;
         if (mode) cout<<endl;
     }
 }
 
-void printResults(Results* results) {
+void printResults(Results* results, int index) {
     double averageInsert = 0, averageDeletion = 0, averageDepth = 0, averageCountOfNumbers = 0;
-    cout<<endl<<endl<<endl<<endl;
-    cout<<"Count of trees: "<< results->countOfTrees<<".\n";
-    for (int i = 0; i < results->countOfTrees; i++) {
+    cout<<endl;
+    cout<<"Count of trees: "<< results->countOfTrees[index]<<".\n";
+    for (int i = 0; i < results->countOfTrees[index]; i++) {
         if (mode) {
-            cout<<i<<" tree has "<<results->countOfNumbersInTree[i]<<" count of numbers in start.\n";
-            cout<<"Average count to insert is: "<<results->averageIterationsOfInsert[i]<<". "<<
-            "Average count to deletion is: "<<results->averageIterationsOfDeletion[i]<<". Max height of tree: "<<
-            results->depth[i]<<endl;
+            cout<<i<<" tree has "<<results->countOfNumbersInTree[index][i]<<" count of numbers in start.\n";
+            cout<<"Average count to insert is: "<<results->averageIterationsOfInsert[index][i]<<". "<<
+            "Average count to deletion is: "<<results->averageIterationsOfDeletion[index][i]<<". Max height of tree: "<<
+            results->depth[index][i]<<endl;
         }
-        averageInsert+= results->averageIterationsOfInsert[i];
-        averageDeletion+= results->averageIterationsOfDeletion[i];
-        averageDepth+= results->depth[i];
-        averageCountOfNumbers+= results->countOfNumbersInTree[i];
+        averageInsert+= results->averageIterationsOfInsert[index][i];
+        averageDeletion+= results->averageIterationsOfDeletion[index][i];
+        averageDepth+= results->depth[index][i];
+        averageCountOfNumbers+= results->countOfNumbersInTree[index][i];
     }
 
-    cout<<endl<<endl<<endl<<endl;
+    cout<<endl;
 
-    cout<<"Average iteration to insert of all trees: "<<averageInsert/results->countOfTrees<<endl;
-    cout<<"Average iteration to deletion of all trees: "<<averageDeletion/results->countOfTrees<<endl;
-    cout<<"Average n: "<<averageCountOfNumbers/results->countOfTrees<<endl;
+    cout<<"Average iteration to insert of all trees: "<<averageInsert/results->countOfTrees[index]<<endl;
+    cout<<"Average iteration to deletion of all trees: "<<averageDeletion/results->countOfTrees[index]<<endl;
+    cout<<"Average n: "<<averageCountOfNumbers/results->countOfTrees[index]<<endl;
 }
 
-void removeIdeal(RandomBinarySearchTree** randomBinarySearchTree, int countOfTrees, Results* results, const int* countInLine) {
 
-    int idealTrees = 0, j = 0;
-    for (int i = 0; i < countOfTrees; i++) {
-        if (searchIdeal(randomBinarySearchTree[i])) {
-            idealTrees++;
-            randomBinarySearchTree[i] = nullptr;
-        }
-    }
-
-
-    if (idealTrees == 1) cout<<"It's "<< idealTrees<<" ideal tree. It will be delete to remove complexity of best case\n";
-    else if (idealTrees > 1) cout<<"There is "<< idealTrees<<" ideal trees. They will be delete to remove complexity of best case\n";
-    // array without ideal trees
-    auto** treesWithoutIdeal = new RandomBinarySearchTree*[countOfTrees - idealTrees];
-
-    results->countOfNumbersInTree = new int[countOfTrees - idealTrees];
-    results->averageIterationsOfInsert = new double [countOfTrees - idealTrees];
-    results->averageIterationsOfDeletion = new double[countOfTrees - idealTrees];
-    results->depth = new int[countOfTrees - idealTrees];
-
-    for (int i = 0 ; i < countOfTrees; i++) {
-        if (randomBinarySearchTree[i]) {
-            treesWithoutIdeal[j] = new RandomBinarySearchTree;
-            treesWithoutIdeal[j] = randomBinarySearchTree[i];
-            results->countOfNumbersInTree[j] = countInLine[i];
-            j++;
-        }
-    }
-
-    results->countOfTrees = countOfTrees - idealTrees;
-
-    //insert in trees
-    generateInsertElements(treesWithoutIdeal,countOfTrees - idealTrees, results);
-
-    //remove from trees
-    generateRemoveElements(treesWithoutIdeal, countOfTrees - idealTrees, results);
-
-
-    printResults(results);
-}
 
 void makeTrees() {
     //results
     auto* results = new Results;
     // count of trees
-    int countOfTrees= rand() % MAX_COUNT_OF_TREES + 10;
+    int countOfTreesWorstCase= rand() % MAX_COUNT_OF_TREES + 10;
+    int countOfTreesAverageCase = rand() % MAX_COUNT_OF_TREES + 10;
+    int startWith;
+
+    //create struct of results
+    results->countOfTrees = new int[2];
+    results->countOfTrees[0] = countOfTreesAverageCase;
+    results->countOfTrees[1] = countOfTreesWorstCase;
+
+    results->countOfNumbersInTree = new int*[2];
+    results->countOfNumbersInTree[0] = new int[countOfTreesAverageCase];
+    results->countOfNumbersInTree[1] = new int[countOfTreesWorstCase];
+
+    results->averageIterationsOfInsert = new double*[2];
+    results->averageIterationsOfInsert[0] = new double[countOfTreesAverageCase];
+    results->averageIterationsOfInsert[1] = new double[countOfTreesWorstCase];
+
+    results->averageIterationsOfDeletion = new double*[2];
+    results->averageIterationsOfDeletion[0] = new double[countOfTreesAverageCase];
+    results->averageIterationsOfDeletion[1] = new double[countOfTreesWorstCase];
+
+    results->depth = new int*[2];
+    results->depth[0] = new int[countOfTreesAverageCase];
+    results->depth[1] = new int[countOfTreesWorstCase];
 
     //array of count of integer in lines
-    int countInLine[countOfTrees];
-    cout<<"Built "<<countOfTrees<<" trees\n";
+    int countInLineAverageCase[countOfTreesAverageCase], countInLineWorstCase[countOfTreesWorstCase];
+
+    cout<<"Built "<<countOfTreesAverageCase<<" trees in average case\n";
+    cout<<"Built "<<countOfTreesWorstCase<<" trees in worst case\n";
 
     //write count of numbers in trees
-    for (int i = 0; i < countOfTrees; i++) {
-            countInLine[i] = rand() % MAX_NUMBER + 10;
+    for (int i = 0; i < countOfTreesAverageCase; i++) {
+        countInLineAverageCase[i] = rand() % 100000 + 30000;
+        results->countOfNumbersInTree[0][i] = countInLineAverageCase[i];
     }
+
+    for (int i = 0; i < countOfTreesWorstCase; i++) {
+        countInLineWorstCase[i] = rand() %  MAX_NUMBER_WORST_CASE + 10;
+        results->countOfNumbersInTree[1][i] = countInLineWorstCase[i];
+    }
+
     // array of array of lines
-    int **arrayOfLines = new int*[countOfTrees];
-    for (int i = 0; i < countOfTrees; i++) arrayOfLines[i] = new int[countInLine[i]];
+    int **arrayOfLinesAverageCase = new int*[countOfTreesAverageCase];
+    int **arrayOfLinesWorstCase = new int*[countOfTreesWorstCase];
+
+    for (int i = 0; i < countOfTreesAverageCase; i++) arrayOfLinesAverageCase[i] = new int[countInLineAverageCase[i]];
+    for (int i = 0; i < countOfTreesWorstCase; i++) arrayOfLinesWorstCase[i] = new int[countInLineWorstCase[i]];
+
     // create and print lines
-    for (int i = 0; i < countOfTrees; i++) {
-        for (int j = 0; j < countInLine[i]; j++) {
-            arrayOfLines[i][j] = (rand() % MAX_NUMBER);
+    for (int i = 0; i < countOfTreesAverageCase; i++) {
+        for (int j = 0; j < countInLineAverageCase[i]; j++) {
+            arrayOfLinesAverageCase[i][j] = (rand() % MAX_NUMBER);
         }
     }
-    cout<<endl;
-    //create trees
-    auto** arrayOfTrees = new RandomBinarySearchTree*[countOfTrees];
-    for (int i = 0; i < countOfTrees; i++) arrayOfTrees[i] = new RandomBinarySearchTree;
 
-    // fill trees
-    for (int i = 0; i < countOfTrees; i++) {
-        enterTree(arrayOfLines[i], countInLine[i], arrayOfTrees[i]);
+    for (int i = 0; i < countOfTreesWorstCase; i++) {
+        startWith = rand() % 100;
+        for (int j = 0; j < countInLineWorstCase[i]; j++) {
+            arrayOfLinesWorstCase[i][j] = startWith++;
+        }
     }
 
-    removeIdeal(arrayOfTrees, countOfTrees, results, countInLine);
+    cout<<endl;
+    //create trees
+    auto** arrayOfTreesAverageCase = new RandomBinarySearchTree*[countOfTreesAverageCase];
+    auto** arrayOfTreesWorstCase = new RandomBinarySearchTree*[countOfTreesWorstCase];
+
+    for (int i = 0; i < countOfTreesAverageCase; i++) arrayOfTreesAverageCase[i] = new RandomBinarySearchTree;
+    for (int i = 0; i < countOfTreesWorstCase; i++) arrayOfTreesWorstCase[i] = new RandomBinarySearchTree;
+
+    // fill trees
+    for (int i = 0; i < countOfTreesAverageCase; i++) {
+        enterTree(arrayOfLinesAverageCase[i], countInLineAverageCase[i], arrayOfTreesAverageCase[i]);
+    }
+
+    for (int i = 0; i < countOfTreesWorstCase; i++) {
+        enterTree(arrayOfLinesWorstCase[i], countInLineWorstCase[i], arrayOfTreesWorstCase[i]);
+    }
+
+    generateInsertElements(arrayOfTreesAverageCase,countOfTreesAverageCase, results, 0);
+    generateInsertElements(arrayOfTreesWorstCase,countOfTreesWorstCase, results, 1);
+
+    //remove from trees
+    generateRemoveElements(arrayOfTreesAverageCase, countOfTreesAverageCase, results, 0);
+    generateRemoveElements(arrayOfTreesWorstCase, countOfTreesWorstCase, results, 1);
+
+
+    cout<<"Average Case:\n";
+    printResults(results, 0);
+    cout<<"Worst Case:\n";
+    printResults(results, 1);
 }
 
 int main() {
-    char modes;
-    srand(time(nullptr));
-    cout<<"Press 'q' to show intermediate results, otherwise press any button\n";
-    cin>>modes;
-    mode = modes == 'q';
-    makeTrees();
+
+
+        char modes;
+        srand(time(nullptr));
+        cout<<"Press 'q' to show intermediate results, otherwise press any button\n";
+        cin>>modes;
+        mode = modes == 'q';
+        makeTrees();
+
+
+
     return 0;
 }
