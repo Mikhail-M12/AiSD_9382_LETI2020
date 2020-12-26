@@ -320,7 +320,15 @@ int main(int argc, char *argv[])
     cin >> upBound;
     cout << "\nThe length is " << len << '\n';
     cout << "\nThe upper boundary " << upBound << '\n';
-    makeTest(len, upBound);
-    cout << "\nThe test has been made\n";
+
+    if (0 < len <= upBound)
+    {
+        makeTest(len, upBound);
+        cout << "\nThe test has been made\n";
+    }
+    else
+    {
+        cout << "Wrong input\n";
+    }
     return 0;
 }
