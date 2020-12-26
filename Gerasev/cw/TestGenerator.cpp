@@ -243,27 +243,59 @@ void BinarySearchTree::drawInString(string* res, string buffer, bool isLast)
         *res += buffer + end + dash + " empty\n";
 }
 
-BinarySearchTree* giveTreeWithLength(unsigned int n)
+bool isInMasLength(unsigned int n, int x, int* mas)
 {
-    auto result = new BinarySearchTree(1);
+    for (int i=0; i<n; i++)
+    {
+        if (mas[i] == x)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+int* giveRandMasWithLength(unsigned int n, unsigned int upperBoundary)
+{
+    auto res = new int[n];
+    int r;
+    for (int i=0; i<n; i++)
+    {
+        do
+        {
+            r = rand();
+            srand(r);
+        } while(isInMasLength(i+1, r%upperBoundary, res));
+        res[i] = r%upperBoundary;
+    }
+    return res;
+}
+
+BinarySearchTree* giveTreeWithLength(int* mas, unsigned int n)
+{
+    auto result = new BinarySearchTree(mas[0]);
     if (n == 0 || n == 1)
         return result;
 
     for (int i=1; i<n; i++)
-        result->insert(i+1);
+        result->insert(mas[i]);
 
     return result;
 }
 
-void makeTest(unsigned int n)
+void makeTest(unsigned int n, unsigned int upBound)
 {
     string path = "./RandomTreeTest.txt";
     ofstream fout;
     fout.open(path);
-    fout << "\nЗадание №1:\nCоздайте случайное дерево поиска из чисел от 1 до " << n << "\n\n\n\n";
+    int* theMas = giveRandMasWithLength(n, upBound);
+    fout << "\nЗадание №1:\nCоздайте случайное дерево поиска из следующих чисел:\n";
+    for (int i=0; i<n; i++)
+        fout << theMas[i] << ' ';
+    
     fout << "\nОдин из возможных ответов на задание №1:\n";
 
-    auto res = giveTreeWithLength(n);
+    auto res = giveTreeWithLength(theMas, n);
     string treeString;
     res->drawInString(&treeString);
     fout << treeString;
@@ -271,9 +303,9 @@ void makeTest(unsigned int n)
 
 
     int r = rand()%n;
-    fout << "\n\n\n\nЗадание №2:\nУдалите из получившегося дерева элемент " << r << "\n\n\n\n";
+    fout << "\n\n\n\nЗадание №2:\nУдалите из получившегося дерева элемент " << theMas[r] << "\n\n\n\n";
     fout << "\nОдин из возможных ответов на задание №2:\n";
-    res->deleteFirst(r);
+    res->deleteFirst(theMas[r]);
     res->drawInString(&treeString);
     fout << treeString;
 }
@@ -281,11 +313,14 @@ void makeTest(unsigned int n)
 int main(int argc, char *argv[])
 {
     srand(time(0));
-    cout << "Please input the length of tree for test ";
+    cout << "Please input the length of tree and upper boundary for test ";
     unsigned int len;
+    unsigned int upBound;
     cin >> len;
+    cin >> upBound;
     cout << "\nThe length is " << len << '\n';
-    makeTest(len);
+    cout << "\nThe upper boundary " << upBound << '\n';
+    makeTest(len, upBound);
     cout << "\nThe test has been made\n";
     return 0;
 }
