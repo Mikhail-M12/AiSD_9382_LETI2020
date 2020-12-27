@@ -1,5 +1,4 @@
 #include "TestGenerator.h"
-
 BinarySearchTree::BinarySearchTree(int inputData)
 {
     data = inputData;
@@ -265,8 +264,8 @@ int* giveRandMasWithLength(unsigned int n, unsigned int upperBoundary)
         {
             r = rand();
             srand(r);
-        } while(isInMasLength(i+1, r%upperBoundary, res));
-        res[i] = r%upperBoundary;
+        } while(isInMasLength(i+1, r%upperBoundary + 1, res));
+        res[i] = r%upperBoundary +1;
     }
     return res;
 }
@@ -278,7 +277,9 @@ BinarySearchTree* giveTreeWithLength(int* mas, unsigned int n)
         return result;
 
     for (int i=1; i<n; i++)
-        result->insert(mas[i]);
+    {
+        result = result->insert(mas[i]);
+    }
 
     return result;
 }
