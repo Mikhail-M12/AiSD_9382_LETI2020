@@ -33,6 +33,4 @@ public:
 
     BinarySearchTree* insertInRoot(int data); // Return root pointer
     BinarySearchTree* insert(int data);
-
-    BinarySearchTree* deleteFirst(int data);
 };

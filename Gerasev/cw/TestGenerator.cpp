@@ -1,4 +1,8 @@
 #include "TestGenerator.h"
+float* usedProbability;
+int insertCounter = 0;
+int joinCounter = 0;
+
 BinarySearchTree::BinarySearchTree(int inputData)
 {
     data = inputData;
@@ -75,34 +79,26 @@ BinarySearchTree* BinarySearchTree::insertInRoot(int inputData)
     if (inputData < data)
     {
         if (pointers.left == nullptr)
-        {
             pointers.left = new BinarySearchTree(inputData);        
-            return this;
-        }
         else
-        {
             pointers.left = pointers.left->insertInRoot(inputData);
-            return rotateRight();
-        }
+        return rotateRight();
     }
 
     if (pointers.right == nullptr)
-    {
         pointers.right = new BinarySearchTree(inputData);
-        return this;
-    }
     else
-    {
         pointers.right = pointers.right->insertInRoot(inputData);
-        return rotateLeft();
-    }
+    return rotateLeft();
 }
 
 BinarySearchTree* BinarySearchTree::insert(int inputData)
 {
     int randNumber = rand();
+    
+    usedProbability[insertCounter++] = (1.0*(randNumber%(quantityOfNodes + 1)))/(quantityOfNodes + 1);
     srand(randNumber);
-
+    
     bool stopHere = false;
     if (randNumber%(quantityOfNodes + 1) == 0)
         stopHere = true;
@@ -130,53 +126,6 @@ BinarySearchTree* BinarySearchTree::insert(int inputData)
     }
 
     updateQuantityOfNodes();
-    return this;
-}
-
-BinarySearchTree* join(BinarySearchTree* smallerTree, BinarySearchTree* biggerTree)
-{
-    if (smallerTree == nullptr)
-        return biggerTree;
-    if (biggerTree == nullptr)
-        return smallerTree;
-
-    int randNumber = rand();
-    srand(randNumber);
-    bool  goSmaller = false;
-    if (randNumber%(smallerTree->getQuantityOfNodes() + biggerTree->getQuantityOfNodes()) < smallerTree->getQuantityOfNodes())
-         goSmaller = true;
-
-    if (goSmaller) {
-        smallerTree->pointers.right = join(smallerTree->pointers.right, biggerTree);
-        smallerTree->updateQuantityOfNodes();
-        return smallerTree;
-    } else {
-        biggerTree->pointers.left = join(smallerTree, biggerTree->pointers.left);
-        biggerTree->updateQuantityOfNodes();
-        return biggerTree;
-    }
-}
-
-BinarySearchTree* BinarySearchTree::deleteFirst(int inputData)
-{
-    if (inputData == data)
-    {
-        BinarySearchTree* res = join(pointers.left, pointers.right);
-        return res;
-    }
-
-    if (inputData < data)
-    {
-        if (pointers.left != nullptr)
-            pointers.left = pointers.left->deleteFirst(inputData);
-    }
-
-    else
-    {
-        if (pointers.right != nullptr)
-            pointers.right = pointers.right->deleteFirst(inputData);
-    }
-
     return this;
 }
 
@@ -286,29 +235,31 @@ BinarySearchTree* giveTreeWithLength(int* mas, unsigned int n)
 
 void makeTest(unsigned int n, unsigned int upBound)
 {
+    usedProbability = new float[1<<n];
     string path = "./RandomTreeTest.txt";
     ofstream fout;
     fout.open(path);
     int* theMas = giveRandMasWithLength(n, upBound);
-    fout << "\nЗадание №1:\nCоздайте случайное дерево поиска из следующих чисел:\n";
+    auto res = giveTreeWithLength(theMas, n);
+
+    fout << "\nЗадание:\nCоздайте случайное дерево поиска из следующих чисел:\n";
     for (int i=0; i<n; i++)
         fout << theMas[i] << ' ';
-    
-    fout << "\nОдин из возможных ответов на задание №1:\n";
 
-    auto res = giveTreeWithLength(theMas, n);
+    fout << "\nИспользуя следующую последовательность случайных чисел от 0 до 1.\n";
+    for (int i=0; i<insertCounter; i++)
+      fout << usedProbability[i] << ' ';
+    fout << '\n';
+
+    fout << "При выборе вставки в корень дерева или продолжения рекурсивного прохода посмотрите на текущее случайное число, проведите вставку в корень, если случайное число меньше вероятности вставки в корень на данном шаге.\n";
+    fout << "На самом первом шаге случайные числа не используются.\n";
+    
+    fout << "\nОтвет на задание:\n";
+
     string treeString;
     res->drawInString(&treeString);
     fout << treeString;
     treeString = "";
-
-
-    int r = rand()%n;
-    fout << "\n\n\n\nЗадание №2:\nУдалите из получившегося дерева элемент " << theMas[r] << "\n\n\n\n";
-    fout << "\nОдин из возможных ответов на задание №2:\n";
-    res->deleteFirst(theMas[r]);
-    res->drawInString(&treeString);
-    fout << treeString;
 }
 
 int main(int argc, char *argv[])
