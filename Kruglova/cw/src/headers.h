@@ -16,8 +16,8 @@ public:
     Node* m_left = nullptr;
 
     // характеристики узла
-    unsigned int m_weight = 0; // вес узла
-    unsigned int m_number = 187;
+    int m_weight = 0; // вес узла
+    int m_number = 187;
     char m_symbol = '\0'; // символ который хранится в листе
     bool m_isLeaf = false; // флаг листа (TRUE, если лист)
     bool m_isNYT = true; // является ли узел NYT
@@ -28,5 +28,11 @@ public:
     Node(Node* parent, char symbol): m_parent{parent}, m_symbol{symbol}, m_isNYT{false}, m_isLeaf{true}, m_number{(parent->m_number) - 1} // конструктор для листьев
     {};
 };
+
+void pushFirst(Node* a);
+void deleteAllNodes();
+void splitHafTree(Node* root, std::vector<Node*> *vec, short int level);
+
+std::string vitterCoder(char symbol);
 
 #endif
