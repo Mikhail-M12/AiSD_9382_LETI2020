@@ -227,10 +227,78 @@ AVL_tree *process_user_input(AVL_tree *tree) {
     return tree;
 }
 
+class Research {
+    int input_size;
+public:
+    unordered_set<int> input;
+    Research(int v = 10000) : input_size(v) {};
+    void generate_ascendance();
+
+    void generate_random(int lower, int upper);
+
+    void run_add(AVL_tree *tree);
+
+    void run_delete(AVL_tree *tree);
+
+};
+
+void Research::generate_ascendance() {
+    for(int i = 1; i <= input_size; i++) {
+        input.insert(i);
+    }
+}
+
+void Research::generate_random(int lower, int upper) {
+    auto now = std::chrono::high_resolution_clock::now();
+    std::mt19937 gen;
+    gen.seed(now.time_since_epoch().count());
+    std::uniform_int_distribution<> distribution(lower, upper);
+    while(input.size() < input_size) {
+        input.insert(distribution(gen));
+    }
+}
+
+
+void Research::run_add(AVL_tree *tree) {
+    int tree_size = 0;
+    ofstream out;
+    out.open("../research_add.csv");
+    out << "tree_size," << "op_count," << "rot_count" << endl;
+    for(auto x : this->input) {
+        op_count = 0;
+        rot_count = 0;
+        tree_size++;
+        tree->root = tree->insert_node(tree->root, x);
+        out << tree_size << ',' << op_count << "," << rot_count << "\n";
+    }
+    out.close();
+}
+
+void Research::run_delete(AVL_tree *tree) {
+    ofstream out;
+    int tree_size = input_size;
+    out.open("../research_delete.csv");
+    out << "tree_size," << "op_count," << "rot_count" << endl;
+    for(auto index : input) {
+        op_count = 0;
+        rot_count = 0;
+        tree->root = tree->remove_node(tree->root, tree->root->get_value());
+        out << tree_size << ',' << op_count  << "," << rot_count << "\n";
+        tree_size--;
+    }
+    out.close();
+
+}
+
 int main() {
     AVL_tree *tree = new AVL_tree();
-    while (true) {
+    /*while (true) {
         tree = process_user_input(tree);
-    }
+    }*/
+    Research res;
+    res.generate_random(0, 10000);
+//    res.generate_ascendance();
+    res.run_add(tree);
+    res.run_delete(tree);
     return 0;
 }
