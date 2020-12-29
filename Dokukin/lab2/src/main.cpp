@@ -1,8 +1,8 @@
-#include<iostream>
+п»ї#include<iostream>
 #include<string>
 #include<fstream>
 
-class Node{ // Элемент списка
+class Node{ // Р­Р»РµРјРµРЅС‚ СЃРїРёСЃРєР°
 	public:
 		char key;
 		Node* next;
@@ -14,7 +14,7 @@ class Node{ // Элемент списка
 		}
 };
 
-bool areIdentical(Node* node1, Node* node2){ // Проверяет, являются ли два списка идентичными
+bool areIdentical(Node* node1, Node* node2){ // РџСЂРѕРІРµСЂСЏРµС‚, СЏРІР»СЏСЋС‚СЃСЏ Р»Рё РґРІР° СЃРїРёСЃРєР° РёРґРµРЅС‚РёС‡РЅС‹РјРё
 	std::cout<<"areIdentical() call for "<<node1->key<<" "<<node2->key<<'\n';
 	if (node1->key != node2->key) return false;
 	if (node1->child != nullptr && node2->child != nullptr){
@@ -24,7 +24,7 @@ bool areIdentical(Node* node1, Node* node2){ // Проверяет, являются ли два списк
 	return true;
 }
 
-void simplifyNode(Node* node){ // Упрощение списка
+void simplifyNode(Node* node){ // РЈРїСЂРѕС‰РµРЅРёРµ СЃРїРёСЃРєР°
 	std::cout<<"simplifyNode() call for "<<node->key<<'\n';
 	if (node->key == '&'){
 		if (node->child->key == '0' || node->child->next->key == '0'){
@@ -137,7 +137,7 @@ void simplifyNode(Node* node){ // Упрощение списка
 	}
 }
 
-void simplifyExpression(Node* head){ // Упрощение всего выражения(обход списка в глубину)
+void simplifyExpression(Node* head){ // РЈРїСЂРѕС‰РµРЅРёРµ РІСЃРµРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ(РѕР±С…РѕРґ СЃРїРёСЃРєР° РІ РіР»СѓР±РёРЅСѓ)
 	std::cout<<"simplifyExpression() call for node "<<head->key<<'\n';
 	if (head->child != nullptr) {
 		simplifyExpression(head->child);
@@ -146,7 +146,7 @@ void simplifyExpression(Node* head){ // Упрощение всего выражения(обход списка в
 	simplifyNode(head);
 }
 
-bool isCorrectExpression(std::string expr){ // Проверяет, является ли введённое выражение корректным
+bool isCorrectExpression(std::string expr){ // РџСЂРѕРІРµСЂСЏРµС‚, СЏРІР»СЏРµС‚СЃСЏ Р»Рё РІРІРµРґС‘РЅРЅРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ РєРѕСЂСЂРµРєС‚РЅС‹Рј
 	std::cout<<"isCorrectExpression() call\n";
 	if (expr.length() < 5) return false;
 	int open = 0;
@@ -160,7 +160,7 @@ bool isCorrectExpression(std::string expr){ // Проверяет, является ли введённое 
 	return true;
 }
 
-int exprToList(std::string expr, Node* head, int i = 0){ // Преобразует выражение в иерархический список
+int exprToList(std::string expr, Node* head, int i = 0){ // РџСЂРµРѕР±СЂР°Р·СѓРµС‚ РІС‹СЂР°Р¶РµРЅРёРµ РІ РёРµСЂР°СЂС…РёС‡РµСЃРєРёР№ СЃРїРёСЃРѕРє
 	while (expr[i] == ' '){
 		i++;
 	}
@@ -184,7 +184,7 @@ int exprToList(std::string expr, Node* head, int i = 0){ // Преобразует выражени
 	return i + 1;
 }
 
-void printList(Node* head){ // Печатает список на экран
+void printList(Node* head){ // РџРµС‡Р°С‚Р°РµС‚ СЃРїРёСЃРѕРє РЅР° СЌРєСЂР°РЅ
 	if (head->key == '&' || head->key == '|' || head->key == '!'){
 		std::cout<<"("<<head->key<<" ";
 		printList(head->child);
@@ -199,7 +199,7 @@ void printList(Node* head){ // Печатает список на экран
 	}
 }
 
-void process(std::string expr){ // Обработка введённого выражения
+void process(std::string expr){ // РћР±СЂР°Р±РѕС‚РєР° РІРІРµРґС‘РЅРЅРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ
 	int c = isCorrectExpression(expr);
 	if (!c) {
 		std::cout<<"Incorrect expression format.\n";
